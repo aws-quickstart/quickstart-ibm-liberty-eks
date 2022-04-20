@@ -1,0 +1,7 @@
+project:
+  name: quickstart-salesforce-health-cloud-virtual-care
+  owner: quickstart-eng@amazon.com
+  template: templates/quickstart-ibm-liberty-eks-main.template.yaml
+  parameters:
+tests:
+  default:
