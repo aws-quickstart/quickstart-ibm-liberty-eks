@@ -1,7 +1,26 @@
 project:
   name: quickstart-ibm-liberty-eks
   owner: quickstart-eng@amazon.com
-  template: templates/quickstart-ibm-liberty-eks-main.template.yaml
+  lambda_source_path: submodules/quickstart-amazon-eks/functions/source
+  lambda_zip_path: submodules/quickstart-amazon-eks/functions/packages
+  package_lambda: true
+  template: templates/ibm-liberty-eks-entrypoint-new-vpc.template.yaml
   parameters:
+    QSS3BucketName: $[taskcat_autobucket]
+    QSS3BucketRegion: $[taskcat_current_region]
+    AvailabilityZones: $[taskcat_genaz_3]
+    RemoteAccessCidr: override
+    KeyPairName: override
+    AdditionalEksAdminUserArn: ''
+    AdditionalEksAdminRoleArn: ''
+    ProvisionBastionHost: Enabled
+    EksPublicAccessEndpoint: Disabled
+    NodeGroupOS: Amazon Linux 2
+    NodeInstanceFamily: Standard
+    NodeInstanceType: t3.medium
+  regions:
+    - us-east-1
 tests:
   default:
+    regions:
+      - us-east-1
