@@ -1,9 +1,6 @@
 project:
   name: quickstart-ibm-liberty-eks
   owner: quickstart-eng@amazon.com
-  lambda_source_path: submodules/quickstart-amazon-eks/functions/source
-  lambda_zip_path: submodules/quickstart-amazon-eks/functions/packages
-  package_lambda: true
   template: templates/ibm-liberty-eks-entrypoint-new-vpc.template.yaml
   parameters:
     QSS3BucketName: $[taskcat_autobucket]
