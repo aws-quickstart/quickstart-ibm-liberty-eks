@@ -1,0 +1,151 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  AWS CloudFormation template to build an IBM WebSphere Liberty project with
+  Amazon Elastic Kubernetes Service (EKS) in AWS. (qs-1t085l07i)
+Metadata:
+  QuickStartDocumentation:
+    EntrypointName: Launch into an existing cluster
+    Order: 3
+  LICENSE: Apache License, Version 2.0
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: EKS cluster configuration
+        Parameters:
+          - Name
+          - VpcId
+          - SubnetIds
+          - HttpProxy
+          - ControlPlaneSecurityGroup
+          - PerAccountSharedResources
+          - PerRegionSharedResources
+      - Label:
+          default: AWS Quick Start configuration
+        Parameters:
+          - QSS3BucketName
+          - QSS3KeyPrefix
+          - QSS3BucketRegion
+    ParameterLabels:
+      Name:
+        default: Cluster name
+      ControlPlaneSecurityGroup:
+        default: Security group
+      SubnetIds:
+        default: Subnet IDs
+      PerAccountSharedResources:
+        default: Deploy account-level shared resources
+      PerRegionSharedResources:
+        default: Deploy Region-level shared resources
+      VpcId:
+        default: VPC ID
+      QSS3BucketName:
+        default: Quick Start S3 bucket name
+      QSS3KeyPrefix:
+        default: Quick Start S3 key prefix
+      QSS3BucketRegion:
+        default: Quick Start S3 bucket Region
+      HttpProxy:
+        default: HTTP proxy
+Parameters:
+  Name:
+    Type: String
+    Description: Name of the EKS cluster to enable for AWS CloudFormation.
+  SubnetIds:
+    Type: String
+    Description: >-
+      (Optional) Comma-separated list of subnet IDs associated with the EKS
+      cluster. There must be routes to the Kubernetes, AWS CloudFormation, and
+      EKS endpoints. Leave this blank for publicly accessible clusters.
+    Default: ''
+  ControlPlaneSecurityGroup:
+    Type: String
+    Description: >-
+      (Optional) Security group ID attached to the EKS cluster. This must allow
+      egress traffic to the Kubernetes, AWS CloudFormation, and EKS endpoints.
+      Leave this blank for publicly accessible clusters.
+    Default: ''
+  PerAccountSharedResources:
+    Type: String
+    Description: >-
+      Choose 'No' if you already deployed the EKS account shared resources in
+      this AWS account.
+    AllowedValues:
+      - AutoDetect
+      - 'Yes'
+      - 'No'
+    Default: AutoDetect
+  PerRegionSharedResources:
+    Type: String
+    AllowedValues:
+      - AutoDetect
+      - 'Yes'
+      - 'No'
+    Default: AutoDetect
+    Description: >-
+      Choose 'No' if you already deployed the EKS shared resources stack in your
+      Region.
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Description: >-
+      ID of the VPC that contains your EKS cluster (eg: vpc-0343606e).
+  QSS3BucketName:
+    Type: String
+    Description:
+      S3 bucket name for the Quick Start assets. This string can include
+      numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot
+      start or end with a hyphen (-).
+    AllowedPattern: ^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$
+    ConstraintDescription: >-
+      Quick Start bucket name can include numbers, lowercase letters, uppercase
+      letters, and hyphens (-). It cannot start or end with a hyphen (-).
+    Default: aws-quickstart
+  QSS3KeyPrefix:
+    Type: String
+    Description:
+      S3 key prefix for the Quick Start assets. Quick Start key prefix
+      can include numbers, lowercase letters, uppercase letters, hyphens (-),
+      periods (.) and forward slash (/).
+    AllowedPattern: ^([0-9a-zA-Z-/\.]+/)*$
+    ConstraintDescription:
+      Quick Start key prefix can include numbers, lowercase letters,
+      uppercase letters, hyphens (-), periods (.) and forward slash (/).
+    Default: quickstart-ibm-liberty-eks/
+  QSS3BucketRegion:
+    Type: String
+    Description: >-
+      Region where the Quick Start S3 bucket (QSS3BucketName) is hosted. When
+      using your own bucket, you must specify this value.
+    Default: us-east-1
+  HttpProxy:
+    Type: String
+    Description: >-
+      (Optional) HTTP(S) proxy configuration. If you provide a value, all
+      worker nodes and pod egress traffic uses this proxy
+      (eg: http://10.101.0.100:3128/).
+    Default: ''
+Conditions:
+  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, aws-quickstart]
+Resources:
+  EksStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}submodules/quickstart-amazon-eks/templates/amazon-eks-entrypoint-existing-cluster.template.yaml
+        - S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
+          S3Region: !If [UsingDefaultBucket, !Ref AWS::Region, !Ref QSS3BucketRegion]
+      Parameters:
+        ControlPlaneSecurityGroup: !Ref ControlPlaneSecurityGroup
+        HttpProxy: !Ref HttpProxy
+        K8sSubnetIds: !Ref SubnetIds
+        KubeClusterName: !Ref Name
+        PerAccountSharedResources: !Ref PerAccountSharedResources
+        PerRegionSharedResources: !Ref PerRegionSharedResources
+        VPCID: !Ref VpcId
+        QSS3BucketName: !Ref QSS3BucketName
+        QSS3KeyPrefix: !Sub ${QSS3KeyPrefix}/submodules/quickstart-amazon-eks/
+        QSS3BucketRegion: !Ref QSS3BucketRegion
+Outputs:
+  EksAdminRoleArn:
+    Value: !GetAtt EksStack.Outputs.EKSAdminRoleArn
+  HelmRoleArn:
+    Value: !GetAtt EksStack.Outputs.HelmRoleArn

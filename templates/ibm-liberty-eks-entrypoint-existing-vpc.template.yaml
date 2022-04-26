@@ -1,0 +1,1209 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  AWS CloudFormation template for deploying IBM WebSphere Liberty into a new
+  Amazon EKS cluster in an existing VPC in AWS. (qs-1t085l09k)
+Metadata:
+  QuickStartDocumentation:
+    EntrypointName: Launch into an existing VPC
+    Order: 2
+  SentenceCaseExclude:
+    - Domain
+    - Hosted
+    - Node
+    - Unmanaged
+  LICENSE: Apache License, Version 2.0
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: Basic configuration
+        Parameters:
+          - RemoteAccessCidr
+          - KeyPairName
+          - ConfigSetName
+          - PerAccountSharedResources
+          - PerRegionSharedResources
+      - Label:
+          default: Network configuration
+        Parameters:
+          - VpcId
+          - PrivateSubnet1Id
+          - PrivateSubnet2Id
+          - PrivateSubnet3Id
+          - PublicSubnet1Id
+          - PublicSubnet2Id
+          - PublicSubnet3Id
+          - HttpProxy
+      - Label:
+          default: Amazon EC2 configuration
+        Parameters:
+          - ProvisionBastionHost
+      - Label:
+          default: Amazon EKS configuration
+        Parameters:
+          - EksClusterName
+          - EksPublicAccessEndpoint
+          - AdditionalEksAdminUserArn
+          - AdditionalEksAdminRoleArn
+          - FargateNamespaces
+          - FargateLabels
+      - Label:
+          default: Default EKS node group configuration
+        Parameters:
+          - NodeInstanceType
+          - NumberOfNodes
+          - MaxNumberOfNodes
+          - NodeInstanceFamily
+          - NodeGroupType
+          - NodeGroupOS
+      - Label:
+          default: Snyk monitor (AWS security partner)
+        Parameters:
+          - SnykIntegration
+          - SnykIntegrationId
+      - Label:
+          default: New Relic infrastructure (AWS monitoring partner)
+        Parameters:
+          - NewRelicIntegration
+          - NewRelicLicenseKey
+      - Label:
+          default: Calico policy (APN security partner)
+        Parameters:
+          - CalicoIntegration
+      - Label:
+          default: Rafay Systems (APN software & internet partner)
+        Parameters:
+          - RafaySysIntegration
+          - RafaySysProject
+          - RafaySysBootstrapBucket
+          - RafaySysBootstrapKey
+          - RafaySysApiKey
+          - RafaySysApiSecret
+          - RafaySysFirstName
+          - RafaySysLastName
+          - RafaySysOrganizationName
+          - RafaySysEmail
+      - Label:
+          default: HashiCorp Vault (AWS security partner)
+        Parameters:
+          - VaultIntegration
+          - VaultUIAcmSslCertificateArn
+          - VaultUIHostedZoneId
+          - VaultUIDomainName
+      - Label:
+          default: HashiCorp Consul (AWS containers partner)
+        Parameters:
+          - ConsulIntegration
+          - ConsulUIAcmSslCertificateArn
+          - ConsulUIHostedZoneId
+          - ConsulUIDomainName
+      - Label:
+          default: Rancher management (AWS management partner)
+        Parameters:
+          - RancherIntegration
+          - RancherDomainName
+      - Label:
+          default: Kubernetes add-ins
+        Parameters:
+          - AlbIngressController
+          - ClusterAutoScaler
+          - EfsStorageClass
+          - PrometheusIntegration
+          - GrafanaIntegration
+      - Label:
+          default: AWS Quick Start configuration
+        Parameters:
+          - QSS3BucketName
+          - QSS3KeyPrefix
+          - QSS3BucketRegion
+    ParameterLabels:
+      KeyPairName:
+        default: SSH key name
+      QSS3BucketName:
+        default: Quick Start S3 bucket name
+      QSS3KeyPrefix:
+        default: Quick Start S3 key prefix
+      QSS3BucketRegion:
+        default: Quick Start S3 bucket Region
+      RemoteAccessCidr:
+        default: Allowed external access CIDR
+      NodeInstanceType:
+        default: Instance type
+      NumberOfNodes:
+        default: Number of nodes
+      PublicSubnet1Id:
+        default: Public subnet 1 ID
+      PublicSubnet2Id:
+        default: Public subnet 2 ID
+      PublicSubnet3Id:
+        default: Public subnet 3 ID
+      PrivateSubnet1Id:
+        default: Private subnet 1 ID
+      PrivateSubnet2Id:
+        default: Private subnet 2 ID
+      PrivateSubnet3Id:
+        default: Private subnet 3 ID
+      VpcId:
+        default: VPC ID
+      AdditionalEksAdminUserArn:
+        default: Additional EKS admin ARN (IAM user)
+      AdditionalEksAdminRoleArn:
+        default: Additional EKS admin ARN (IAM role)
+      ClusterAutoScaler:
+        default: Cluster autoscaler
+      EfsStorageClass:
+        default: EFS storage class
+      ProvisionBastionHost:
+        default: Provision bastion host
+      AlbIngressController:
+        default: AWS load balancer controller
+      EksClusterName:
+        default: EKS cluster name
+      SnykIntegrationId:
+        default: Integration ID
+      SnykIntegration:
+        default: Snyk integration
+      NewRelicIntegration:
+        default: New Relic integration
+      NewRelicLicenseKey:
+        default: License key
+      CalicoIntegration:
+        default: Calico policy integration
+      RafaySysIntegration:
+        default: Rafay Systems integration
+      RafaySysProject:
+        default: Rafay Systems project
+      RafaySysFirstName:
+        default: First name
+      RafaySysLastName:
+        default: Last name
+      RafaySysOrganizationName:
+        default: Organization name
+      RafaySysEmail:
+        default: Email
+      RafaySysApiKey:
+        default: API key
+      RafaySysApiSecret:
+        default: API secret
+      RafaySysBootstrapBucket:
+        default: Bootstrap S3 bucket
+      RafaySysBootstrapKey:
+        default: Bootstrap S3 key
+      EksPublicAccessEndpoint:
+        default: EKS public access endpoint
+      HttpProxy:
+        default: HTTP proxy
+      ConfigSetName:
+        default: Config set name
+      PerAccountSharedResources:
+        default: Per-account shared resources
+      PerRegionSharedResources:
+        default: Per-Region shared resources
+      MaxNumberOfNodes:
+        default: Maximum number of nodes
+      FargateNamespaces:
+        default: Fargate namespaces
+      FargateLabels:
+        default: Fargate labels
+      NodeInstanceFamily:
+        default: Instance family
+      NodeGroupType:
+        default: Node group type
+      NodeGroupOS:
+        default: Node group operating system
+      VaultIntegration:
+        default: HashiCorp Vault integration
+      VaultUIAcmSslCertificateArn:
+        default: Vault UI ACM SSL certificate ARN
+      VaultUIHostedZoneId:
+        default: Route 53 hosted zone ID
+      VaultUIDomainName:
+        default: Vault UI load balancer DNS name
+      ConsulIntegration:
+        default: HashiCorp Consul integration
+      ConsulUIAcmSslCertificateArn:
+        default: ACM SSL certificate ARN
+      ConsulUIHostedZoneId:
+        default: Route 53 hosted zone ID
+      ConsulUIDomainName:
+        default: Consul UI load balancer DNS name
+      RancherIntegration:
+        default: Rancher management integration
+      RancherDomainName:
+        default: Rancher management domain name
+      PrometheusIntegration:
+        default: Prometheus integration
+      GrafanaIntegration:
+        default: Grafana integration
+Parameters:
+  KeyPairName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: >-
+      Name of an existing key pair, which allows you to securely connect to
+      your instance after it launches.
+  QSS3BucketName:
+    Type: String
+    Description: >-
+      S3 bucket name for the Quick Start assets. This string can include
+      numbers, lowercase letters, uppercase letters, and hyphens (-). It cannot
+      start or end with a hyphen (-).
+    AllowedPattern: ^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$
+    ConstraintDescription: >-
+      Quick Start bucket name can include numbers, lowercase letters, uppercase
+      letters, and hyphens (-). It cannot start or end with a hyphen (-).
+    Default: aws-quickstart
+  QSS3KeyPrefix:
+    Type: String
+    Description: >-
+      S3 key prefix for the Quick Start assets. Quick Start key prefix can
+      include numbers, lowercase letters, uppercase letters, hyphens (-),
+      periods (.) and forward slash (/).
+    AllowedPattern: ^([0-9a-zA-Z-/\.]+/)*$
+    ConstraintDescription: >-
+      Quick Start key prefix can include numbers, lowercase letters, uppercase
+      letters, hyphens (-), periods (.) and forward slash (/).
+    Default: quickstart-ibm-liberty-eks/
+  QSS3BucketRegion:
+    Type: String
+    Description: >-
+      Region where the Quick Start S3 bucket (QSS3BucketName) is hosted. When
+      using your own bucket, you must specify this value.
+    Default: 'us-east-1'
+  RemoteAccessCidr:
+    Type: String
+    Description: >-
+      CIDR IP range that is permitted to access the instances. We recommend
+      that you set this value to a trusted IP range.
+    AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$
+    ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/x
+  EksPublicAccessEndpoint:
+    Type: String
+    Description: >-
+      Configure access to the Kubernetes API server endpoint from outside of
+      your VPC.
+    AllowedValues:
+      - Enabled
+      - Disabled
+    Default: Disabled
+  AdditionalEksAdminUserArn:
+    Type: String
+    Description: >-
+      (Optional) IAM user Amazon Resource Name (ARN) to be granted
+      administrative access to the EKS cluster.
+    AllowedPattern: ^arn:(aws|aws-cn|aws-us-gov):iam::[0-9]{12}:.*|^$
+    ConstraintDescription: Must be a valid IAM ARN or empty
+    Default: ''
+  AdditionalEksAdminRoleArn:
+    Type: String
+    Description: >-
+      (Optional) IAM role Amazon Resource Name (ARN) to be granted
+      administrative access to the EKS cluster.
+    AllowedPattern: ^arn:(aws|aws-cn|aws-us-gov):iam::[0-9]{12}:.*|^$
+    ConstraintDescription: Must be a valid IAM ARN or empty
+    Default: ''
+  NodeInstanceType:
+    Type: String
+    Description: EC2 instance type.
+    AllowedValues:
+      - a1.medium
+      - a1.large
+      - a1.xlarge
+      - a1.2xlarge
+      - a1.4xlarge
+      - a1.metal
+      - c1.medium
+      - c1.xlarge
+      - c3.large
+      - c3.xlarge
+      - c3.2xlarge
+      - c3.4xlarge
+      - c3.8xlarge
+      - c4.large
+      - c4.xlarge
+      - c4.2xlarge
+      - c4.4xlarge
+      - c4.8xlarge
+      - c5.large
+      - c5.xlarge
+      - c5.2xlarge
+      - c5.4xlarge
+      - c5.9xlarge
+      - c5.12xlarge
+      - c5.18xlarge
+      - c5.24xlarge
+      - c5.metal
+      - c5a.large
+      - c5a.xlarge
+      - c5a.2xlarge
+      - c5a.4xlarge
+      - c5a.8xlarge
+      - c5a.12xlarge
+      - c5a.16xlarge
+      - c5a.24xlarge
+      - c5ad.large
+      - c5ad.xlarge
+      - c5ad.2xlarge
+      - c5ad.4xlarge
+      - c5ad.8xlarge
+      - c5ad.12xlarge
+      - c5ad.16xlarge
+      - c5ad.24xlarge
+      - c5d.large
+      - c5d.xlarge
+      - c5d.2xlarge
+      - c5d.4xlarge
+      - c5d.9xlarge
+      - c5d.12xlarge
+      - c5d.18xlarge
+      - c5d.24xlarge
+      - c5d.metal
+      - c5n.large
+      - c5n.xlarge
+      - c5n.2xlarge
+      - c5n.4xlarge
+      - c5n.9xlarge
+      - c5n.18xlarge
+      - c5n.metal
+      - c6g.medium
+      - c6g.large
+      - c6g.xlarge
+      - c6g.2xlarge
+      - c6g.4xlarge
+      - c6g.8xlarge
+      - c6g.12xlarge
+      - c6g.16xlarge
+      - c6g.metal
+      - c6gd.medium
+      - c6gd.large
+      - c6gd.xlarge
+      - c6gd.2xlarge
+      - c6gd.4xlarge
+      - c6gd.8xlarge
+      - c6gd.12xlarge
+      - c6gd.16xlarge
+      - c6gd.metal
+      - cc2.8xlarge
+      - d2.xlarge
+      - d2.2xlarge
+      - d2.4xlarge
+      - d2.8xlarge
+      - f1.2xlarge
+      - f1.4xlarge
+      - f1.16xlarge
+      - g2.2xlarge
+      - g2.8xlarge
+      - g3.4xlarge
+      - g3.8xlarge
+      - g3.16xlarge
+      - g3s.xlarge
+      - g4dn.xlarge
+      - g4dn.2xlarge
+      - g4dn.4xlarge
+      - g4dn.8xlarge
+      - g4dn.12xlarge
+      - g4dn.16xlarge
+      - g4dn.metal
+      - h1.2xlarge
+      - h1.4xlarge
+      - h1.8xlarge
+      - h1.16xlarge
+      - i2.xlarge
+      - i2.2xlarge
+      - i2.4xlarge
+      - i2.8xlarge
+      - i3.16xlarge
+      - i3.large
+      - i3.xlarge
+      - i3.2xlarge
+      - i3.4xlarge
+      - i3.8xlarge
+      - i3.metal
+      - i3en.large
+      - i3en.xlarge
+      - i3en.2xlarge
+      - i3en.3xlarge
+      - i3en.6xlarge
+      - i3en.12xlarge
+      - i3en.24xlarge
+      - i3en.metal
+      - inf1.xlarge
+      - inf1.2xlarge
+      - inf1.6xlarge
+      - inf1.24xlarge
+      - m1.small
+      - m1.medium
+      - m1.large
+      - m1.xlarge
+      - m2.xlarge
+      - m2.2xlarge
+      - m2.4xlarge
+      - m3.medium
+      - m3.large
+      - m3.xlarge
+      - m3.2xlarge
+      - m4.large
+      - m4.xlarge
+      - m4.2xlarge
+      - m4.4xlarge
+      - m4.10xlarge
+      - m4.16xlarge
+      - m5.large
+      - m5.xlarge
+      - m5.2xlarge
+      - m5.4xlarge
+      - m5.8xlarge
+      - m5.12xlarge
+      - m5.16xlarge
+      - m5.24xlarge
+      - m5.metal
+      - m5a.large
+      - m5a.xlarge
+      - m5a.2xlarge
+      - m5a.4xlarge
+      - m5a.8xlarge
+      - m5a.12xlarge
+      - m5a.16xlarge
+      - m5a.24xlarge
+      - m5ad.large
+      - m5ad.xlarge
+      - m5ad.2xlarge
+      - m5ad.4xlarge
+      - m5ad.8xlarge
+      - m5ad.12xlarge
+      - m5ad.16xlarge
+      - m5ad.24xlarge
+      - m5d.large
+      - m5d.xlarge
+      - m5d.2xlarge
+      - m5d.4xlarge
+      - m5d.8xlarge
+      - m5d.12xlarge
+      - m5d.16xlarge
+      - m5d.24xlarge
+      - m5d.metal
+      - m5dn.large
+      - m5dn.xlarge
+      - m5dn.2xlarge
+      - m5dn.4xlarge
+      - m5dn.8xlarge
+      - m5dn.12xlarge
+      - m5dn.16xlarge
+      - m5dn.24xlarge
+      - m5n.large
+      - m5n.xlarge
+      - m5n.2xlarge
+      - m5n.4xlarge
+      - m5n.8xlarge
+      - m5n.12xlarge
+      - m5n.16xlarge
+      - m5n.24xlarge
+      - m6g.medium
+      - m6g.large
+      - m6g.xlarge
+      - m6g.2xlarge
+      - m6g.4xlarge
+      - m6g.8xlarge
+      - m6g.12xlarge
+      - m6g.16xlarge
+      - m6g.metal
+      - m6gd.medium
+      - m6gd.large
+      - m6gd.xlarge
+      - m6gd.2xlarge
+      - m6gd.4xlarge
+      - m6gd.8xlarge
+      - m6gd.12xlarge
+      - m6gd.16xlarge
+      - m6gd.metal
+      - p2.xlarge
+      - p2.8xlarge
+      - p2.16xlarge
+      - p3.2xlarge
+      - p3.8xlarge
+      - p3.16xlarge
+      - p3dn.24xlarge
+      - r3.large
+      - r3.xlarge
+      - r3.2xlarge
+      - r3.4xlarge
+      - r3.8xlarge
+      - r4.large
+      - r4.xlarge
+      - r4.2xlarge
+      - r4.4xlarge
+      - r4.8xlarge
+      - r4.16xlarge
+      - r5.large
+      - r5.xlarge
+      - r5.2xlarge
+      - r5.4xlarge
+      - r5.8xlarge
+      - r5.12xlarge
+      - r5.16xlarge
+      - r5.24xlarge
+      - r5.metal
+      - r5a.large
+      - r5a.xlarge
+      - r5a.2xlarge
+      - r5a.4xlarge
+      - r5a.8xlarge
+      - r5a.12xlarge
+      - r5a.16xlarge
+      - r5a.24xlarge
+      - r5ad.large
+      - r5ad.xlarge
+      - r5ad.2xlarge
+      - r5ad.4xlarge
+      - r5ad.8xlarge
+      - r5ad.12xlarge
+      - r5ad.16xlarge
+      - r5ad.24xlarge
+      - r5d.large
+      - r5d.xlarge
+      - r5d.2xlarge
+      - r5d.4xlarge
+      - r5d.8xlarge
+      - r5d.12xlarge
+      - r5d.16xlarge
+      - r5d.24xlarge
+      - r5d.metal
+      - r5dn.large
+      - r5dn.xlarge
+      - r5dn.2xlarge
+      - r5dn.4xlarge
+      - r5dn.8xlarge
+      - r5dn.12xlarge
+      - r5dn.16xlarge
+      - r5dn.24xlarge
+      - r5n.large
+      - r5n.xlarge
+      - r5n.2xlarge
+      - r5n.4xlarge
+      - r5n.8xlarge
+      - r5n.12xlarge
+      - r5n.16xlarge
+      - r5n.24xlarge
+      - r6g.medium
+      - r6g.large
+      - r6g.xlarge
+      - r6g.2xlarge
+      - r6g.4xlarge
+      - r6g.8xlarge
+      - r6g.12xlarge
+      - r6g.16xlarge
+      - r6g.metal
+      - r6gd.medium
+      - r6gd.large
+      - r6gd.xlarge
+      - r6gd.2xlarge
+      - r6gd.4xlarge
+      - r6gd.8xlarge
+      - r6gd.12xlarge
+      - r6gd.16xlarge
+      - r6gd.metal
+      - t1.micro
+      - t2.nano
+      - t2.micro
+      - t2.small
+      - t2.medium
+      - t2.large
+      - t2.xlarge
+      - t2.2xlarge
+      - t3.nano
+      - t3.micro
+      - t3.small
+      - t3.medium
+      - t3.large
+      - t3.xlarge
+      - t3.2xlarge
+      - t3a.nano
+      - t3a.micro
+      - t3a.small
+      - t3a.medium
+      - t3a.large
+      - t3a.2xlarge
+      - t3a.xlarge
+      - t4g.nano
+      - t4g.micro
+      - t4g.small
+      - t4g.medium
+      - t4g.large
+      - t4g.xlarge
+      - t4g.2xlarge
+      - x1.16xlarge
+      - x1.32xlarge
+      - x1e.xlarge
+      - x1e.2xlarge
+      - x1e.4xlarge
+      - x1e.8xlarge
+      - x1e.16xlarge
+      - x1e.32xlarge
+      - z1d.large
+      - z1d.xlarge
+      - z1d.2xlarge
+      - z1d.3xlarge
+      - z1d.6xlarge
+      - z1d.12xlarge
+      - z1d.metal
+    ConstraintDescription: Must be a valid EC2 instance type.
+    Default: t3.medium
+  NumberOfNodes:
+    Type: Number
+    Description: >-
+      Number of Amazon EKS node instances. The default is one for each of the
+      three Availability Zones.
+    MinValue: 0
+    MaxValue: 450
+    Default: 3
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Description: >-
+      ID of your existing VPC (eg: vpc-0343606e).
+  PublicSubnet1Id:
+    Type: String
+    Description: >-
+      (Optional) ID of the public subnet in Availability Zone 1 of your
+      existing VPC (eg: subnet-a0246dcd, subnet-a0246dcd).
+    Default: ''
+  PublicSubnet2Id:
+    Type: String
+    Description: >-
+      (Optional) ID of the public subnet in Availability Zone 2 of your
+      existing VPC (eg: subnet-b1236eea).
+    Default: ''
+  PublicSubnet3Id:
+    Type: String
+    Description: >-
+      (Optional) ID of the public subnet in Availability Zone 3 of your
+      existing VPC (eg: subnet-c3456aba).
+    Default: ''
+  PrivateSubnet1Id:
+    Type: AWS::EC2::Subnet::Id
+    Description: >-
+      ID of the private subnet in Availability Zone 1 of your existing VPC
+      (eg: subnet-fe9a8b32).
+  PrivateSubnet2Id:
+    Type: AWS::EC2::Subnet::Id
+    Description: >-
+      ID of the private subnet in Availability Zone 2 of your existing VPC
+      (eg: subnet-be8b01ea).
+  PrivateSubnet3Id:
+    Type: String
+    Description: >-
+      (Optional) ID of the private subnet in Availability Zone 3 of your
+      existing VPC (eg: subnet-abd39039).
+    Default: ''
+  ClusterAutoScaler:
+    Type: String
+    Description: Choose 'Enabled' to enable Kubernetes cluster autoscaler.
+    AllowedValues:
+      - Enabled
+      - Disabled
+    Default: Disabled
+  EfsStorageClass:
+    Type: String
+    Description: Choose 'Enabled' to enable EFS storage class.
+    AllowedValues:
+      - Enabled
+      - Disabled
+    Default: Disabled
+  HttpProxy:
+    Type: String
+    Description: >-
+      (Optional) HTTP(S) proxy configuration. If provided, all worker nodes and
+      pod egress traffic uses this proxy. (eg: http://10.101.0.100:3128/).
+    Default: ''
+  ProvisionBastionHost:
+    Type: String
+    AllowedValues:
+      - Enabled
+      - Disabled
+    Default: Enabled
+    Description: Choose 'Disabled' to skip creating a bastion host.
+  AlbIngressController:
+    Type: String
+    Description: Choose 'Enabled' to deploy the AWS load balancer controller.
+    AllowedValues:
+      - Enabled
+      - Disabled
+    Default: Enabled
+  EksClusterName:
+    Type: String
+    Description: >-
+      (Optional) Name for the EKS cluster. If left blank, one is
+      auto-generated. This must be unique within the Region.
+    Default: ''
+  SnykIntegrationId:
+    Type: String
+    Description: >-
+      (Optional) If Snyk is enabled, the Snyk integration ID must be provided.
+      For more information, see
+      https://support.snyk.io/hc/en-us/articles/360003916158-Install-the-Snyk-controller-with-Helm.
+    NoEcho: true
+    AllowedPattern: '^[0-9a-z-]{36}$|^$'
+    Default: ''
+  SnykIntegration:
+    Type: String
+    Description: >-
+      For more information, see
+      https://github.com/aws-quickstart/quickstart-eks-snyk/.
+    AllowedValues:
+      - Enabled
+      - Disabled
+    Default: Disabled
+  NewRelicLicenseKey:
+    Type: String
+    Description: >-
+      (Optional) If New Relic is enabled, this must be provided. For more
+      information, see
+      https://docs.newrelic.com/docs/accounts/install-new-relic/account-setup/license-key.
+    NoEcho: true
+    Default: ''
+  NewRelicIntegration:
+    Type: String
+    Description: >-
+      For more information, see
+      https://github.com/aws-quickstart/quickstart-eks-newrelic-infrastructure/.
+    AllowedValues:
+      - Enabled
+      - Disabled
+    Default: Disabled
+  ConfigSetName:
+    Type: String
+    Description: >-
+      (Optional) Name used to map advanced parameters to an EKS cluster. If you
+      launched an advanced configuration stack and would like to apply it's
+      values to this cluster, this name must match the 'Config set name'
+      parameter in that stack. If left blank, a new config set is created using
+      default values.
+    Default: ''
+  CalicoIntegration:
+    Type: String
+    Description: >-
+      For more information see https://www.projectcalico.org/.
+    AllowedValues:
+      - Enabled
+      - Disabled
+    Default: Disabled
+  RafaySysIntegration:
+    Type: String
+    Description: >-
+      For more information see
+      https://aws-quickstart.github.io/quickstart-eks-rafay-systems/.
+    AllowedValues:
+      - Enabled
+      - Disabled
+    Default: Disabled
+  RafaySysProject:
+    Type: String
+    Description: >-
+      This is the name you want to use for you Rafay deployment.
+    Default: defaultproject
+  RafaySysBootstrapBucket:
+    Type: String
+    Description: >-
+      (Optional) S3 bucket to place the the rafay bootstrap yaml file. If left
+      blank the EKS Quick Start bucket will be used.
+    Default: ''
+  RafaySysBootstrapKey:
+    Type: String
+    Description: >-
+      (Optional) S3 key to place the the rafay bootstrap yaml file. If left
+      blank the key will be rafay/<CLUSTER_NAME>/cluster-bootstrap.yaml.
+    Default: ''
+  RafaySysApiKey:
+    Type: String
+    Description: >-
+      (Optional) Required if using an existing Rafay account.
+    Default: ''
+  RafaySysApiSecret:
+    Type: String
+    Description: >-
+      (Optional) Required if using an existing Rafay account.
+    NoEcho: true
+    Default: ''
+  RafaySysFirstName:
+    Type: String
+    Description: >-
+      (Optional) Required if registering a new Rafay account.
+    Default: ''
+  RafaySysLastName:
+    Type: String
+    Description: >-
+      (Optional) Required if registering a new Rafay account.
+    Default: ''
+  RafaySysOrganizationName:
+    Type: String
+    Description: >-
+      (Optional) Required if registering a new Rafay account.
+    Default: ''
+  RafaySysEmail:
+    Type: String
+    Description: >-
+      (Optional) Required if registering a new Rafay account.
+    Default: ''
+  PerAccountSharedResources:
+    Type: String
+    Description: >-
+      Choose 'No' if you already deployed another EKS Quick Start stack in your
+      AWS account.
+    AllowedValues:
+      - AutoDetect
+      - 'Yes'
+      - 'No'
+    Default: AutoDetect
+  PerRegionSharedResources:
+    Type: String
+    Description: >-
+      Choose 'No' if you already deployed another EKS Quick Start stack in
+      your Region.
+    AllowedValues:
+      - AutoDetect
+      - 'Yes'
+      - 'No'
+    Default: AutoDetect
+  GrafanaIntegration:
+    Type: String
+    Description: >-
+      Grafana requires 'Prometheus integration' to be enabled. For more
+      information see https://www.grafana.com/.
+    AllowedValues:
+      - Enabled
+      - Disabled
+    Default: Disabled
+  PrometheusIntegration:
+    Type: String
+    Description: For more information see https://prometheus.io/.
+    AllowedValues:
+      - Enabled
+      - Disabled
+    Default: Disabled
+  MaxNumberOfNodes:
+    Type: Number
+    Description: >-
+      Maximum number of Amazon EKS node instances. The default is three.
+    MinValue: 0
+    MaxValue: 450
+    Default: 3
+  FargateNamespaces:
+    Type: String
+    Description: >-
+      (Optional) Comma-separated list of namespaces for which Fargate should be
+      enabled.
+    Default: ''
+  FargateLabels:
+    Type: String
+    Description: >-
+      (Optional) Requires at least one Fargate namespace to be specified. This
+      is a comma-separated list of key-value pod labels. For a pod to run on
+      Fargate, all of the labels must match, and it must run in a namespace
+      defined by 'Fargate namespaces'.
+    Default: ''
+  NodeInstanceFamily:
+    Type: String
+    Description: >-
+      Choose the instance family to match the value of 'Node instance type'.
+    AllowedValues:
+      - Standard
+      - ARM
+      - GPU
+    Default: Standard
+  NodeGroupType:
+    Type: String
+    Description: >-
+      Choose 'Unmanaged' to create an Auto Scaling group without using the
+      EKS-managed node groups feature.
+    AllowedValues:
+      - Managed
+      - Unmanaged
+    Default: Managed
+  NodeGroupOS:
+    Type: String
+    Description: >-
+      Operating system to use for node instances. Note that if you choose
+      'Windows', an additional Amazon Linux node group is created.
+    AllowedValues:
+      - Amazon Linux 2
+      - Bottlerocket
+      - Windows
+    Default: Amazon Linux 2
+  VaultIntegration:
+    Type: String
+    Description: >-
+      For more information, see
+      https://github.com/aws-quickstart/quickstart-eks-hashicorp-vault/.
+    AllowedValues:
+      - Enabled
+      - Disabled
+    Default: Disabled
+  VaultUIDomainName:
+    Type: String
+    Description: >-
+      (Optional) Fully qualified DNS name for the vault-ui service load
+      balancer. If you don't provide a value for 'ACM SSL certificate ARN',
+      use the HostedZoneID.
+    MaxLength: 128
+    Default: ''
+  VaultUIHostedZoneId:
+    Type: String
+    Description: >-
+      (Optional) Route 53 Hosted zone ID of the domain name. If you don't
+      provide an ACMSSLCertificateArn value, the Quick Start creates an ACM
+      certificate for you using HostedZoneID in conjunction with DomainName.
+    Default: ''
+  VaultUIAcmSslCertificateArn:
+    Type: String
+    Description: >-
+      (Optional) ARN of the load balancer's ACM SSL certificate. If you don't
+      provide values for 'Domain name' and 'Hosted zone ID', provide a value
+      for 'ACM SSL certificate ARN'.
+    AllowedPattern: ^arn:(aws|aws-cn|aws-us-gov):acm:.*:[0-9]{12}:certificate.*|^$
+    Default: ''
+  ConsulIntegration:
+    Type: String
+    Description: >-
+      For more information, see
+      https://github.com/aws-quickstart/quickstart-eks-hashicorp-consul/.
+    AllowedValues:
+      - Enabled
+      - Disabled
+    Default: Disabled
+  ConsulUIDomainName:
+    Type: String
+    Description: >-
+      (Optional) Fully qualified DNS name for the consul-ui service load
+      balancer. If you don't provide a value for 'ACM SSL certificate ARN',
+      use the HostedZoneID.
+    MaxLength: 128
+    Default: ''
+  ConsulUIHostedZoneId:
+    Type: String
+    Description: >-
+      (Optional) Route 53 hosted zone ID of the domain name. If you don't
+      provide an ACMSSLCertificateArn value, the Quick Start creates an ACM
+      certificate for you using HostedZoneID in conjunction with DomainName.
+    Default: ''
+  ConsulUIAcmSslCertificateArn:
+    Type: String
+    Description: >-
+      (Optional) ARN of the load balancer's ACM SSL certificate. If you don't
+      provide values for 'Domain name' and 'Hosted zone ID', provide a value
+      for 'ACM SSL certificate ARN'.
+    AllowedPattern: ^arn:(aws|aws-cn|aws-us-gov):acm:.*:[0-9]{12}:certificate.*|^$
+    ConstraintDescription: Must be a valid ACM ARN or empty.
+    Default: ''
+  RancherIntegration:
+    Type: String
+    Description: >-
+      For more information, see
+      https://github.com/aws-quickstart/quickstart-eks-rancher/.
+    AllowedValues:
+      - Enabled
+      - Disabled
+    Default: Disabled
+  RancherDomainName:
+    Type: String
+    Description: >-
+      DNS domain name that users can use to access the Rancher console.
+    Default: aws.private
+# Mappings:
+#   Config:
+#     Prefix:
+#       Value: eks-quickstart
+Conditions:
+  # DetectSharedStacks: !And
+  #   - !Equals [!Ref PerAccountSharedResources, AutoDetect]
+  #   - !Equals [!Ref PerRegionSharedResources, AutoDetect]
+  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, aws-quickstart]
+  # CreateAdvancedConfigWithDefaults: !Equals [!Ref ConfigSetName, '']
+  # CreatePerAccountSharedResources:
+  #   !Equals [!Ref PerAccountSharedResources, 'Yes']
+  # CreatePerRegionSharedResources:
+  #   !Equals [!Ref PerRegionSharedResources, 'Yes']
+  # WindowsNodes: !Equals [!Ref NodeGroupOS, Windows]
+  # VaultEnabled: !Equals [!Ref VaultIntegration, Enabled]
+  # EnablePrometheus: !Equals [!Ref PrometheusIntegration, Enabled]
+  # EnableGrafana: !Equals [!Ref GrafanaIntegration, Enabled]
+Rules:
+  AutoDetectSharedParams:
+    RuleCondition: !Or
+      - !Equals [!Ref PerRegionSharedResources, AutoDetect]
+      - !Equals [!Ref PerAccountSharedResources, AutoDetect]
+    Assertions:
+      - Assert: !And
+          - !Equals [!Ref PerRegionSharedResources, AutoDetect]
+          - !Equals [!Ref PerAccountSharedResources, AutoDetect]
+        AssertDescription: >-
+          AutDetect must be set/unset for both PerRegionSharedResources and
+          PerAccountSharedResources.
+  LablesNeedNamespaces:
+    RuleCondition: !Not [!Equals [!Ref FargateLabels, '']]
+    Assertions:
+      - AssertDescription: >-
+          You must specify at least one Fargate namespace to enable Fargate.
+        Assert: !Not [!Equals [!Ref FargateNamespaces, '']]
+  WindowsUnmanaged:
+    Assertions:
+      - Assert: !Not [!Equals [NodeGroupOS, Windows]]
+        AssertDescription: Managed nodegroups do not support Windows nodes.
+    RuleCondition: !Equals [!Ref NodeGroupType, Managed]
+  # Vault
+  VaultUIDomainNamePresentWithHostedID:
+    RuleCondition: !And
+      - !Equals [!Ref VaultIntegration, Enabled]
+      - !Equals [!Ref VaultUIHostedZoneId, '']
+    Assertions:
+      - Assert: !Not [!Equals [!Ref VaultUIDomainName, '']]
+        AssertDescription: >-
+          Vault: Please specify a 'Domain Name' if you specify
+          'Route 53 Hosted Zone ID'.
+  VaultUIHostedIDPresentWithDomainName:
+    RuleCondition: !And
+      - !Equals [!Ref VaultIntegration, Enabled]
+      - !Equals [!Ref VaultUIDomainName, '']
+    Assertions:
+      - Assert: !Not [!Equals [!Ref VaultUIHostedZoneId, '']]
+        AssertDescription: >-
+          Vault: Please specify a 'Route 53 Hosted Zone ID' if you specify
+          'Domain Name'.
+  VaultUIGenerateOrProvideSSL:
+    RuleCondition: !And
+      - !Equals [!Ref VaultIntegration, 'Enabled']
+      - !Not [!Equals [!Ref VaultUIAcmSslCertificateArn, '']]
+    Assertions:
+      - Assert: !And
+          - !Equals [!Ref VaultUIHostedZoneId, '']
+          - !Equals [!Ref VaultUIDomainName, '']
+        AssertDescription: >-
+          Vault1: Using an SSL certificate is enforced. A CertificateArn or a
+          HostedZoneID and Domain Name must be provided.
+  VaultUINoLoadBalancerInfoSupplied:
+    RuleCondition: !Equals [!Ref VaultIntegration, Enabled]
+    Assertions:
+      - Assert: !Or
+          - !Not [!Equals [!Ref VaultUIHostedZoneId, '']]
+          - !Not [!Equals [!Ref VaultUIAcmSslCertificateArn, '']]
+          - !Not [!Equals [!Ref VaultUIDomainName, '']]
+        AssertDescription: >-
+          Vault2: Using an SSL certificate is enforced. A CertificateArn or a
+          HostedZoneID and Domain Name must be provided.
+  # Consul
+  ConsulUIDomainNamePresentWithHostedID:
+    RuleCondition: !And
+      - !Equals [!Ref ConsulIntegration, Enabled]
+      - !Equals [!Ref ConsulUIHostedZoneId, '']
+    Assertions:
+      - Assert: !Not [!Equals [!Ref ConsulUIDomainName, '']]
+        AssertDescription: >-
+          Consul: Please specify a 'Domain Name' if you specify
+          'Route 53 Hosted Zone ID'.
+  ConsulUIHostedIDPresentWithDomainName:
+    RuleCondition: !And
+      - !Equals [!Ref ConsulIntegration, Enabled]
+      - !Equals [!Ref ConsulUIDomainName, '']
+    Assertions:
+      - Assert: !Not [!Equals [!Ref ConsulUIHostedZoneId, '']]
+        AssertDescription: >-
+          Consul: Please specify a 'Route 53 Hosted Zone ID' if you specify
+          'Domain Name'.
+  ConsulUIGenerateOrProvideSSL:
+    RuleCondition: !And
+      - !Equals [!Ref ConsulIntegration, Enabled]
+      - !Not [!Equals [!Ref ConsulUIAcmSslCertificateArn, '']]
+    Assertions:
+      - Assert: !And
+          - !Equals [!Ref ConsulUIHostedZoneId, '']
+          - !Equals [!Ref ConsulUIDomainName, '']
+        AssertDescription: >-
+          Consul1: Using an SSL certificate is enforced. A CertificateArn or a
+          HostedZoneID and Domain Name must be provided.
+  ConsulUINoLoadBalancerInfoSupplied:
+    RuleCondition: !Equals [!Ref ConsulIntegration, Enabled]
+    Assertions:
+      - Assert: !Or
+          - !Not [!Equals [!Ref ConsulUIHostedZoneId, '']]
+          - !Not [!Equals [!Ref ConsulUIAcmSslCertificateArn, '']]
+          - !Not [!Equals [!Ref ConsulUIDomainName, '']]
+        AssertDescription: >-
+          Consul2: Using an SSL certificate is enforced. A CertificateArn or a
+          HostedZoneID and Domain Name must be provided.
+Resources:
+  EksStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}submodules/quickstart-amazon-eks/templates/amazon-eks-entrypoint-existing-vpc.template.yaml
+        - S3Bucket: !If [UsingDefaultBucket, !Sub '${QSS3BucketName}-${AWS::Region}', !Ref QSS3BucketName]
+          S3Region: !If [UsingDefaultBucket, !Ref AWS::Region, !Ref QSS3BucketRegion]
+      Parameters:
+        VPCID: !Ref VpcId
+        PrivateSubnet1ID: !Ref PrivateSubnet1Id
+        PrivateSubnet2ID: !Ref PrivateSubnet2Id
+        PrivateSubnet3ID: !Ref PrivateSubnet3Id
+        PublicSubnet1ID: !Ref PublicSubnet1Id
+        PublicSubnet2ID: !Ref PublicSubnet2Id
+        PublicSubnet3ID: !Ref PublicSubnet3Id
+        RemoteAccessCIDR: !Ref RemoteAccessCidr
+        KeyPairName: !Ref KeyPairName
+        ConfigSetName: !Ref ConfigSetName
+        PerAccountSharedResources: !Ref PerAccountSharedResources
+        PerRegionSharedResources: !Ref PerRegionSharedResources
+        HttpProxy: !Ref HttpProxy
+        ProvisionBastionHost: !Ref ProvisionBastionHost
+        EKSClusterName: !Ref EksClusterName
+        EKSPublicAccessEndpoint: !Ref EksPublicAccessEndpoint
+        AdditionalEKSAdminUserArn: !Ref AdditionalEksAdminUserArn
+        AdditionalEKSAdminRoleArn: !Ref AdditionalEksAdminRoleArn
+        FargateNamespaces: !Ref FargateNamespaces
+        FargateLabels: !Ref FargateLabels
+        NodeInstanceType: !Ref NodeInstanceType
+        NumberOfNodes: !Ref NumberOfNodes
+        MaxNumberOfNodes: !Ref MaxNumberOfNodes
+        NodeInstanceFamily: !Ref NodeInstanceFamily
+        NodeGroupType: !Ref NodeGroupType
+        NodeGroupOS: !Ref NodeGroupOS
+        SnykIntegration: !Ref SnykIntegration
+        SnykIntegrationId: !Ref SnykIntegrationId
+        NewRelicIntegration: !Ref NewRelicIntegration
+        NewRelicLicenseKey: !Ref NewRelicLicenseKey
+        CalicoIntegration: !Ref CalicoIntegration
+        RafaySysIntegration: !Ref RafaySysIntegration
+        RafaySysProject: !Ref RafaySysProject
+        RafaySysBootstrapBucket: !Ref RafaySysBootstrapBucket
+        RafaySysBootstrapKey: !Ref RafaySysBootstrapKey
+        RafaySysApiKey: !Ref RafaySysApiKey
+        RafaySysApiSecret: !Ref RafaySysApiSecret
+        RafaySysFirstName: !Ref RafaySysFirstName
+        RafaySysLastName: !Ref RafaySysLastName
+        RafaySysOrganizationName: !Ref RafaySysOrganizationName
+        RafaySysEmail: !Ref RafaySysEmail
+        VaultIntegration: !Ref VaultIntegration
+        VaultUIACMSSLCertificateArn: !Ref VaultUIAcmSslCertificateArn
+        VaultUIHostedZoneID: !Ref VaultUIHostedZoneId
+        VaultUIDomainName: !Ref VaultUIDomainName
+        ConsulIntegration: !Ref ConsulIntegration
+        ConsulUIACMSSLCertificateArn: !Ref ConsulUIAcmSslCertificateArn
+        ConsulUIHostedZoneID: !Ref ConsulUIHostedZoneId
+        ConsulUIDomainName: !Ref ConsulUIDomainName
+        RancherIntegration: !Ref RancherIntegration
+        RancherDomainName: !Ref RancherDomainName
+        ALBIngressController: !Ref AlbIngressController
+        ClusterAutoScaler: !Ref ClusterAutoScaler
+        EfsStorageClass: !Ref EfsStorageClass
+        PrometheusIntegration: !Ref PrometheusIntegration
+        GrafanaIntegration: !Ref GrafanaIntegration
+        QSS3BucketName: !Ref QSS3BucketName
+        QSS3KeyPrefix: !Sub ${QSS3KeyPrefix}/submodules/quickstart-amazon-eks/
+        QSS3BucketRegion: !Ref QSS3BucketRegion
+Outputs:
+  EksClusterName:
+    Value: !GetAtt EksStack.Outputs.EKSClusterName
+  BastionIP:
+    Value: !GetAtt EksStack.Outputs.BastionIP
+  BastionSecurityGroup:
+    Value: !GetAtt EksStack.Outputs.BastionSecurityGroup
+  NodeGroupSecurityGroup:
+    Value: !GetAtt EksStack.Outputs.NodeGroupSecurityGroup
+  ControlPlaneSecurityGroup:
+    Value: !GetAtt EksStack.Outputs.ControlPlaneSecurityGroup
+  OidcIssuerURL:
+    Value: !GetAtt EksStack.Outputs.OIDCIssuerURL
