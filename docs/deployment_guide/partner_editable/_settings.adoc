@@ -1,14 +1,14 @@
 :quickstart-project-name: quickstart-ibm-liberty-eks
 :quickstart-github-org: aws-quickstart
-:partner-product-name: Full Product Name
-:partner-product-short-name: Product Name
-:partner-company-name: Example Company Name, Ltd.
-:doc-month: July
+:partner-product-name: IBM WebSphere Application Server Liberty
+:partner-product-short-name: WebSphere Liberty
+:partner-company-name: IBM
+:doc-month: September
 :doc-year: 2022
-:partner-contributors: John Smith, {partner-company-name}
+:partner-contributors: Ranjan Kumar, Venu Beyagudem, Paul Baity, and Pam Helyar, {partner-company-name}
 // :other-contributors: Akua Mansa, Trek10
 :aws-contributors: Janine Singh, AWS IoT Partner team
 :aws-ia-contributors: Troy Lindsay and Vinod Shukla, AWS Integration & Automation team
-:deployment_time: 15 minutes
+:deployment_time: 20 minutes
 :default_deployment_region: us-east-1
 // :private_repo:
