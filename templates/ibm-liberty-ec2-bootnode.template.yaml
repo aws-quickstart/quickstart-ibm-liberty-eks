@@ -1,0 +1,90 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: This template creates an EC2 instance which is used to run eksctl and kubectl. (qs-1tdrmii5o)
+Metadata:
+  ParameterLabels:
+      RoleName:
+        default: Role name
+Parameters:
+  RoleName:
+    Description: The name of the role to attach to the boot node
+    Type: String
+  BootNodeName:
+    Type: String
+Mappings:
+  AWSAMIRegionMap:
+    af-south-1:
+      AMZNLINUX2: ami-0936d2754993c364e
+    ap-northeast-1:
+      AMZNLINUX2: ami-0ca38c7440de1749a
+    ap-northeast-2:
+      AMZNLINUX2: ami-0f2c95e9fe3f8f80e
+    ap-northeast-3:
+      AMZNLINUX2: ami-06e9ad0943b200859
+    ap-south-1:
+      AMZNLINUX2: ami-010aff33ed5991201
+    ap-southeast-1:
+      AMZNLINUX2: ami-02f26adf094f51167
+    ap-southeast-2:
+      AMZNLINUX2: ami-0186908e2fdeea8f3
+    ca-central-1:
+      AMZNLINUX2: ami-0101734ab73bd9e15
+    eu-central-1:
+      AMZNLINUX2: ami-043097594a7df80ec
+    me-south-1:
+      AMZNLINUX2: ami-0880769bc15eeec4f
+    ap-east-1:
+      AMZNLINUX2: ami-0aca22cb23f122f27
+    eu-north-1:
+      AMZNLINUX2: ami-050fdc53cf6ba8f7f
+    eu-south-1:
+      AMZNLINUX2: ami-0f447354763f0eaac
+    eu-west-1:
+      AMZNLINUX2: ami-063d4ab14480ac177
+    eu-west-2:
+      AMZNLINUX2: ami-06dc09bb8854cbde3
+    eu-west-3:
+      AMZNLINUX2: ami-0b3e57ee3b63dd76b
+    sa-east-1:
+      AMZNLINUX2: ami-05373777d08895384
+    us-east-1:
+      AMZNLINUX2: ami-0d5eff06f840b45e9
+    us-gov-west-1:
+      AMZNLINUX2: ami-0bbf3595bb2fb39ec
+    us-gov-east-1:
+      AMZNLINUX2: ami-0cc17d57bec8c6017
+    us-east-2:
+      AMZNLINUX2: ami-077e31c4939f6a2f3
+    us-west-1:
+      AMZNLINUX2: ami-04468e03c37242e1e
+    us-west-2:
+      AMZNLINUX2: ami-0cf6f5c8a62fa5da6
+    cn-north-1:
+      AMZNLINUX2: ami-0c52e2685c7218558
+    cn-northwest-1:
+      AMZNLINUX2: ami-05b9b6d6acf8ae9b6
+Resources:
+  BootNodeProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - !Ref RoleName
+      Path: /
+  BootNode:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !FindInMap [AWSAMIRegionMap, !Ref "AWS::Region", AMZNLINUX2]
+      InstanceType: t2.micro
+      IamInstanceProfile: !Ref BootNodeProfile
+      Tags:
+        - Key: "Name"
+          Value:  !Ref BootNodeName
+Outputs:
+  InstanceId:
+    Description: The instance ID of the boot node
+    Value: !Ref BootNode
+  InstanceName:
+    Description: The name of the boot node
+    Value: !Ref BootNodeName
+  User:
+    Description: The user of the boot node
+    Value: "ec2-user"

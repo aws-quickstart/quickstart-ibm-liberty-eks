@@ -1,0 +1,112 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: This template creates an IAM role which can be attached to an EC2 instance profile to enable EKS cluster creation with eksctl. Based on https://eksctl.io/usage/minimum-iam-policies/. (qs-1tdrllf03)
+Metadata:
+  ParameterLabels:
+      RoleName:
+        default: Role name
+Parameters:
+  RoleName:
+    Description: The name to give to the role.
+    Default: IBMLibertyDeploymentRole
+    Type: String
+Resources:
+  IBMLibertyDeploymentRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Ref RoleName
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: 'sts:AssumeRole'
+            Principal:
+              Service: !Sub ec2.${AWS::URLSuffix}
+            Effect: Allow
+            Sid: ''
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonEC2FullAccess
+        - arn:aws:iam::aws:policy/AWSCloudFormationFullAccess
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+        - arn:aws:iam::aws:policy/AmazonS3FullAccess
+        - arn:aws:iam::aws:policy/CloudWatchFullAccess
+      Policies:
+        - PolicyName: IBMLibertyEKSFullAccess
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action: eks:*
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - ssm:GetParameter
+                  - ssm:GetParameters
+                  - ssm:PutParameter
+                Resource: '*'
+              - Effect: Allow
+                Action:
+                  - kms:CreateGrant
+                  - kms:DescribeKey
+                Resource: '*'
+              - Effect: Allow
+                Action: logs:PutRetentionPolicy
+                Resource: '*'
+        - PolicyName: IBMLibertyIAMLimitedAccess
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Effect: Allow
+                Action:
+                  - iam:CreateInstanceProfile
+                  - iam:DeleteInstanceProfile
+                  - iam:GetInstanceProfile
+                  - iam:RemoveRoleFromInstanceProfile
+                  - iam:GetRole
+                  - iam:CreateRole
+                  - iam:DeleteRole
+                  - iam:AttachRolePolicy
+                  - iam:PutRolePolicy
+                  - iam:ListInstanceProfiles
+                  - iam:AddRoleToInstanceProfile
+                  - iam:ListInstanceProfilesForRole
+                  - iam:PassRole
+                  - iam:DetachRolePolicy
+                  - iam:DeleteRolePolicy
+                  - iam:GetRolePolicy
+                  - iam:GetOpenIDConnectProvider
+                  - iam:CreateOpenIDConnectProvider
+                  - iam:DeleteOpenIDConnectProvider
+                  - iam:TagOpenIDConnectProvider
+                  - iam:ListAttachedRolePolicies
+                  - iam:TagRole
+                  - iam:GetPolicy
+                  - iam:CreatePolicy
+                  - iam:DeletePolicy
+                  - iam:ListPolicyVersions
+                Resource:
+                  - !Sub arn:aws:iam::${AWS::AccountId}:instance-profile/eksctl-*
+                  - !Sub arn:aws:iam::${AWS::AccountId}:role/eksctl-*
+                  - !Sub arn:aws:iam::${AWS::AccountId}:policy/eksctl-*
+                  - !Sub arn:aws:iam::${AWS::AccountId}:oidc-provider/*
+                  - !Sub arn:aws:iam::${AWS::AccountId}:role/aws-service-role/eks-nodegroup.amazonaws.com/AWSServiceRoleForAmazonEKSNodegroup
+                  - !Sub arn:aws:iam::${AWS::AccountId}:role/eksctl-managed-*
+              - Effect: Allow
+                Action:
+                  - iam:GetRole
+                Resource:
+                  - !Sub arn:aws:iam::${AWS::AccountId}:role/*
+              - Effect: Allow
+                Action:
+                  - iam:CreateServiceLinkedRole
+                Resource: '*'
+                Condition:
+                    StringEquals:
+                        iam:AWSServiceName:
+                          - eks.amazonaws.com
+                          - eks-nodegroup.amazonaws.com
+                          - eks-fargate.amazonaws.com
+Outputs:
+  RoleName:
+    Description: The name of the created role.
+    Value: !Ref IBMLibertyDeploymentRole
+  RoleARN:
+    Description: The ARN of the created role.
+    Value: !GetAtt IBMLibertyDeploymentRole.Arn

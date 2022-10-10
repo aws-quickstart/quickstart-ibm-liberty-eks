@@ -1,0 +1,19 @@
+apiVersion: liberty.websphere.ibm.com/v1
+kind: WebSphereLibertyApplication
+metadata:
+  name: APPLICATION_NAME
+  namespace: APPLICATION_NAMESPACE
+  labels:
+    app: APPLICATION_NAME
+spec:
+  license:
+    accept: true
+    edition: LICENSE_EDITION
+    metric: LICENSE_METRIC
+    productEntitlementSource: LICENSE_ENTITLEMENT
+  applicationImage: APPLICATION_IMAGE_URL
+  manageTLS: true
+  expose: true
+  pullPolicy: IfNotPresent
+  replicas: APPLICATION_REPLICAS
+  resources: {}
