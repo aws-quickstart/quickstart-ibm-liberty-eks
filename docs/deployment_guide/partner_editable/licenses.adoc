@@ -1,3 +1,17 @@
 // Include details about any licenses and how to sign up. Provide links as appropriate.
 
-There is no cost to use this Quick Start, but you will be billed for any AWS services or resources that this Quick Start deploys. For more information, refer to the https://fwd.aws/rA69w?[AWS Quick Start General Information Guide^].
+You are responsible for the cost of the AWS services and any third-party licenses used while running this Quick Start. There is no additional cost for using the Quick Start. You will be billed for any AWS services or resources that this Quick Start deploys. For more information, refer to the https://fwd.aws/rA69w?[AWS Quick Start General Information Guide^].
+
+To use {partner-product-name} on the AWS Cloud, you must have a valid license to use {partner-product-short-name}.
+
+1. Ensure that you have an https://www.ibm.com/account[IBMid]. You need an IBMid and password.
+2. Read the https://www.ibm.com/docs/SSAW57_liberty/opr/ae/in-t-license-viewing.html[license information for WebSphere Liberty Operator]. You must have an IBM WebSphere Application Server license and your IBMid must have an active WebSphere entitlement associated with it. A valid license to any of the following products grants you entitlement to use {partner-product-short-name} Operator.
++
+* Standalone product editions:
+** WebSphere Application Server
+** WebSphere Application Server Liberty Core
+** WebSphere Application Server Network Deployment
+* Other product entitlement sources:
+** IBM Cloud Pak for Applications
+** WebSphere Application Server Family Edition
+** WebSphere Hybrid Edition
