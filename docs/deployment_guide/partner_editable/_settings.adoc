@@ -1,9 +1,9 @@
 :quickstart-project-name: quickstart-ibm-liberty-eks
 :quickstart-github-org: aws-quickstart
-:partner-product-name: IBM WebSphere Application Server Liberty
+:partner-product-name: IBM WebSphere Liberty for Amazon EKS
 :partner-product-short-name: WebSphere Liberty
 :partner-company-name: IBM
-:doc-month: September
+:doc-month: October
 :doc-year: 2022
 :partner-contributors: Ranjan Kumar, Venu Beyagudem, Paul Baity, and Pam Helyar, {partner-company-name}
 // :other-contributors: Akua Mansa, Trek10
