@@ -5,5 +5,5 @@ For troubleshooting common Quick Start issues, refer to the https://fwd.aws/rA69
 == Resources
 // Uncomment section and add links to any external resources that are specified by the partner.
 
-* https://www.ibm.com/docs/SSAW57_liberty/opr/ae/cfg-t-viewstatus.html[Viewing WebSphere Liberty operator application status]
-* https://www.ibm.com/docs/SSAW57_liberty/opr/ae/t-troubleshooting.html[Troubleshooting WebSphere Liberty operators]
+* https://www.ibm.com/docs/SSEQTP_liberty/opr/ae/cfg-t-viewstatus.html[Viewing WebSphere Liberty operator application status]
+* https://www.ibm.com/docs/SSEQTP_liberty/opr/ae/t-troubleshooting.html[Troubleshooting WebSphere Liberty operators]
