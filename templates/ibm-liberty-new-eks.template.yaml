@@ -75,7 +75,7 @@ Parameters:
   AppContainerImageURL:
     Type: String
     Description: >-
-      Custom application container image. For example, icr.io/appcafe/open-liberty/samples/getting-started. 
+      Custom application container image. For example, icr.io/appcafe/open-liberty/samples/getting-started.
       This value is only required when "Deploy application"="Custom" is selected.
     AllowedPattern: ^(?:(?=[^:\/]{4,253})(?!-)[a-zA-Z0-9-]{1,63}(?<!-)(?:\\.(?!-)[a-zA-Z0-9-]{1,63}(?<!-))*(?::[0-9]{1,5})?/)?((?![._-])(?:[a-z0-9._-]*)(?<![._-])(?:/(?![._-])[a-z0-9._-]*(?<![._-]))*)(?::(?![.-])[a-zA-Z0-9_.-]{1,128})?$
     ConstraintDescription: The value must be a valid container image path. For example, icr.io/appcafe/open-liberty/samples/getting-started
@@ -110,8 +110,8 @@ Parameters:
     Description:  Product edition.
   LicenseProductEntitlementSource:
     Type: String
-    AllowedValues: ["Standalone", "IBM WebSphere Hybrid Edition", "IBM Cloud Pak for Applications", "IBM WebSphere Server Family Edition"]
-    Description: Entitlement source for the product. Select "Standalone" if the entitlement source is selected in "License edition".
+    AllowedValues: ["Standalone", "IBM WebSphere Hybrid Edition", "IBM Cloud Pak for Applications", "IBM WebSphere Application Server Family Edition"]
+    Description: Entitlement source for the product. Select "Standalone" if the entitlement source is a product that you selected in License "Edition".
   SetupNewECR:
     Type: String
     AllowedValues: ["True", "False"]

@@ -15,7 +15,7 @@ source $CUR_DIR/ibm-liberty-parameters.properties
 source $CUR_DIR/utilities.sh
 
 
-appyaml="$CUR_DIR/../templates/ibm-liberty-app-deploy.yaml"
+appyaml="$CUR_DIR/templates/ibm-liberty-app-deploy.yaml"
 echo "APPLICATION_DEPLOY=$APPLICATION_DEPLOY, deploying $appyaml."
 
 # Add parameter values to the app CRD

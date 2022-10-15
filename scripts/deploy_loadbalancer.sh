@@ -20,11 +20,11 @@ if [[ "${LAUNCH_TYPE}" == "EC2" ]]; then
     sed -e "s|APPLICATION_NAMESPACE|${APPLICATION_NAMESPACE}|g" \
         -e "s|APPLICATION_NAME|${APPLICATION_NAME}|g" \
         -e "s|LOADBALANCER_NAME|${LOADBALANCER_NAME}|g" \
-        -i $CUR_DIR/../templates/ibm-liberty-app-deploy-service.yaml
+        -i $CUR_DIR/templates/ibm-liberty-app-deploy-service.yaml
 
     echo "Deploying a load balancer for application ${APPLICATION_NAME}..."
-    cat $CUR_DIR/../templates/ibm-liberty-app-deploy-service.yaml
-    kubectl apply -f $CUR_DIR/../templates/ibm-liberty-app-deploy-service.yaml
+    cat $CUR_DIR/templates/ibm-liberty-app-deploy-service.yaml
+    kubectl apply -f $CUR_DIR/templates/ibm-liberty-app-deploy-service.yaml
 
     wait_for service "${LOADBALANCER_NAME}" ${APPLICATION_NAMESPACE}
 

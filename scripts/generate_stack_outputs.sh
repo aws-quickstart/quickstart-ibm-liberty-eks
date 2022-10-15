@@ -32,7 +32,7 @@ echo "Writing outputs to SSM parameter store..."
 aws ssm put-parameter \
     --type String \
     --name "/ibm/liberty-for-eks/${AWS_DEFAULT_REGION}/${WORKLOAD_STACK_NAME}/install-outputs" \
-    --value "$(cat $CUR_DIR/stack-outputs.properties)"
+    --value "$(cat $CUR_DIR/stack-outputs.properties)" \
     --overwrite
 
 if [ $? != 0 ]; then

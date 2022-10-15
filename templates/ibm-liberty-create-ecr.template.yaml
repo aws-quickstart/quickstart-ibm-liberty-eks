@@ -13,6 +13,11 @@ Resources:
     Type: AWS::ECR::Repository
     Properties:  
       RepositoryName: !Ref ECRName
+      ImageTagMutability: IMMUTABLE
+      ImageScanningConfiguration:
+        ScanOnPush: true
+      EncryptionConfiguration:
+        EncryptionType: KMS
 Outputs:
   ECRName:
     Description: ECR name

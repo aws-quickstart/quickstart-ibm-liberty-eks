@@ -105,8 +105,8 @@ separator
 
 # Add IBM Operator Catalog: https://www.ibm.com/docs/en/cloud-paks/1.0?topic=clusters-adding-operator-catalog
 echo "Installing IBM Operator Catalog..."
-echo kubectl apply -f $CUR_DIR/../templates/catalog_source.yaml
-kubectl apply -f $CUR_DIR/../templates/catalog_source.yaml
+echo kubectl apply -f $CUR_DIR/templates/catalog_source.yaml
+kubectl apply -f $CUR_DIR/templates/catalog_source.yaml
 wait_for catalogsource ibm-operator-catalog olm
 if [[ $? != 0 ]]; then
     echo "IBM Operator Catalog failed to install."
@@ -120,8 +120,8 @@ separator
 
 # Subscribe for Websphere Liberty Operator: https://www.ibm.com/docs/en/was-liberty/nd?topic=operators-installing-kubernetes-cli#in-t-kubectl__install-op-cli
 echo "Subscribing for WLO..."
-echo kubectl apply -f $CUR_DIR/../templates/wlo_subscription.yaml
-kubectl apply -f $CUR_DIR/../templates/wlo_subscription.yaml
+echo kubectl apply -f $CUR_DIR/templates/wlo_subscription.yaml
+kubectl apply -f $CUR_DIR/templates/wlo_subscription.yaml
 sleep 30s
 kubectl -n operators get csv
 

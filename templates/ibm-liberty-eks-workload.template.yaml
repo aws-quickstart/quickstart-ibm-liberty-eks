@@ -13,7 +13,7 @@ Parameters:
   AppContainerImageURL:
     Type: String
     Description: >-
-      Custom application container image. For example, icr.io/appcafe/open-liberty/samples/getting-started. 
+      Custom application container image. For example, icr.io/appcafe/open-liberty/samples/getting-started.
       This value is only required when "Deploy application"="Custom" is selected.
     AllowedPattern: ^(?:(?=[^:\/]{4,253})(?!-)[a-zA-Z0-9-]{1,63}(?<!-)(?:\\.(?!-)[a-zA-Z0-9-]{1,63}(?<!-))*(?::[0-9]{1,5})?/)?((?![._-])(?:[a-z0-9._-]*)(?<![._-])(?:/(?![._-])[a-z0-9._-]*(?<![._-]))*)(?::(?![.-])[a-zA-Z0-9_.-]{1,128})?$
     ConstraintDescription: The value must be a valid container image path. For example, icr.io/appcafe/open-liberty/samples/getting-started
@@ -53,7 +53,7 @@ Parameters:
     Description:  Product edition.
   LicenseProductEntitlementSource:
     Type: String
-    AllowedValues: ["Standalone", "IBM Cloud Pak for Applications", "IBM WebSphere Server Family Edition", "IBM WebSphere Hybrid Edition"]
+    AllowedValues: ["Standalone", "IBM Cloud Pak for Applications", "IBM WebSphere Application Server Family Edition", "IBM WebSphere Hybrid Edition"]
     Default: "Standalone"
     Description: Entitlement source for the product.
   S3FolderForCode:
@@ -132,8 +132,8 @@ Resources:
               Service: lambda.amazonaws.com
             Action: sts:AssumeRole
       ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-        - arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM
+        - !Sub arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - !Sub arn:${AWS::Partition}:iam::aws:policy/service-role/AmazonEC2RoleforSSM
       Path: /
       Policies:
         - PolicyName: IBMLibertySSMLimitedAccess
@@ -145,13 +145,11 @@ Resources:
                   - ssm:PutParameter
                   - ssm:GetParameter
                   - ssm:DeleteParameter
-                Resource:
-                  - '*'
+                Resource: !Sub arn:${AWS::Partition}:ssm:*:${AWS::AccountId}:parameter/*
               - Effect: Allow
                 Action:
                   - logs:FilterLogEvents
-                Resource:
-                  - '*'
+                Resource: !Sub arn:${AWS::Partition}:logs:*:${AWS::AccountId}:log-group:*
 
   GetInstallOutputsLambda:
     Type: AWS::Lambda::Function
