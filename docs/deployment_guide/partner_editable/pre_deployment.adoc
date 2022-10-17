@@ -1,3 +1,31 @@
 //Include any predeployment steps here, such as signing up for a Marketplace AMI or making any changes to a partner account. If there are no predeployment steps, leave this file empty.
 
 == Predeployment steps
+
+
+=== AWS account
+
+If you don't already have an AWS account, create one at https://aws.amazon.com by following the on-screen instructions. Generate a key for the AWS Region that you work in and download and configure the following resources:
+
+* https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html[Kubernetes command-line interface (CLI)] (`kubectl`)
+* AWS CLI
+
+
+=== Specialized knowledge
+// Include links if helpful. 
+// You don't need to list AWS services or point to general info about AWS; the boilerplate already covers this.
+
+// This deployment requires a moderate level of familiarity with AWS services. If you're new to AWS, see https://aws.amazon.com/getting-started/[Getting Started Resource Center] and https://aws.amazon.com/training/[AWS Training and Certification]. These sites provide materials for learning how to design, deploy, and operate your infrastructure and applications on the AWS Cloud.
+
+This Quick Start assumes familiarity with the following products and resources:
+
+* Kubernetes CLI (`kubectl`)
+* SSH
+* AWS CLI
+* {partner-product-short-name} Operator
+
+
+=== IAM permissions
+
+Before you launch the Quick Start, you must sign in to the AWS Management Console with IAM permissions for the resources that the templates deploy. The _AdministratorAccess_ managed policy within IAM provides sufficient permissions, although your organization might choose to use a custom policy with more restrictions. For more information, see https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_job-functions.html[AWS managed policies for job functions].
+

@@ -1,3 +1,29 @@
 // Include any postdeployment steps here, such as steps necessary to test that the deployment was successful. If there are no postdeployment steps, leave this file empty.
 
 == Postdeployment steps
+
+=== Validate deployment
+
+Use the Kubernetes CLI to confirm that {partner-product-short-name} Operator deployed sucessfully.
+
+1. Run `kubectl version` and confirm that the output messages include information about {partner-product-short-name} Operator and any deployed applications.
++
+----
+$ kubectl version
+...
+----
+
+2. Run `kubectl get nodes` and confirm that the output messages show a successful connection between the nodes and cluster.
++
+----
+$ kubectl get nodes
+...
+----
+
+For more information, see https://www.ibm.com/docs/SSEQTP_liberty/opr/ae/in-t-validate.html[Validating installation] and https://www.ibm.com/docs/SSEQTP_liberty/opr/ae/cfg-t-viewstatus.html[Viewing operator application status] in the {partner-product-short-name} Operator documentation.
+
+
+=== Deploy License Service
+
+Deploy https://www.ibm.com/docs/SSHKN6/license-service/1.x.x/standalone-LS.html[License Service] on your Kubernetes cluster. License Service is required to measure and track license use of IBM Containerized Software such as {partner-product-short-name} Operator. Manual license measurements are not allowed.
+
