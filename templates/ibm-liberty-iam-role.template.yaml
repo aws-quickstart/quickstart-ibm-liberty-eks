@@ -12,6 +12,13 @@ Parameters:
 Resources:
   IBMLibertyDeploymentRole:
     Type: AWS::IAM::Role
+    Metadata:
+      cfn-lint:
+        config:
+          ignore_checks:
+            - EIAMPolicyWildcardResource
+          ignore_reasons:
+            - EIAMPolicyWildcardResource: "eks ListClusters, DescribeAddonVersions, RegisterCluster, CreateCluster only allow wildcard resource."
     Properties:
       RoleName: !Ref RoleName
       AssumeRolePolicyDocument:
