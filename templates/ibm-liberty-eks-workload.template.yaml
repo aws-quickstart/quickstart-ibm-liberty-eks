@@ -1,9 +1,65 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: This template installs WebSphere LIberty Operator and Application on EKS cluster. (qs-1tdrmii93)
 Metadata:
-  ParameterLabels:
+  LICENSE: Apache License, Version 2.0
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: EKS configuration
+        Parameters:
+          - EKSClusterName
+          - AdditionalEKSAdminArns
+          - LaunchType
+      - Label:
+          default: Application configuration
+        Parameters:
+          - DeployApp
+          - AppContainerImageURL
+          - AppName
+          - AppNamespace
+          - AppReplicas
+          - QSS3CodeLocation
+      - Label:
+          default: License
+        Parameters:
+          - LicenseEdition
+          - LicenseProductEntitlementSource
+      - Label:
+          default: Boot node configuration
+        Parameters:
+          - BootNodeInstanceId
+          - BootNodeUser
+      - Label:
+          default: Other configuration
+        Parameters:
+          - MainStackName
+    ParameterLabels:
+      AppContainerImageURL:
+        default: Custom application image name
+      AppName:
+        default: Application name
+      AppNamespace:
+        default: EKS namespace to deploy the app
+      AppReplicas:
+        default: Number of app replicas
+      DeployApp:
+        default: Deploy application
       EKSClusterName:
-        default: EKS Cluster Name
+        default: EKS cluster name
+      LicenseEdition:
+        default: Edition
+      LicenseProductEntitlementSource:
+        default: Product entitlement source
+      BootNodeInstanceId:
+        default: Boot node
+      BootNodeUser:
+        default: Boot node login user
+      AdditionalEKSAdminArns:
+        default: Additional EKS administrator ARNs (IAM users or roles)
+      QSS3CodeLocation:
+        default: Quick Start S3 location
+      MainStackName:
+        default: Main stack name
 Parameters:
   DeployApp:
     Type: String
@@ -48,18 +104,17 @@ Parameters:
     Description: Select which launch type to use for your EKS cluster (required).
   LicenseEdition:
     Type: String
-    AllowedValues: ["IBM WebSphere Application Server", "IBM WebSphere Application Server Liberty Core", "IBM WebSphere Application Server Network Deployment"]
+    AllowedValues: ["", "IBM WebSphere Application Server", "IBM WebSphere Application Server Liberty Core", "IBM WebSphere Application Server Network Deployment"]
     Default: "IBM WebSphere Application Server"
     Description:  Product edition.
   LicenseProductEntitlementSource:
     Type: String
-    AllowedValues: ["Standalone", "IBM Cloud Pak for Applications", "IBM WebSphere Application Server Family Edition", "IBM WebSphere Hybrid Edition"]
+    AllowedValues: ["", "Standalone", "IBM Cloud Pak for Applications", "IBM WebSphere Application Server Family Edition", "IBM WebSphere Hybrid Edition"]
     Default: "Standalone"
     Description: Entitlement source for the product.
-  S3FolderForCode:
+  QSS3CodeLocation:
     Type: String
-    Description:  S3 folder for code(Dev only). E.g. s3://ibm-liberty-eks-byol-dev/rk
-    Default: s3://ibm-liberty-eks-byol-dev
+    Description: The S3 location for your copy of the Quick Start assets.
   AdditionalEKSAdminArns:
     Default: ""
     Description: >-
@@ -70,8 +125,7 @@ Parameters:
     Type: String
   MainStackName:
     Type: String
-    Description:  Main Stack Name
-    Default: Main-Stack-Name
+    Description: The name of the main (parent) stack. This is used to title the CloudWatch log group to which installation output is written.
 
 Conditions:
   DeployAppSet: !Not [!Equals [!Ref DeployApp, None]]
@@ -89,7 +143,7 @@ Resources:
         commands:
         - !Sub |
           #!/bin/bash
-          aws s3 cp ${S3FolderForCode} . --recursive
+          aws s3 cp ${QSS3CodeLocation} . --recursive
 
           echo "BOOTNODE_INSTANCE_ID=${BootNodeInstanceId}" > scripts/ibm-liberty-parameters.properties
           echo "Install_Log_Location=/tmp/install.log" >> scripts/ibm-liberty-parameters.properties
@@ -133,7 +187,8 @@ Resources:
             Action: sts:AssumeRole
       ManagedPolicyArns:
         - !Sub arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-        - !Sub arn:${AWS::Partition}:iam::aws:policy/service-role/AmazonEC2RoleforSSM
+        - !Sub arn:${AWS::Partition}:iam::aws:policy/AmazonSSMManagedInstanceCore
+        - !Sub arn:${AWS::Partition}:iam::aws:policy/CloudWatchAgentServerPolicy
       Path: /
       Policies:
         - PolicyName: IBMLibertySSMLimitedAccess

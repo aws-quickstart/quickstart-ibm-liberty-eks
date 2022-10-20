@@ -8,13 +8,13 @@ Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
       - Label:
-          default: EKS Configuration
+          default: EKS configuration
         Parameters:
           - EKSClusterName
           - SetupNewECR
           - AdditionalEKSAdminArns
       - Label:
-          default: Application Configuration
+          default: Application configuration
         Parameters:
           - DeployApp
           - AppContainerImageURL
@@ -66,12 +66,13 @@ Metadata:
 Parameters:
   AcceptLicense:
     Type: String
-    AllowedValues: ["Accept: Proceed with the installation", "Decline: Exit without installing"]
+    AllowedValues: ["", "Accept: Proceed with the installation", "Decline: Exit without installing"]
     Description: >-
-      I accept the terms on the license agreement corresponding to the version of IBM Program
+      I accept the terms on the license agreement corresponding to the version of IBM program
       in the application container by setting this value to true. See https://ibm.biz/was-license
-      for the license agreement applicable to this IBM Program. You must accept the license for the installation to work.
+      for the license agreement applicable to this IBM program. You must accept the license for the installation to work.
     ConstraintDescription: You must accept the license (https://ibm.biz/was-license) to proceed with installation.
+    Default: ""
   AppContainerImageURL:
     Type: String
     Description: >-
@@ -106,17 +107,19 @@ Parameters:
     ConstraintDescription: The name must start with a letter and can only contain lowercase letters, numbers, hyphens, underscores, periods and forward slashes.
   LicenseEdition:
     Type: String
-    AllowedValues: ["IBM WebSphere Application Server", "IBM WebSphere Application Server Liberty Core", "IBM WebSphere Application Server Network Deployment"]
+    AllowedValues: ["", "IBM WebSphere Application Server", "IBM WebSphere Application Server Liberty Core", "IBM WebSphere Application Server Network Deployment"]
     Description:  Product edition.
+    Default: ""
   LicenseProductEntitlementSource:
     Type: String
-    AllowedValues: ["Standalone", "IBM WebSphere Hybrid Edition", "IBM Cloud Pak for Applications", "IBM WebSphere Application Server Family Edition"]
+    AllowedValues: ["", "Standalone", "IBM WebSphere Hybrid Edition", "IBM Cloud Pak for Applications", "IBM WebSphere Application Server Family Edition"]
     Description: Entitlement source for the product. Select "Standalone" if the entitlement source is a product that you selected in License "Edition".
+    Default: ""
   SetupNewECR:
     Type: String
     AllowedValues: ["True", "False"]
     Default: "True"
-    Description: Set up a new private ECR? If True, a new ECR is set up with the name <EKS Cluster Name>-ecr. Default is True.
+    Description: Set up a new private ECR? If true, a new ECR is set up with the name <EKS cluster name>-ecr. Default is true.
   QSS3BucketName:
     Type: String
     Description: Name of the S3 bucket for your copy of the Quick Start assets.
@@ -161,7 +164,7 @@ Parameters:
       (Optional) A comma-delimited list of IAM user or role Amazon Resource Names (ARNs)
       to be granted administrative access to the Amazon EKS cluster. For example, grant
       access to two users with their ARNs: "arn:aws:iam::012345678910:user/user1@example.com,
-      arn:aws:iam::012345678910:user/user2@example.com"
+      arn:aws:iam::012345678910:user/user2@example.com".
     Type: String
 
 Conditions:
@@ -172,9 +175,14 @@ Conditions:
 
 Rules:
   RequireAcceptLicense:
+    RuleCondition: !Not [!Equals [!Ref DeployApp, None]]
     Assertions:
       - Assert: !Equals [!Ref AcceptLicense, "Accept: Proceed with the installation"]
         AssertDescription: In order to proceed with installation, you must accept the license
+      - Assert: !Not [!Equals [!Ref LicenseEdition, ""]]
+        AssertDescription: In order to proceed with installation, you must provide the product edition
+      - Assert: !Not [!Equals [!Ref LicenseProductEntitlementSource, ""]]
+        AssertDescription: In order to proceed with installation, you must provide the entitlement source for the product 
   RequireImageWhenCustom:
     RuleCondition: !Equals [!Ref DeployApp, Custom]
     Assertions:
@@ -237,7 +245,7 @@ Resources:
         AppContainerImageURL: !If [DeploySample, "icr.io/appcafe/open-liberty/samples/getting-started", !Ref AppContainerImageURL]
         AppReplicas: !Ref AppReplicas
         MainStackName: !Ref "AWS::StackName"
-        S3FolderForCode: !Sub
+        QSS3CodeLocation: !Sub
           - s3://${S3Bucket}/${QSS3KeyPrefix}
           - S3Bucket: !If [UsingDefaultBucket, !Sub 'aws-quickstart-${AWS::Region}', !Ref QSS3BucketName]
         AdditionalEKSAdminArns: !Ref AdditionalEKSAdminArns

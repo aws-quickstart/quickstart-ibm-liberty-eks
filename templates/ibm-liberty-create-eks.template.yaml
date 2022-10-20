@@ -59,7 +59,8 @@ Resources:
             Action: sts:AssumeRole
       ManagedPolicyArns:
         - !Sub arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
-        - !Sub arn:${AWS::Partition}:iam::aws:policy/service-role/AmazonEC2RoleforSSM
+        - !Sub arn:${AWS::Partition}:iam::aws:policy/AmazonSSMManagedInstanceCore
+        - !Sub arn:${AWS::Partition}:iam::aws:policy/CloudWatchAgentServerPolicy
       Path: /
       Policies:
         - PolicyName: IBMLibertySSMLimitedAccess
@@ -68,7 +69,6 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                  - ssm:SendCommand
                   - ssm:PutParameter
                   - ssm:GetParameter
                   - ssm:DeleteParameter
@@ -77,17 +77,26 @@ Resources:
                 Action:
                   - logs:FilterLogEvents
                 Resource: !Sub arn:${AWS::Partition}:logs:*:${AWS::AccountId}:log-group:*
+              - Effect: Allow
+                Action:
+                  - ssm:SendCommand
+                Resource:
+                  - !Sub arn:${AWS::Partition}:ec2:*:${AWS::AccountId}:instance/*
+                  - !Sub arn:${AWS::Partition}:ssm:*:*:document/*
         - PolicyName: IBMLibertyEC2LimitedAccess
           PolicyDocument:
             Version: 2012-10-17
             Statement:
               - Effect: Allow
                 Action:
-                  - ec2:DescribeInstances
                   - ec2:StartInstances
                 Resource:
                   - !Sub arn:${AWS::Partition}:license-manager:*:${AWS::AccountId}:license-configuration/*
                   - !Sub arn:${AWS::Partition}:ec2:*:${AWS::AccountId}:instance/*
+              - Effect: Allow
+                Action:
+                  - ec2:DescribeInstances
+                Resource: '*'
 
   CleanUpLambda:
     Type: AWS::Lambda::Function
