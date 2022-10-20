@@ -2,8 +2,23 @@
 
 For troubleshooting common Quick Start issues, refer to the https://fwd.aws/rA69w?[AWS Quick Start General Information Guide^] and https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/troubleshooting.html[Troubleshooting CloudFormation^].
 
-== Resources
+To get information about {partner-product-short-name} Operator and any deployed applications, run the `kubectl get deployments` command.
+----
+$ kubectl get deployments
+----
+
+For more information, see https://www.ibm.com/docs/SSEQTP_liberty/opr/ae/cfg-t-viewstatus.html[Viewing operator application status] and https://www.ibm.com/docs/SSEQTP_liberty/opr/ae/t-troubleshooting.html[Troubleshooting WebSphere Liberty operators] in the {partner-product-short-name} Operator documentation.
+
+
+== Customer support
+
+For {partner-product-short-name} Operator issues, open a Support Ticket with IBM Support and add information that can help IBM Support troubleshoot and fix the problem.
+
+. Click *Open a case* on the https://www.ibm.com/mysupport/s/topic/0TO500000001DQQGA2/websphere-application-server[WebSphere Application Server support] or https://www.ibm.com/mysupport/s/[Let's troubleshoot] page.
+. Add information that can help IBM Support determine the cause of the error.
++
+In the ticket, describe the error. If the error is difficult to describe, then provide a screen capture of the error. Also, provide pertinent information, such as a description of your cluster configuration and the component that is failing or having issues.
+
+//== Resources
 // Uncomment section and add links to any external resources that are specified by the partner.
 
-* https://www.ibm.com/docs/SSEQTP_liberty/opr/ae/cfg-t-viewstatus.html[Viewing WebSphere Liberty operator application status]
-* https://www.ibm.com/docs/SSEQTP_liberty/opr/ae/t-troubleshooting.html[Troubleshooting WebSphere Liberty operators]
