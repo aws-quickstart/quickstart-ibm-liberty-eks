@@ -2,30 +2,58 @@
 
 == Predeployment steps
 
+Before you launch the Quick Start, see the https://fwd.aws/rA69w?[AWS Quick Start General Information Guide]. You need an AWS account, IAM permissions, and familarity with AWS services and the AWS CLI.
 
-=== AWS account
+This deployment uses the resource quotas in <<#_table1>>. If necessary, request https://console.aws.amazon.com/servicequotas[service quota increases].
 
-If you don't already have an AWS account, create one at https://aws.amazon.com by following the on-screen instructions. Generate a key for the AWS Region that you work in and download and configure the following resources:
+[#_table1]
+.Deployment resource use
+[cols="1,1"]
+|===
+|Resource |This deployment uses
 
-* https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html[Kubernetes command-line interface (CLI)] (`kubectl`)
-* AWS CLI
+// Space needed to maintain table headers
+|VPCs | 1
+|VPC subnets | 4
+|Elastic IP addresses | 1
+|Security groups | 3
+|AWS Identity and Access Management (IAM) roles | 4
+|Classic Load Balancer | 2
+|EC2 Instance, t2.micro | 1
+|EC2 Instance, m5.large | 3
+|ECR repositories | 1
+|SSM associations | 2
+|Lambda functions | 2
+|EKS clusters | 1
+|===
+
+Also, complete the following predeployment steps.
+
+=== Existing license
+
+Confirm that you have a valid license to use {partner-product-short-name} Operator. See <<#_costs_and_licenses>>.
 
 
-=== Specialized knowledge
-// Include links if helpful. 
-// You don't need to list AWS services or point to general info about AWS; the boilerplate already covers this.
+=== Kubernetes CLI
 
-// This deployment requires a moderate level of familiarity with AWS services. If you're new to AWS, see https://aws.amazon.com/getting-started/[Getting Started Resource Center] and https://aws.amazon.com/training/[AWS Training and Certification]. These sites provide materials for learning how to design, deploy, and operate your infrastructure and applications on the AWS Cloud.
-
-This Quick Start assumes familiarity with the following products and resources:
-
-* Kubernetes CLI (`kubectl`)
-* SSH
-* AWS CLI
-* {partner-product-short-name} Operator
+Download and configure the https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html[Kubernetes command-line interface (CLI)] so that you can manage deployed applications and resources with `kubectl` commands.
 
 
-=== IAM permissions
+=== EKS cluster access
 
-Before you launch the Quick Start, you must sign in to the AWS Management Console with IAM permissions for the resources that the templates deploy. The _AdministratorAccess_ managed policy within IAM provides sufficient permissions, although your organization might choose to use a custom policy with more restrictions. For more information, see https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_job-functions.html[AWS managed policies for job functions].
+When you build the CloudFormation stack, https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_manage-attach-detach.html[provide your IAM user ARN] in the _AdditionalEKSAdminArns_ parameter.
 
+Any IAM entity ARNs in this parameter can access the EKS cluster during the {partner-product-short-name} Operator deployment. IAM entity ARNs are specified in a comma-delimited list.
+
+Note that you might need to start the boot node to connect to the EKS cluster. 
+
+
+=== CloudWatch log streams
+
+Optionally, view log data in https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/Working-with-log-groups-and-streams.html[Amazon CloudWatch log streams] during deployment. You can access log streams from a log groups search in the https://console.aws.amazon.com/cloudwatch/[CloudWatch console].
+
+. In the navigation pane, click *Logs* and then *Log groups*.
+. On the Log groups page, enter the stack name in the search bar.
+. From the *Log streams* tab of the log group details, select the log stream to view.
+
+After deployment, you also can access log streams from the stack *Outputs* tab in the CloudWatch console. See <<#_cloudwatch_log_streams_after_deployment>>.
