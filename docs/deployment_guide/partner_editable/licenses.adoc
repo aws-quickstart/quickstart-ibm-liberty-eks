@@ -8,10 +8,10 @@ To use {partner-product-name} on the AWS Cloud, you must have a valid license to
 2. Ensure that you have an https://www.ibm.com/software/passportadvantage/pao_customer.html[active WebSphere entitlement associated with your IBMid]. A valid license to any of the following products grants you entitlement to use {partner-product-short-name} Operator. Read the https://ibm.biz/was-license[license information for WebSphere Liberty Operator].
 +
 * Standalone product editions:
-** WebSphere Application Server
-** WebSphere Application Server Liberty Core
-** WebSphere Application Server Network Deployment
+** IBM WebSphere Application Server
+** IBM WebSphere Application Server Liberty Core
+** IBM WebSphere Application Server Network Deployment
 * Other product entitlement sources:
 ** IBM WebSphere Hybrid Edition
-** IBM WebSphere Application Server Family Edition
 ** IBM Cloud Pak for Applications
+** IBM WebSphere Application Server Family Edition
