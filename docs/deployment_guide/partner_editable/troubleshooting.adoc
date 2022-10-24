@@ -2,12 +2,133 @@
 
 For troubleshooting common Quick Start issues, refer to the https://fwd.aws/rA69w?[AWS Quick Start General Information Guide^] and https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/troubleshooting.html[Troubleshooting CloudFormation^].
 
+
+* If the deployment failed, check the failed stack for error messages. See the <<#_how_do_i_get_information_about_my_deployment>> FAQ.
+
+* If the workload stack failed, check the logs. See the <<#_where_are_the_deployment_logs>> and <<#_how_do_i_recover_from_a_failed_stack>> FAQs.
+
+* If you cannot access the cluster, see the <<#_how_do_i_connect_to_the_eks_cluster>> FAQ.
+
+== FAQs
+
+Review frequently asked questions for this Quick Start.
+
+.General FAQs
+* <<#_how_do_i_connect_to_the_eks_cluster>>
+* <<#_where_are_the_deployment_logs>>
+* <<#_how_do_i_get_information_about_my_deployment>>
+* <<#_how_do_i_recover_from_a_failed_stack>>
+
+.{partner-product-short-name} Operator FAQs
+* <<#_how_many_deployments_run_for_a_successful_deployment>>
+* <<#_where_is_more_information_about_websphere_liberty_operator>>
+
+=== General
+
+==== How do I connect to the EKS cluster?
+
+===== With the boot node
+
+. Find the boot node.
+. Start the boot node.
+. Connect to ________.
+
+===== Without the boot node
+
+. Check your ARN configuration. Configure <<#_eks_cluster_access>>, if not done so already.
+. Use the <<#_kubernetes_cli>> to access the EKS cluster.
++
+.. Run the following command to update your `kubeconfig` file so that you can use `kubectl` commands to work with your cluster.
++
+----
+aws eks update-kubeconfig --name <cluster_name> --region <cluster_region>
+----
++
+Replace `<cluster_name>` with your cluster name and `<cluster_region>` with your AWS Region.
+.. Run any `kubectl` command to confirm that you can access the cluster. 
++
+For example, run `kubectl get pods` and confirm that the output messages show a successful connection to the cluster.
++
+----
+$ kubectl get pods
+error: You must be logged in to the server (Unauthorized)
+----
++
+An `Unauthorized` error means that your IAM user or role was not granted access to the cluster. To gain access to the cluster, provide your IAM user ARN in the _AdditionalEKSAdminArns_ parameter of the stack.
+
+
+
+==== Where are the deployment logs?
+
+===== CloudWatch log streams
+
+During or after deployment, and even after a failed deployment, you can view log data in https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/Working-with-log-groups-and-streams.html[Amazon CloudWatch log streams]. Access log streams from a log groups search in the https://console.aws.amazon.com/cloudwatch/[CloudWatch console].
+
+. In the navigation pane, click *Logs* and then *Log groups*.
+. On the Log groups page, enter the stack name in the search bar.
+. From the *Log streams* tab of the log group details, select the log stream to view.
+
+After deployment, you can also view log streams from the stack *Outputs* tab in the CloudWatch console.
+
+. Click the *Outputs* tab for your stack.
+. Click the _CloudWatchInstallLogs_ key *Value* URL.
+. From the *Log streams* tab of the log group details, select the output logs.
+
+
+===== Additional logs
+
+- SSM logs: on boot node at /var/log/amazon/ssm/
+
+- Lambda function logs: in CloudWatch (ask Paul)
+
+
+==== How do I get information about my deployment?
+
 To get information about {partner-product-short-name} Operator and any deployed applications, run the `kubectl get deployments` command.
 ----
 $ kubectl get deployments
 ----
 
-For more information, see https://www.ibm.com/docs/SSEQTP_liberty/opr/ae/cfg-t-viewstatus.html[Viewing operator application status] and https://www.ibm.com/docs/SSEQTP_liberty/opr/ae/t-troubleshooting.html[Troubleshooting WebSphere Liberty operators] in the {partner-product-short-name} Operator documentation.
+
+- Stack outputs
+
+- CloudWatch: output.properties
+
+==== How do I recover from a failed stack?
+
+Delete the stack and retry the deployment. Stack deletion deletes all the artifacts that the stack created, including the EKS cluster and everything deployed in the cluster. 
+
+Stack deletion might fail due to timeouts or resource dependencies. Try to delete the failed stack again. If you have installed any external components after the deployment, like Ingress, then those resources are not deleted and might prevent stack deletion. In which case, try to manually delete the resources that prevent stack deletion.
+
+
+=== {partner-product-short-name} Operator
+
+
+==== How many deployments run for a successful deployment?
+
+The `kubectl get deployments` command lists the deployments. The application name and its namespace depend on your input. If you did not deploy an application, then you will not see any application and cert-manager deployments in your list.
+
+----
+NAMESPACE    NAME
+
+default      websphereliberty-app-sample
+kube-system  coredns
+olm          catalog-operator
+olm          olm-operator
+olm          packageserver
+operators    cert-manager
+operators    cert-manager-cainjector
+operators    cert-manager-webhook
+operators    wlo-controller-manager
+----
+
+
+==== Where is more information about {partner-product-short-name} Operator?
+
+See the {partner-product-short-name} Operator documentation.
+
+* https://www.ibm.com/docs/SSEQTP_liberty/opr/ae/cfg-t-viewstatus.html[Viewing operator application status]
+* https://www.ibm.com/docs/SSEQTP_liberty/opr/ae/t-troubleshooting.html[Troubleshooting WebSphere Liberty operators]
 
 
 == Customer support
@@ -18,7 +139,9 @@ For {partner-product-short-name} Operator issues, open a Support Ticket with IBM
 . Add information that can help IBM Support determine the cause of the error.
 +
 In the ticket, describe the error. If the error is difficult to describe, then provide a screen capture of the error. Also, provide pertinent information, such as a description of your cluster configuration and the component that is failing or having issues.
++
+The <<#_where_are_the_deployment_logs>> FAQ explains how to find deployment logs. See https://www.ibm.com/docs/SSEQTP_liberty/opr/ae/t-troubleshooting.html#t-troubleshooting__must-gather[Gathering information about clusters with MustGather] to learn how to use MustGather to collect information for a Support Ticket.
+
 
 //== Resources
 // Uncomment section and add links to any external resources that are specified by the partner.
-
