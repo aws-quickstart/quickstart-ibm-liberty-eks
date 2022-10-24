@@ -2,48 +2,19 @@
 
 == Postdeployment steps
 
-After deployment, validate the Quick Start deployment and deploy the License Service. To learn how to view logs, see <<#_cloudwatch_log_streams_after_deployment>>.
+After deployment, validate the Quick Start deployment. If an application was deployed, also deploy the License Service.
 
 
 === Deployment validation
 
-* If you selected to deploy the sample or a custom application, then launch the application. From the *Outputs* tab of the main stack, click the _AppEndpoint_ key *Value* URL.
-* If you did not deploy an application, check the *Outputs* tab of the main stack and connect to the EKS cluster to verify the deployment. See <<#_eks_cluster_connection>>.
+* If you selected to deploy the sample or a custom application
++
+. Launch the application. From the *Outputs* tab of the main stack, click the _AppEndpoint_ key *Value* URL.
+. Deploy <<_license_service>>.
+* If you did not deploy an application, check the *Outputs* tab of the main stack.
 
-==== EKS cluster connection
-
-Use the <<#_kubernetes_cli>> to access the EKS cluster.
-
-. Configure <<#_eks_cluster_access>>, if not done so already.
-. Run the following command to update your `kubeconfig` file so that you can use `kubectl` commands to work with your cluster.
-+
-----
-aws eks update-kubeconfig --name <cluster_name> --region <cluster_region>
-----
-+
-Replace `<cluster_name>` with your cluster name and `<cluster_region>` with your AWS Region.
-. Run any `kubectl` command to confirm that you can access the cluster. 
-+
-For example, run `kubectl get pods` and confirm that the output messages show a successful connection to the cluster.
-+
-----
-$ kubectl get pods
-error: You must be logged in to the server (Unauthorized)
-----
-+
-An `Unauthorized` error means that your IAM user or role was not granted access to the cluster. To gain access to the cluster, provide your IAM user ARN in the _AdditionalEKSAdminArns_ parameter of the stack.
-
+For general information about your deployment, see the <<#_how_do_i_get_information_about_my_deployment>> FAQ. If the deployment failed, see <<#_troubleshooting>>.
 
 === License Service
 
 Deploy https://www.ibm.com/docs/SSHKN6/license-service/1.x.x/standalone-LS.html[License Service] on your Kubernetes cluster. License Service is required to measure and track license use of IBM Containerized Software such as {partner-product-short-name} Operator. Manual license measurements are not allowed.
-
-=== CloudWatch log streams after deployment
-
-Before deployment, you can access log streams from a log groups search in the https://console.aws.amazon.com/cloudwatch/[CloudWatch console]. For instructions, see <<#_cloudwatch_log_streams>>.
-
-After deployment, you can also view log streams from the stack *Outputs* tab in the CloudWatch console.
-
-. Click the *Outputs* tab for your stack.
-. Click the _CloudWatchInstallLogs_ key *Value* URL.
-. From the *Log streams* tab of the log group details, select the output logs.
