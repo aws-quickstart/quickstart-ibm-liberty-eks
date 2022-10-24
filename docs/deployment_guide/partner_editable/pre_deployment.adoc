@@ -4,10 +4,19 @@
 
 Before you launch the Quick Start, see the https://fwd.aws/rA69w?[AWS Quick Start General Information Guide]. You need an AWS account, IAM permissions, and familarity with AWS services and the AWS CLI.
 
+Also, complete the following predeployment steps.
+
+=== Existing license
+
+Confirm that you have a valid license to use {partner-product-short-name} Operator. See <<#_costs_and_licenses>>.
+
+
+=== Resource quotas
+
 This deployment uses the resource quotas in <<#_table1>>. If necessary, request https://console.aws.amazon.com/servicequotas[service quota increases].
 
 [#_table1]
-.Deployment resource use
+.Deployment resource quotas
 [cols="1,1"]
 |===
 |Resource |This deployment uses
@@ -27,12 +36,6 @@ This deployment uses the resource quotas in <<#_table1>>. If necessary, request 
 |EKS clusters | 1
 |===
 
-Also, complete the following predeployment steps.
-
-=== Existing license
-
-Confirm that you have a valid license to use {partner-product-short-name} Operator. See <<#_costs_and_licenses>>.
-
 
 === Kubernetes CLI
 
@@ -47,13 +50,5 @@ Any IAM entity ARNs in this parameter can access the EKS cluster during the {par
 
 Note that you might need to start the boot node to connect to the EKS cluster. 
 
-
-=== CloudWatch log streams
-
-Optionally, view log data in https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/Working-with-log-groups-and-streams.html[Amazon CloudWatch log streams] during deployment. You can access log streams from a log groups search in the https://console.aws.amazon.com/cloudwatch/[CloudWatch console].
-
-. In the navigation pane, click *Logs* and then *Log groups*.
-. On the Log groups page, enter the stack name in the search bar.
-. From the *Log streams* tab of the log group details, select the log stream to view.
-
-After deployment, you also can access log streams from the stack *Outputs* tab in the CloudWatch console. See <<#_cloudwatch_log_streams_after_deployment>>.
+[TIP]
+To monitor progress during deployment, view <<#_cloudwatch_log_streams>>.
