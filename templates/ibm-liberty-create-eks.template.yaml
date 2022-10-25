@@ -42,7 +42,7 @@ Resources:
             eksctl create cluster --fargate --name ${EKSClusterName} --region ${AWS::Region} > /tmp/eksctl_create_cluster.log
           - !Sub |
             #!/bin/bash
-            eksctl create cluster --name ${EKSClusterName} --region ${AWS::Region} > /tmp/eksctl_create_cluster.log
+            eksctl create cluster -f /tmp/cluster.yaml > /tmp/eksctl_create_cluster.log
         workingDirectory:
         - /tmp
       WaitForSuccessTimeoutSeconds: 1200

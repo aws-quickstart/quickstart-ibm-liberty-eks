@@ -2,16 +2,20 @@ project:
   name: taskcat-was-on-aws
   regions:
   - ca-central-1
+  - eu-west-1
   package_lambda: false
+  shorten_stack_name: true
 tests:
   default:
     template: ./templates/ibm-liberty-new-eks.template.yaml
     parameters:
-      EKSClusterName: $[taskcat_project_name]
+      AvailabilityZones: $[taskcat_genaz_3]
+      NumberOfAZs: '3'
+      EKSClusterName: was-cluster-$[taskcat_random-string]
       SetupNewECR: "False"
       AcceptLicense: "Accept: Proceed with the installation"
       LicenseEdition: "IBM WebSphere Application Server"
       LicenseProductEntitlementSource: "Standalone"
       QSS3BucketName: $[taskcat_autobucket]
-      QSS3BucketRegion: ca-central-1
+      QSS3BucketRegion: $[taskcat_current_region]
       QSS3KeyPrefix: $[taskcat_project_name]/

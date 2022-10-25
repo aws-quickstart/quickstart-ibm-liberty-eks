@@ -10,6 +10,41 @@ Parameters:
     Type: String
   BootNodeName:
     Type: String
+  PublicSubnet1ID:
+    Description: The ID of the public subnet in Availability Zone 1 for the boot node and EKS cluster (for example, "subnet-9bc642ac").
+    Type: String
+  PublicSubnet2ID:
+    Description: The ID of the public subnet in Availability Zone 2 for the EKS cluster (for example, "subnet-9bc642ac").
+    Type: String
+  PublicSubnet3ID:
+    Description: The ID of the public subnet in Availability Zone 3 for the EKS cluster (for example, "subnet-9bc642ac").
+    Type: String
+  PrivateSubnet1ID:
+    Description: The ID of the private subnet in Availability Zone 1 for the EKS cluster (for example, "subnet-9bc642ac").
+    Type: String
+  PrivateSubnet2ID:
+    Description: The ID of the private subnet in Availability Zone 2 for the EKS cluster (for example, "subnet-9bc642ac").
+    Type: String
+  PrivateSubnet3ID:
+    Description: The ID of the private subnet in Availability Zone 3 for the EKS cluster (for example, "subnet-9bc642ac").
+    Type: String
+  AvailabilityZone1:
+    Description: The name of the Availability Zone 1 for the EKS cluster (for example, "ca-central-1a").
+    Type: String
+  AvailabilityZone2:
+    Description: The name of the Availability Zone 2 for the EKS cluster (for example, "ca-central-1b").
+    Type: String
+  AvailabilityZone3:
+    Description: The name of the Availability Zone 3 for the EKS cluster (for example, "ca-central-1d").
+    Type: String
+  EKSClusterName:
+    Type: String
+    Description: Name of the new EKS cluster (length 2-250) (required). The name must start with a letter and contain only lowercase letters, numbers, hyphens, underscores, periods, and forward slashes.
+    MinLength: 2
+    MaxLength: 250
+    AllowedPattern: (?:[a-z0-9]+(?:[._-][a-z0-9]+)*/)*[a-z0-9]+(?:[._-][a-z0-9]+)*
+    ConstraintDescription: The name must start with a letter and can only contain lowercase letters, numbers, hyphens, underscores, periods and forward slashes.
+
 Mappings:
   AWSAMIRegionMap:
     af-south-1:
@@ -71,13 +106,63 @@ Resources:
       Path: /
   BootNode:
     Type: AWS::EC2::Instance
+    Metadata:
+      AWS::CloudFormation::Init:
+        configSets:
+          Required:
+            - StackPropertiesFile
+        StackPropertiesFile:
+          files:
+            /tmp/cluster.yaml:
+              content:
+                !Sub
+                - |
+                  apiVersion: eksctl.io/v1alpha5
+                  kind: ClusterConfig
+                  metadata:
+                    name: ${ClusterName}
+                    region: ${AWS::Region}
+                  vpc:
+                    subnets:
+                      private:
+                        ${AZ1}: { id: ${PrivateSubnet1ID} }
+                        ${AZ2}: { id: ${PrivateSubnet2ID} }
+                        ${AZ3}: { id: ${PrivateSubnet3ID} }
+                      public:
+                        ${AZ1}: { id: ${PublicSubnet1ID} }
+                        ${AZ2}: { id: ${PublicSubnet3ID} }
+                        ${AZ3}: { id: ${PublicSubnet3ID} }
+                  nodeGroups:
+                    - name: ng-1-workers
+                      labels: { role: workers }
+                      instanceType: m5.large
+                      desiredCapacity: 2
+                - AZ1: !Ref AvailabilityZone1
+                  AZ2: !Ref AvailabilityZone2
+                  AZ3: !Ref AvailabilityZone3
+                  PrivateSubnet1ID: !Ref PrivateSubnet1ID
+                  PrivateSubnet2ID: !Ref PrivateSubnet2ID
+                  PrivateSubnet3ID: !Ref PrivateSubnet3ID
+                  PublicSubnet1ID: !Ref PublicSubnet1ID
+                  PublicSubnet2ID: !Ref PublicSubnet2ID
+                  PublicSubnet3ID: !Ref PublicSubnet3ID
+                  ClusterName: !Ref EKSClusterName
+
     Properties:
       ImageId: !FindInMap [AWSAMIRegionMap, !Ref "AWS::Region", AMZNLINUX2]
       InstanceType: t2.micro
       IamInstanceProfile: !Ref BootNodeProfile
+      SubnetId: !Ref PublicSubnet1ID
       Tags:
         - Key: "Name"
           Value:  !Ref BootNodeName
+      UserData:
+        Fn::Base64:
+          !Sub |
+            #!/bin/bash
+            /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource BootNode --configsets Required --region ${AWS::Region}
+            /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource BootNode --region ${AWS::Region}
+
 Outputs:
   InstanceId:
     Description: The instance ID of the boot node

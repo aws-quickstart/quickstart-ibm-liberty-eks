@@ -64,6 +64,16 @@ Metadata:
         default: Set up new private ECR
 
 Parameters:
+  NumberOfAZs:
+    AllowedValues:
+      - '3'
+    Default: '3'
+    Description: >-
+      Number of Availability Zones used for the deployment.
+    Type: String
+  AvailabilityZones:
+    Description: The list of Availability Zones to use for the subnet in the VPC. The Quick Start uses three Availability Zones.
+    Type: List<AWS::EC2::AvailabilityZone::Name>
   AcceptLicense:
     Type: String
     AllowedValues: ["Accept: Proceed with the installation", "Decline: Exit without installing"]
@@ -182,6 +192,19 @@ Rules:
         AssertDescription: You must provide an image when deploying a custom application
 
 Resources:
+  VPCStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}submodules/quickstart-aws-vpc/templates/aws-vpc.template.yaml
+        - S3Bucket: !If [ UsingDefaultBucket, !Sub 'aws-quickstart-${AWS::Region}', !Ref QSS3BucketName ]
+          S3Region: !If [ UsingDefaultBucket, !Ref AWS::Region, !Ref QSS3BucketRegion ]
+      Parameters:
+        AvailabilityZones: !Join [ ',', !Ref AvailabilityZones ]
+        NumberOfAZs: !Ref NumberOfAZs
+        PrivateSubnetATag2: "kubernetes.io/role/internal-elb="
+        PublicSubnetTag2: "kubernetes.io/role/elb="
+
   IBMLibertyIAMRoleStack:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
@@ -202,6 +225,16 @@ Resources:
       Parameters:
         RoleName: !GetAtt IBMLibertyIAMRoleStack.Outputs.RoleName
         BootNodeName: !Join ["-", [!Ref EKSClusterName, "bootnode"]]
+        EKSClusterName: !Ref EKSClusterName
+        PublicSubnet1ID: !GetAtt 'VPCStack.Outputs.PublicSubnet1ID'
+        PublicSubnet2ID: !GetAtt 'VPCStack.Outputs.PublicSubnet2ID'
+        PublicSubnet3ID: !GetAtt 'VPCStack.Outputs.PublicSubnet3ID'
+        AvailabilityZone1: !Select [0, !Ref AvailabilityZones]
+        AvailabilityZone2: !Select [1, !Ref AvailabilityZones]
+        AvailabilityZone3: !Select [2, !Ref AvailabilityZones]
+        PrivateSubnet1ID: !GetAtt 'VPCStack.Outputs.PrivateSubnet1AID'
+        PrivateSubnet2ID: !GetAtt 'VPCStack.Outputs.PrivateSubnet3AID'
+        PrivateSubnet3ID: !GetAtt 'VPCStack.Outputs.PrivateSubnet3AID'
 
   IBMLibertyEKSClusterStack:
     Type: 'AWS::CloudFormation::Stack'
