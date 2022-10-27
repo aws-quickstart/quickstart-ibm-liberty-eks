@@ -7,7 +7,7 @@ AWS Cloud.
 
 [#architecture1]
 .Quick Start architecture for {partner-product-short-name} for Amazon EKS
-image::../docs/deployment_guide/images/architecture_diagram.png[Architecture]
+image::../docs/deployment_guide/images/architecture_diagram.png[The figure is an architectural diagram of the Quick Start for IBM {partner-product-short-name} for Amazon EKS]
 
 As shown in <<architecture1>>, this Quick Start sets up the following:
 
@@ -22,7 +22,6 @@ As shown in <<architecture1>>, this Quick Start sets up the following:
 * Amazon CloudWatch to monitor and track metrics for your AWS resources and applications.
 * Amazon Elastic Container Registry (Amazon ECR) to store, share, and deploy container software such as application images and artifacts.
 * Grouping of the private subnets with an Auto Scaling Group for inbound Secure Shell (SSH) access and Amazon EKS for the underlying Kubernetes infrastructure and platform.
-* Ingress controllers, which provide HTTPS load balancing across the WebSphere Liberty instances. This Quick Start uses an Application Load Balancer, which is configured to use HTTPS.
-* Appropriate security groups for each instance or function to restrict access to only necessary protocols and ports. For example, access to HTTPS server ports on Amazon EC2 web servers is limited to the Application Load Balancer.
+* Classic Load Balancer to enable HTTPS access to an application.
 
 //[.small]#* The template that deploys this Quick Start into an existing VPC skips the components marked by asterisks and prompts you for your existing VPC configuration.#
