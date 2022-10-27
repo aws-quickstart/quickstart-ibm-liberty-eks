@@ -89,11 +89,11 @@ After deployment, you can also view log streams from the stack *Outputs* tab in 
 
 ===== Lambda function logs
 
-Lamda function logs are at `/aws/lambda/` and have the file path `/aws/lambda/<name_of_lambda_resource>`, for example, `/aws/lambda/test-IBMLiberty-CleanUpLambda-68vc5iStYCJa`.
+Lambda function logs are at `/aws/lambda/` and have the file path `/aws/lambda/<name_of_lambda_resource>`, for example, `/aws/lambda/test-IBMLiberty-CleanUpLambda-68vc5iStYCJa`.
 
 You can view Lambda function logs in CloudWatch. 
 
-. From the stack *Resources* tab, select a Lamda function.
+. From the stack *Resources* tab, select a Lambda function.
 . Click the *Monitor* tab.
 . Click *View logs in CloudWatch*. 
 
