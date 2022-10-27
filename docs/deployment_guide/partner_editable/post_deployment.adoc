@@ -9,7 +9,7 @@ After deployment, validate the Quick Start deployment. If an application was dep
 
 * If you selected to deploy the sample or a custom application
 +
-. Launch the application. From the *Outputs* tab of the main stack, click the _AppEndpoint_ key *Value* URL.
+. Launch the application. From the *Outputs* tab of the main stack, click value of the _AppEndpoint_ key.
 . Deploy <<_license_service>>.
 * If you did not deploy an application, check the *Outputs* tab of the main stack.
 
