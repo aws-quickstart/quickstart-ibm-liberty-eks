@@ -84,7 +84,7 @@ During or after deployment, and even after a failed deployment, you can view log
 After deployment, you can also view log streams from the stack *Outputs* tab in the CloudWatch console.
 
 . Click the *Outputs* tab for your stack.
-. Click the _CloudWatchInstallLogs_ key *Value* URL.
+. Click the value of the _CloudWatchInstallLogs_ key.
 . From the *Log streams* tab of the log group details, select the output logs.
 
 ===== Lambda function logs
