@@ -27,11 +27,13 @@ Review frequently asked questions for this Quick Start.
 
 ==== How do I connect to the EKS cluster?
 
+The steps to connect to the cluster depend on whether you use the boot node.
+
 ===== With the boot node
 
 . Find the boot node.
 . Start the boot node.
-. Connect to ________.
+. Connect to the EKS cluster.
 
 ===== Without the boot node
 
@@ -56,6 +58,17 @@ error: You must be logged in to the server (Unauthorized)
 +
 An `Unauthorized` error means that your IAM user or role was not granted access to the cluster. To gain access to the cluster, provide your IAM user ARN in the _AdditionalEKSAdminArns_ parameter of the stack.
 
+If needed, ask the creator of the EKS cluster to grant access by adding your IAM user or role to the `aws-auth` Kubernetes ConfigMap in the `kube-system` namespace. This ConfigMap maps IAM entities in AWS to user accounts in the Kubernetes cluster. The following steps use https://docs.aws.amazon.com/eks/latest/userguide/eksctl.html[eksctl].
+
+. Get the ARN of the IAM entity to which you want to grant cluster access.
++
+* Example ARN for a role: `arn:aws:iam::439159788015:role/some-role`
+* Example ARN for a user: `arn:aws:iam::439159788015:user/user@ibm.com`
+. Run the `eksctl` command to create a mapping for that IAM entity in the `aws-auth` ConfigMap.
++
+----
+eksctl create iamidentitymapping --cluster "<cluster_name>" --region "<cluster_region>" --arn
+----
 
 
 ==== Where are the deployment logs?
@@ -74,12 +87,19 @@ After deployment, you can also view log streams from the stack *Outputs* tab in 
 . Click the _CloudWatchInstallLogs_ key *Value* URL.
 . From the *Log streams* tab of the log group details, select the output logs.
 
+===== Lambda function logs
 
-===== Additional logs
+Lamda function logs are at `/aws/lambda/` and have the file path `/aws/lambda/<name_of_lambda_resource>`, for example, `/aws/lambda/test-IBMLiberty-CleanUpLambda-68vc5iStYCJa`.
 
-- SSM logs: on boot node at /var/log/amazon/ssm/
+You can view Lambda function logs in CloudWatch. 
 
-- Lambda function logs: in CloudWatch (ask Paul)
+. From the stack *Resources* tab, select a Lamda function.
+. Click the *Monitor* tab.
+. Click *View logs in CloudWatch*. 
+
+===== SSM logs
+
+SSM logs are on the boot node at `/var/log/amazon/ssm/.
 
 
 ==== How do I get information about my deployment?
@@ -89,10 +109,29 @@ To get information about {partner-product-short-name} Operator and any deployed 
 $ kubectl get deployments
 ----
 
+For stack outputs, go to the stack *Outputs* tab in the https://console.aws.amazon.com/cloudwatch/[CloudWatch console].
 
-- Stack outputs
+The CloudWatch `output.properties` file provides the deployment properties. The following example properties are for a deployment with the sample application, with `Standalone` entitlement from a license to the `IBM WebSphere Application Server` product edition.
 
-- CloudWatch: output.properties
+----
+BOOTNODE_INSTANCE_ID=i-0259993b763ee9631
+Install_Log_Location=/tmp/install.log
+APPLICATION_DEPLOY='Sample'
+APPLICATION_IMAGE_URL=icr.io/appcafe/open-liberty/samples/getting-started
+APPLICATION_NAME=websphereliberty-app-sample
+APPLICATION_NAMESPACE=default
+APPLICATION_REPLICAS=1
+AWS_DEFAULT_REGION=us-west-2
+EKS_CLUSTER_NAME=taskcat-was-on-aws-fvt-1
+LAUNCH_TYPE=EC2
+LICENSE_EDITION='IBM WebSphere Application Server'
+LICENSE_ENTITLEMENT='Standalone'
+EKS_ADMIN_USER_ARNS=''
+WORKLOAD_STACK_NAME='tCaT-taskcat-was-on-aws-fvt-1-4db324b417e4471abd7872e8dde27d3d-IBMLibertyWorkloadStack-1H0JWZG5CL24T'
+MainStackName=tCaT-taskcat-was-on-aws-fvt-1-4db324b417e4471abd7872e8dde27d3d
+BootNodeUser=ec2-user
+CloudWatchInstallLogs=https://us-west-2.console.aws.amazon.com/cloudwatch/home?region=us-west-2#logsV2:log-groups/log-group/tCaT-taskcat-was-on-aws-fvt-1-4db324b417e4471abd7872e8dde27d3d
+----
 
 ==== How do I recover from a failed stack?
 
