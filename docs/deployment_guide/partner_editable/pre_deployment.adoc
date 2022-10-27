@@ -2,7 +2,7 @@
 
 == Predeployment steps
 
-Before you launch the Quick Start, see the https://fwd.aws/rA69w?[AWS Quick Start General Information Guide]. You need an AWS account, IAM permissions, and familarity with AWS services and the AWS CLI.
+Before you launch the Quick Start, see the https://fwd.aws/rA69w?[AWS Quick Start General Information Guide]. You need an AWS account, IAM permissions, and familiarity with AWS services and the AWS CLI.
 
 Also, complete the following predeployment steps.
 
@@ -27,9 +27,9 @@ This deployment uses the resource quotas in <<#_table1>>. If necessary, request 
 |Elastic IP addresses | 1
 |Security groups | 3
 |AWS Identity and Access Management (IAM) roles | 4
-|Classic Load Balancer | 2
+|Classic Load Balancer | 1
 |EC2 Instance, t2.micro | 1
-|EC2 Instance, m5.large | 3
+|EC2 Instance, m5.large | 2
 |ECR repositories | 1
 |SSM associations | 2
 |Lambda functions | 2
@@ -37,18 +37,22 @@ This deployment uses the resource quotas in <<#_table1>>. If necessary, request 
 |===
 
 
-=== Kubernetes CLI
+=== Other considerations
+
+Before deployment, you might also get access to the EKS cluster and the Kubernetes CLI.
+
+==== EKS cluster access
+
+When you build the CloudFormation stack, https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_manage-attach-detach.html[provide your IAM user ARN] in the *Additional EKS administrator ARNs (IAM users or roles)* parameter.
+
+Any IAM entity ARNs in this parameter can access the EKS cluster after the deployment. IAM entity ARNs are specified in a comma-delimited list.
+
+You might need to start the boot node to connect to the EKS cluster. 
+
+
+==== Kubernetes CLI
 
 Download and configure the https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html[Kubernetes command-line interface (CLI)] so that you can manage deployed applications and resources with `kubectl` commands.
-
-
-=== EKS cluster access
-
-When you build the CloudFormation stack, https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_manage-attach-detach.html[provide your IAM user ARN] in the _AdditionalEKSAdminArns_ parameter.
-
-Any IAM entity ARNs in this parameter can access the EKS cluster during the {partner-product-short-name} Operator deployment. IAM entity ARNs are specified in a comma-delimited list.
-
-Note that you might need to start the boot node to connect to the EKS cluster. 
 
 [TIP]
 To monitor progress during deployment, view <<#_cloudwatch_log_streams>>.
