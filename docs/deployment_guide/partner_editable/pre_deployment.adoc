@@ -39,7 +39,7 @@ This deployment uses the resource quotas in <<#_table1>>. If necessary, request 
 
 === Other considerations
 
-Before deployment, you might also get access to the EKS cluster and the Kubernetes CLI.
+Before deployment, you might also enable access to the EKS cluster and get the Kubernetes CLI.
 
 ==== EKS cluster access
 
