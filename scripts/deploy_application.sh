@@ -36,5 +36,6 @@ wait_for deployment ${APPLICATION_NAME} ${APPLICATION_NAMESPACE}
 
 if [[ $? != 0 ]]; then
     echo "The WebSphereLibertyApplication ${APPLICATION_NAME} is not available." >&2
+    DEPLOY="Failed"
     exit 1
 fi

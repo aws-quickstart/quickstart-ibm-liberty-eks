@@ -18,7 +18,7 @@ echo "**********************************************"
 echo "*         Deployment Status Summary          *"
 echo "**********************************************"
 echo
-cho ----------------- Properties ------------------
+echo ----------------- Properties ------------------
 echo "Content of " $CUR_DIR/ibm-liberty-parameters.properties
 cat $CUR_DIR/ibm-liberty-parameters.properties
 echo ----------------- cert-manger CRD ------------------

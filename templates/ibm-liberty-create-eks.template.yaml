@@ -35,14 +35,28 @@ Resources:
           #!/bin/bash
           curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
           sudo mv /tmp/eksctl /usr/local/bin
+        - |
+          #!/bin/bash
+          i=0
+          while [ ! -f /tmp/cluster.yaml ]; do 
+            echo "/tmp/cluster.yaml isn't available yet, waiting"
+            sleep 5
+            i=$[$i+1]
+            if [ $i -ge 12 ]; then
+              echo "Timed out waiting 60 seconds for /tmp/cluster.yaml to be available"
+              break; 
+            fi
+            echo "/tmp/cluster.yaml ready:"
+            cat /tmp/cluster.yaml
+          done
         - !If
           - IsFargate
           - !Sub |
             #!/bin/bash
-            eksctl create cluster --fargate --name ${EKSClusterName} --region ${AWS::Region} > /tmp/eksctl_create_cluster.log
-          - !Sub |
+            eksctl create cluster --fargate --name ${EKSClusterName} --region ${AWS::Region} > /tmp/eksctl.log
+          - |
             #!/bin/bash
-            eksctl create cluster --name ${EKSClusterName} --region ${AWS::Region} > /tmp/eksctl_create_cluster.log
+            eksctl create cluster -f /tmp/cluster.yaml > /tmp/eksctl.log
         workingDirectory:
         - /tmp
       WaitForSuccessTimeoutSeconds: 1200
@@ -69,10 +83,8 @@ Resources:
             Statement:
               - Effect: Allow
                 Action:
-                  - ssm:PutParameter
-                  - ssm:GetParameter
-                  - ssm:DeleteParameter
-                Resource: !Sub arn:${AWS::Partition}:ssm:*:${AWS::AccountId}:parameter/*
+                  - ssm:ListCommandInvocations
+                Resource: '*'
               - Effect: Allow
                 Action:
                   - logs:FilterLogEvents
@@ -120,41 +132,68 @@ Resources:
 
                   instanceID = os.environ['BootNode']
                   stackName = os.environ['StackName']
-                  parameterName = stackName + "_CleanupStatus"
 
                   instance = ec2.Instance(instanceID)
-                  if instance.state.get('Name') != 'running':
-                    print("Boot node is not running. Starting now...")
-                    instance.start()
-                    instance.wait_until_running()
+                  instance_state = lambda: instance.state.get('Name', 'LAMBDA_ERR')
+                  retries = 18
 
-                  response = ssm.send_command(Targets=[{"Key":"instanceids","Values":[instanceID]}],
-                          DocumentName="AWS-RunShellScript",
-                          Parameters={"commands":[f"/tmp/scripts/destroy.sh {parameterName}"],
-                                      "executionTimeout":["1800"],
-                                      "workingDirectory":["/tmp/scripts"]},
-                          Comment="Execute script to delete EKS cluster",
-                          TimeoutSeconds=180)
+                  while instance_state() != 'running' and retries > 0:
+                    print(f"Boot node is not running (its current state is '{instance_state()}'). Starting now...")
+                    try:
+                      instance.start()
+                      instance.wait_until_running()
+                    except Exception as ex:
+                      print(f"Error when starting boot node: {ex}")
+                      print("Trying again in 10 seconds.")
+                      time.sleep(10)
+
+                    instance.reload()
+                    retries = retries - 1
+                  
+                  # We're looping here because it can take a while for the 
+                  # SSM agent to start up on the boot node. Once the command
+                  # is successfully sent, we break and move on.
+                  while True:
+                    try:
+                      response = ssm.send_command(Targets=[{"Key":"instanceids","Values":[instanceID]}],
+                              DocumentName="AWS-RunShellScript",
+                              Parameters={"commands":[f"/tmp/scripts/destroy.sh >> /tmp/eksctl.log"],
+                                          "executionTimeout":["1800"],
+                                          "workingDirectory":["/tmp/scripts"]},
+                              Comment="Execute script to delete EKS cluster",
+                              TimeoutSeconds=180)
+                      break
+                    except Exception as ex:
+                      print("Error:", ex)
+                      print("Trying again in 10 seconds...")
+                      time.sleep(10)
 
                   print("Response:", response)
+                  command_id = response['Command']['CommandId']
+                  current_status = 'Pending'
+                  command_in_progress = lambda: current_status in ('Pending', 'InProgress')
 
-                  current_status = "RUNNING"
-                  final_status = "COMPLETE"
-                  response = ssm.put_parameter(Name=parameterName,
-                          Description="Waiting for CleanupStatus to be COMPLETE",
-                          Value=current_status,
-                          Type='String',
-                          Overwrite=True)
-                  print(response)
+                  while command_in_progress():
+                    print("Checking on SSM command status...")
+                    invocations = ssm.list_command_invocations(
+                          CommandId=command_id,
+                          InstanceId=instanceID,
+                          Details=True
+                    )
 
-                  while current_status != final_status:
-                    time.sleep(30)
-                    response = ssm.get_parameter(Name=parameterName)
-                    parameter = response.get('Parameter')
-                    current_status = parameter.get('Value')
-                    print(f"Waiting for destroy.sh script to complete (current status: {current_status})")
+                    if len(invocations['CommandInvocations']):
+                      current_status = invocations['CommandInvocations'][0]['Status']
 
-                  ssm.delete_parameter(Name=parameterName)
+                    print(f"Current status is '{current_status}'.")
+                    if command_in_progress(): time.sleep(30)
+                  else:
+                    if current_status != 'Success':
+                      try:
+                        error = invocations['CommandInvocations'][0]['CommandPlugins'][0]['Output']
+                      except:
+                        error = 'Unknown error, check SSM command history logs'
+
+                      raise RuntimeError(f"SSM command failed with the following error: {error}")
 
                 cfnresponse.send(event, context, cfnresponse.SUCCESS, {}, '')
 
@@ -180,6 +219,9 @@ Outputs:
   EKSName:
     Description: EKS cluster name
     Value: !Ref EKSClusterName
+  EKSUrl:
+    Description: Link to the EKS cluster
+    Value: !Join ["",["https://", !Ref "AWS::Region",".console.aws.amazon.com/eks/home?region=",!Ref "AWS::Region","#/clusters/", !Ref EKSClusterName]]
   LaunchType:
     Description: Launch type of the new cluster
     Value: !Ref LaunchType

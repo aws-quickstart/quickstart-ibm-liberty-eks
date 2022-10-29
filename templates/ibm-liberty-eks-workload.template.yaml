@@ -73,6 +73,7 @@ Parameters:
       This value is only required when "Deploy application"="Custom" is selected.
     AllowedPattern: ^(?:(?=[^:\/]{4,253})(?!-)[a-zA-Z0-9-]{1,63}(?<!-)(?:\\.(?!-)[a-zA-Z0-9-]{1,63}(?<!-))*(?::[0-9]{1,5})?/)?((?![._-])(?:[a-z0-9._-]*)(?<![._-])(?:/(?![._-])[a-z0-9._-]*(?<![._-]))*)(?::(?![.-])[a-zA-Z0-9_.-]{1,128})?$
     ConstraintDescription: The value must be a valid container image path. For example, icr.io/appcafe/open-liberty/samples/getting-started
+    Default: ""
   AppName:
     Type: String
     Default: "websphereliberty-app-sample"
@@ -105,13 +106,13 @@ Parameters:
   LicenseEdition:
     Type: String
     AllowedValues: ["", "IBM WebSphere Application Server", "IBM WebSphere Application Server Liberty Core", "IBM WebSphere Application Server Network Deployment"]
-    Default: "IBM WebSphere Application Server"
     Description:  Product edition.
+    Default: ""
   LicenseProductEntitlementSource:
     Type: String
     AllowedValues: ["", "Standalone", "IBM Cloud Pak for Applications", "IBM WebSphere Application Server Family Edition", "IBM WebSphere Hybrid Edition"]
-    Default: "Standalone"
     Description: Entitlement source for the product.
+    Default: ""
   QSS3CodeLocation:
     Type: String
     Description: The S3 location for your copy of the Quick Start assets.
@@ -275,12 +276,6 @@ Outputs:
   WLOVersion:
     Description: The installed version of WebSphere Liberty Operator
     Value: !GetAtt InstallOutputs.WLOVersion
-  ClusterVpcId:
-    Description: The ID of the VPC which was created for your EKS cluster
-    Value: !GetAtt InstallOutputs.ClusterVpcId
-  ClusterVpcUrl:
-    Description: URL to manage the VPC which was created for your EKS cluster
-    Value: !Join ["", ["https://", !Ref "AWS::Region", ".console.aws.amazon.com/vpc/home?region=", !Ref "AWS::Region", "#VpcDetails:VpcId=", !GetAtt InstallOutputs.ClusterVpcId]]
   EKSName:
     Description: EKS Cluster name
     Value: !Ref EKSClusterName

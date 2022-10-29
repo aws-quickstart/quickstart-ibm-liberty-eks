@@ -43,9 +43,9 @@ cat <<EOF > /tmp/scripts/config.json
                                            "retention_in_days": -1
                                    },
                                    {
-                                           "file_path": "/tmp/eksctl_create_cluster.log",
+                                           "file_path": "/tmp/eksctl.log",
                                            "log_group_name": "${MainStackName}",
-                                           "log_stream_name": "eksctl_create_cluster-log",
+                                           "log_stream_name": "eksctl-log",
                                            "retention_in_days": -1
                                    },
                                    {
@@ -67,6 +67,6 @@ sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-c
 
 # Trigger CloudWatch logs for create EKS Cluster log.
 sleep 5s
-sudo mv /tmp/eksctl_create_cluster.log /tmp/eksctl_create_cluster.log.tmp
-sudo cat /tmp/eksctl_create_cluster.log.tmp > /tmp/eksctl_create_cluster.log
+sudo mv /tmp/eksctl.log /tmp/eksctl.log.tmp
+sudo cat /tmp/eksctl.log.tmp > /tmp/eksctl.log
 sudo cp /tmp/scripts/ibm-liberty-parameters.properties /tmp/output.properties

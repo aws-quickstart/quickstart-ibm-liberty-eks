@@ -151,9 +151,14 @@ if [[ "$APPLICATION_DEPLOY" != "None" ]]; then
     $CUR_DIR/deploy_application.sh
     separator
 
-    # Deploy a load balancer to expose the application
-    $CUR_DIR/deploy_loadbalancer.sh
-    separator
+    if [[ $DEPLOY != "Passed" ]]; then
+        echo "The WebSphereLibertyApplication, ${APPLICATION_NAME}, failed to deploy. Make sure the application image is accessible without a credential. Pod status:" >&2
+        kubectl get pods  -n ${APPLICATION_NAMESPACE} | grep  ${APPLICATION_NAME}
+    else
+        # Deploy a load balancer to expose the application
+        $CUR_DIR/deploy_loadbalancer.sh
+        separator
+    fi
 fi
 
 $CUR_DIR/grant_cluster_access.sh

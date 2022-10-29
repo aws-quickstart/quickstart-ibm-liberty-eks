@@ -160,3 +160,6 @@ Outputs:
   RoleARN:
     Description: The ARN of the created role.
     Value: !GetAtt IBMLibertyDeploymentRole.Arn
+  RoleURL:
+    Description: Link to the IAM role.
+    Value: !Join ["",["https://", !Ref "AWS::Region",".console.aws.amazon.com/iamv2/home?region=",!Ref "AWS::Region","#/roles/details/", !Ref IBMLibertyDeploymentRole]]

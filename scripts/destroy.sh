@@ -15,14 +15,9 @@ source $CUR_DIR/ibm-liberty-parameters.properties
 
 export AWS_DEFAULT_REGION
 
-SSM_PARAMETER_NAME=$1
-
 if eksctl get cluster "${EKS_CLUSTER_NAME}"; then
     echo "Deleting cluster ${EKS_CLUSTER_NAME}..."
     eksctl delete cluster --wait "${EKS_CLUSTER_NAME}"
 else
     echo "Cluster ${EKS_CLUSTER_NAME} does not exist."
 fi
-
-# Update the parameter the Lambda function watches to know when this script is complete.
-aws ssm put-parameter --name "${SSM_PARAMETER_NAME}" --value "COMPLETE" --overwrite

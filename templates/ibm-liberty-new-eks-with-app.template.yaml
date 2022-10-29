@@ -13,6 +13,8 @@ Metadata:
           - EKSClusterName
           - SetupNewECR
           - AdditionalEKSAdminArns
+          - NumberOfAZs
+          - AvailabilityZones
       - Label:
           default: Application configuration
         Parameters:
@@ -24,9 +26,9 @@ Metadata:
       - Label:
           default: License
         Parameters:
-          - AcceptLicense
           - LicenseEdition
           - LicenseProductEntitlementSource
+          - AcceptLicense
       - Label:
           default: AWS Quick Start configuration
         Parameters:
@@ -35,23 +37,23 @@ Metadata:
           - QSS3BucketRegion
     ParameterLabels:
       AcceptLicense:
-        default: Accept* (https://ibm.biz/was-license)
+        default: Accept (https://ibm.biz/was-license)
       AppContainerImageURL:
         default: Custom application image name
       AppName:
         default: Application name
       AppNamespace:
-        default: EKS namespace to deploy the app
+        default: Application namespace
       AppReplicas:
-        default: Number of app replicas
+        default: Application replicas
       DeployApp:
         default: Deploy application
       EKSClusterName:
         default: EKS cluster name*
       LicenseEdition:
-        default: Edition*
+        default: Edition
       LicenseProductEntitlementSource:
-        default: Product entitlement source*
+        default: Product entitlement source
       QSS3BucketName:
         default: Quick Start S3 bucket name
       QSS3BucketRegion:
@@ -62,22 +64,35 @@ Metadata:
         default: Additional EKS administrator ARNs (IAM users or roles)
       SetupNewECR:
         default: Set up new private ECR
+      NumberOfAZs:
+        default: Number of AZs
+      AvailabilityZones:
+        default: Availability zones
 
 Parameters:
+  NumberOfAZs:
+    AllowedValues:
+      - '3'
+    Default: '3'
+    Description: >-
+      Number of Availability Zones used for the deployment.
+    Type: String
+  AvailabilityZones:
+    Description: The list of Availability Zones to use for the subnet in the VPC. The Quick Start uses three Availability Zones.
+    Type: List<AWS::EC2::AvailabilityZone::Name>
   AcceptLicense:
     Type: String
-    AllowedValues: ["", "Accept: Proceed with the installation", "Decline: Exit without installing"]
+    AllowedValues: ["Accept: Proceed with the installation", "Decline: Exit without installing"]
     Description: >-
       I accept the terms on the license agreement corresponding to the version of IBM program
       in the application container by setting this value to true. See https://ibm.biz/was-license
-      for the license agreement applicable to this IBM program. You must accept the license for the installation to work.
+      for the license agreement applicable to this IBM program. You must accept the license if you are deploying sample or custom application.
     ConstraintDescription: You must accept the license (https://ibm.biz/was-license) to proceed with installation.
-    Default: ""
   AppContainerImageURL:
     Type: String
     Description: >-
       Custom application container image. For example, icr.io/appcafe/open-liberty/samples/getting-started.
-      This value is only required when "Deploy application"="Custom" is selected.
+      This value is only required when "Deploy application" is set to "Custom". The value must be accessible without any credentials.
     AllowedPattern: ^(?:(?=[^:\/]{4,253})(?!-)[a-zA-Z0-9-]{1,63}(?<!-)(?:\\.(?!-)[a-zA-Z0-9-]{1,63}(?<!-))*(?::[0-9]{1,5})?/)?((?![._-])(?:[a-z0-9._-]*)(?<![._-])(?:/(?![._-])[a-z0-9._-]*(?<![._-]))*)(?::(?![.-])[a-zA-Z0-9_.-]{1,128})?$
     ConstraintDescription: The value must be a valid container image path. For example, icr.io/appcafe/open-liberty/samples/getting-started
   AppName:
@@ -87,17 +102,17 @@ Parameters:
   AppNamespace:
     Type: String
     Default: "default"
-    Description: Namespace in the EKS cluster where app will be deployed. This namespace is created if it does not exist.
+    Description: Namespace in the EKS cluster where the application will be deployed.
   AppReplicas:
     Type: Number
     MinValue: 1
     Default: 2
-    Description: Number of app replicas (minimum 1). Ignore this parameter if "Deploy application"=None.
+    Description: Number of application replicas (minimum 1).
   DeployApp:
     Type: String
-    AllowedValues: [ "Sample", "Custom", None ]
+    AllowedValues: [ "Sample", "Custom" ]
     Default: "Sample"
-    Description: Type of application to deploy. If "None", deploy no application. If "Sample" or "Custom", also see the "License" parameters.
+    Description: Deploy sample or custom application or skip application deployment. Details on sample application is available at https://github.com/OpenLiberty/sample-getting-started.
   EKSClusterName:
     Type: String
     Description: Name of the new EKS cluster (length 2-250) (required). The name must start with a letter and contain only lowercase letters, numbers, hyphens, underscores, periods, and forward slashes.
@@ -107,19 +122,17 @@ Parameters:
     ConstraintDescription: The name must start with a letter and can only contain lowercase letters, numbers, hyphens, underscores, periods and forward slashes.
   LicenseEdition:
     Type: String
-    AllowedValues: ["", "IBM WebSphere Application Server", "IBM WebSphere Application Server Liberty Core", "IBM WebSphere Application Server Network Deployment"]
+    AllowedValues: ["IBM WebSphere Application Server", "IBM WebSphere Application Server Liberty Core", "IBM WebSphere Application Server Network Deployment"]
     Description:  Product edition.
-    Default: ""
   LicenseProductEntitlementSource:
     Type: String
-    AllowedValues: ["", "Standalone", "IBM WebSphere Hybrid Edition", "IBM Cloud Pak for Applications", "IBM WebSphere Application Server Family Edition"]
-    Description: Entitlement source for the product. Select "Standalone" if the entitlement source is a product that you selected in License "Edition".
-    Default: ""
+    AllowedValues: ["Standalone", "IBM WebSphere Hybrid Edition", "IBM Cloud Pak for Applications", "IBM WebSphere Application Server Family Edition"]
+    Description: Entitlement source for the product. Select "Standalone" if the entitlement source is IBM WebSphere Application Server, IBM WebSphere Application Server Liberty Core, or IBM WebSphere Application Server Network Deployment.
   SetupNewECR:
     Type: String
-    AllowedValues: ["True", "False"]
-    Default: "True"
-    Description: Set up a new private ECR? If true, a new ECR is set up with the name <EKS cluster name>-ecr. Default is true.
+    AllowedValues: ["Yes", "No"]
+    Default: "Yes"
+    Description: Set up a new private ECR? If Yes, a new ECR is set up with the name <EKS cluster name>-ecr. Default is Yes.
   QSS3BucketName:
     Type: String
     Description: Name of the S3 bucket for your copy of the Quick Start assets.
@@ -161,33 +174,27 @@ Parameters:
   AdditionalEKSAdminArns:
     Default: ""
     Description: >-
-      (Optional) A comma-delimited list of IAM user or role Amazon Resource Names (ARNs)
-      to be granted administrative access to the Amazon EKS cluster. For example, grant
-      access to two users with their ARNs: "arn:aws:iam::012345678910:user/user1@example.com,
-      arn:aws:iam::012345678910:user/user2@example.com".
+      Provide your own IAM user ARN to be granted administrative access to the new EKS cluster. 
+      To grant access to additional users or roles, provide a comma-delimited list of ARNs. 
+      For example, to grant access to yourself and another user, use "arn:aws:iam::012345678910:user/myid@example.com, 
+      arn:aws:iam::012345678910:user/otherid@example.com".
     Type: String
 
 Conditions:
   UsingDefaultBucket: !Equals [!Ref QSS3BucketName, aws-quickstart]
-  SetupECR: !Equals [!Ref SetupNewECR, "True"]
+  SetupECR: !Equals [!Ref SetupNewECR, "Yes"]
   DeploySample: !Equals [!Ref DeployApp, Sample]
-  DeployAppSet: !Not [!Equals [!Ref DeployApp, None]]
 
 Rules:
   RequireAcceptLicense:
-    RuleCondition: !Not [!Equals [!Ref DeployApp, None]]
     Assertions:
       - Assert: !Equals [!Ref AcceptLicense, "Accept: Proceed with the installation"]
-        AssertDescription: In order to proceed with installation, you must accept the license
-      - Assert: !Not [!Equals [!Ref LicenseEdition, ""]]
-        AssertDescription: In order to proceed with installation, you must provide the product edition
-      - Assert: !Not [!Equals [!Ref LicenseProductEntitlementSource, ""]]
-        AssertDescription: In order to proceed with installation, you must provide the entitlement source for the product 
+        AssertDescription: In order to proceed with installation, you must accept the license.
   RequireImageWhenCustom:
     RuleCondition: !Equals [!Ref DeployApp, Custom]
     Assertions:
       - Assert: !Not [!Equals [!Ref AppContainerImageURL, ""]]
-        AssertDescription: You must provide an image when deploying a custom application
+        AssertDescription: You must provide an image when deploying a custom application.
 
 Resources:
   IBMLibertyIAMRoleStack:
@@ -200,6 +207,19 @@ Resources:
       Parameters:
         RoleName: !Join [ "", [ "ibm-liberty-", !Ref EKSClusterName, "-", !Ref "AWS::Region", "-role" ] ]
 
+  IBMLibertyVPCStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}submodules/quickstart-aws-vpc/templates/aws-vpc.template.yaml
+        - S3Bucket: !If [ UsingDefaultBucket, !Sub 'aws-quickstart-${AWS::Region}', !Ref QSS3BucketName ]
+          S3Region: !If [ UsingDefaultBucket, !Ref AWS::Region, !Ref QSS3BucketRegion ]
+      Parameters:
+        AvailabilityZones: !Join [ ',', !Ref AvailabilityZones ]
+        NumberOfAZs: !Ref NumberOfAZs
+        PrivateSubnetATag2: "kubernetes.io/role/internal-elb="
+        PublicSubnetTag2: "kubernetes.io/role/elb="
+  
   IBMLibertyBootNodeStack:
     Type: 'AWS::CloudFormation::Stack'
     Properties:
@@ -210,6 +230,16 @@ Resources:
       Parameters:
         RoleName: !GetAtt IBMLibertyIAMRoleStack.Outputs.RoleName
         BootNodeName: !Join ["-", [!Ref EKSClusterName, "bootnode"]]
+        EKSClusterName: !Ref EKSClusterName
+        PublicSubnet1ID: !GetAtt 'IBMLibertyVPCStack.Outputs.PublicSubnet1ID'
+        PublicSubnet2ID: !GetAtt 'IBMLibertyVPCStack.Outputs.PublicSubnet2ID'
+        PublicSubnet3ID: !GetAtt 'IBMLibertyVPCStack.Outputs.PublicSubnet3ID'
+        AvailabilityZone1: !Select [0, !Ref AvailabilityZones]
+        AvailabilityZone2: !Select [1, !Ref AvailabilityZones]
+        AvailabilityZone3: !Select [2, !Ref AvailabilityZones]
+        PrivateSubnet1ID: !GetAtt 'IBMLibertyVPCStack.Outputs.PrivateSubnet1AID'
+        PrivateSubnet2ID: !GetAtt 'IBMLibertyVPCStack.Outputs.PrivateSubnet3AID'
+        PrivateSubnet3ID: !GetAtt 'IBMLibertyVPCStack.Outputs.PrivateSubnet3AID'
 
   IBMLibertyEKSClusterStack:
     Type: 'AWS::CloudFormation::Stack'
@@ -267,6 +297,9 @@ Outputs:
   EKSClusterName:
     Description: EKS cluster name
     Value: !Ref EKSClusterName
+  EKSClusterUrl:
+    Description: EKS cluster URL
+    Value: !GetAtt IBMLibertyEKSClusterStack.Outputs.EKSUrl
   ECRName:
     Condition: SetupECR
     Description: ECR name
@@ -279,34 +312,36 @@ Outputs:
     Condition: SetupECR
     Description: ECR URI
     Value: !GetAtt IBMLibertyECRStack.Outputs.ECRRepositoryUri
-  RoleName:
-    Description: Role name to manage EKS
-    Value: !GetAtt IBMLibertyIAMRoleStack.Outputs.RoleName
   BootNodeInstanceId:
     Description: Boot node EC2 instance ID
     Value: !GetAtt IBMLibertyBootNodeStack.Outputs.InstanceId
   BootNodeName:
-    Description: Boot node Name
+    Description: Boot node name
     Value: !GetAtt IBMLibertyBootNodeStack.Outputs.InstanceName
   InstallLogsLocation:
     Description: Install logs location (on boot node)
     Value: "/tmp/install.log"
   CloudWatchInstallLogs:
-    Description: Cloud Watch Install Logs
+    Description: Installation logs (in CloudWatch)
     Value: !GetAtt IBMLibertyWorkloadStack.Outputs.CloudWatchInstallLogs
   OutputProperties:
-    Description: Output Properties
+    Description: Output properties
     Value: !GetAtt IBMLibertyWorkloadStack.Outputs.OutputProperties
   AppEndpoint:
     Description: The URL for the deployed application
     Value: !GetAtt IBMLibertyWorkloadStack.Outputs.AppEndpoint
-    Condition: DeployAppSet
   WLOVersion:
     Description: The installed version of WebSphere Liberty Operator
     Value: !GetAtt IBMLibertyWorkloadStack.Outputs.WLOVersion
-  ClusterVpcId:
+  EKSClusterVpcId:
     Description: The ID of the VPC which was created for your EKS cluster
-    Value: !GetAtt IBMLibertyWorkloadStack.Outputs.ClusterVpcId
-  ClusterVpcUrl:
+    Value: !GetAtt IBMLibertyVPCStack.Outputs.VPCID
+  EKSClusterVpcUrl:
     Description: URL to manage the VPC which was created for your EKS cluster
-    Value: !GetAtt IBMLibertyWorkloadStack.Outputs.ClusterVpcUrl
+    Value: !Join ["", ["https://", !Ref "AWS::Region", ".console.aws.amazon.com/vpc/home?region=", !Ref "AWS::Region", "#VpcDetails:VpcId=", !GetAtt IBMLibertyVPCStack.Outputs.VPCID]]
+  IAMRoleName:
+    Description: Role name to manage EKS
+    Value: !GetAtt IBMLibertyIAMRoleStack.Outputs.RoleName
+  IAMRoleUrl:
+    Description: The URL to view the IAM role that was used to create the EKS cluster
+    Value: !GetAtt IBMLibertyIAMRoleStack.Outputs.RoleURL
