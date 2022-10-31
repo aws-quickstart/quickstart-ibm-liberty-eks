@@ -7,7 +7,7 @@ AWS Cloud.
 
 [#architecture1]
 .Quick Start architecture for {partner-product-short-name} for Amazon EKS
-image::../docs/deployment_guide/images/architecture_diagram.png[The figure is an architectural diagram of the Quick Start for IBM {partner-product-short-name} for Amazon EKS]
+image::../docs/deployment_guide/images/architecture_diagram.png[The figure is an architectural diagram of the Quick Start for {partner-product-name}]
 
 As shown in <<architecture1>>, this Quick Start sets up the following:
 
