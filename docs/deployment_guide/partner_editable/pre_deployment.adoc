@@ -43,12 +43,11 @@ Before deployment, you might also enable access to the EKS cluster and get the K
 
 ==== EKS cluster access
 
-When you build the CloudFormation stack, https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_manage-attach-detach.html[provide your IAM user ARN] in the *Additional EKS administrator ARNs (IAM users or roles)* parameter.
+// When you build the CloudFormation stack.
 
-Any IAM entity ARNs in this parameter can access the EKS cluster after the deployment. IAM entity ARNs are specified in a comma-delimited list.
+By default, you can access the EKS cluster by the boot node only. To enable direct access to the EKS cluster, https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies_manage-attach-detach.html[provide a list of IAM entity ARNs] in the *Additional EKS administrator ARNs (IAM users or roles)* parameter. Specify your and other's IAM entity ARNs in a comma-delimited list. Any IAM entity ARNs in this parameter can access the EKS cluster after the deployment. 
 
 You might need to start the boot node to connect to the EKS cluster. 
-
 
 ==== Kubernetes CLI
 
