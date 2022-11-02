@@ -146,23 +146,23 @@ Resources:
           #!/bin/bash
           aws s3 cp ${QSS3CodeLocation} . --recursive
 
-          echo "BOOTNODE_INSTANCE_ID=${BootNodeInstanceId}" > scripts/ibm-liberty-parameters.properties
-          echo "Install_Log_Location=/tmp/install.log" >> scripts/ibm-liberty-parameters.properties
-          echo "APPLICATION_DEPLOY='${DeployApp}'" >> scripts/ibm-liberty-parameters.properties
+          echo "APPLICATION_DEPLOY='${DeployApp}'" > scripts/ibm-liberty-parameters.properties
           echo "APPLICATION_IMAGE_URL=${AppContainerImageURL}" >> scripts/ibm-liberty-parameters.properties
-          echo "APPLICATION_NAME=${AppName}" >> scripts/ibm-liberty-parameters.properties
           echo "APPLICATION_NAMESPACE=${AppNamespace}" >> scripts/ibm-liberty-parameters.properties
+          echo "APPLICATION_NAME=${AppName}" >> scripts/ibm-liberty-parameters.properties
           echo "APPLICATION_REPLICAS=${AppReplicas}" >> scripts/ibm-liberty-parameters.properties
           echo "AWS_DEFAULT_REGION=${AWS::Region}" >> scripts/ibm-liberty-parameters.properties
+          echo "BOOTNODE_INSTANCE_ID=${BootNodeInstanceId}" >> scripts/ibm-liberty-parameters.properties
+          echo "BOOTNODE_USER=${BootNodeUser}" >> scripts/ibm-liberty-parameters.properties
+          echo "CLOUDWATCH_INSTALL_LOGS=https://${AWS::Region}.console.aws.amazon.com/cloudwatch/home?region=${AWS::Region}#logsV2:log-groups/log-group/${MainStackName}" >> scripts/ibm-liberty-parameters.properties
+          echo "EKS_ADMIN_USER_ARNS='${AdditionalEKSAdminArns}'" >> scripts/ibm-liberty-parameters.properties
           echo "EKS_CLUSTER_NAME=${EKSClusterName}" >> scripts/ibm-liberty-parameters.properties
+          echo "INSTALL_LOG_LOCATION=/tmp/install.log" >> scripts/ibm-liberty-parameters.properties
           echo "LAUNCH_TYPE=${LaunchType}" >> scripts/ibm-liberty-parameters.properties
           echo "LICENSE_EDITION='${LicenseEdition}'" >> scripts/ibm-liberty-parameters.properties
           echo "LICENSE_ENTITLEMENT='${LicenseProductEntitlementSource}'" >> scripts/ibm-liberty-parameters.properties
-          echo "EKS_ADMIN_USER_ARNS='${AdditionalEKSAdminArns}'" >> scripts/ibm-liberty-parameters.properties
+          echo "MAIN_STACK_NAME=${MainStackName}" >> scripts/ibm-liberty-parameters.properties
           echo "WORKLOAD_STACK_NAME='${AWS::StackName}'" >> scripts/ibm-liberty-parameters.properties
-          echo "MainStackName=${MainStackName}" >> scripts/ibm-liberty-parameters.properties
-          echo "BootNodeUser=${BootNodeUser}" >> scripts/ibm-liberty-parameters.properties
-          echo "CloudWatchInstallLogs=https://${AWS::Region}.console.aws.amazon.com/cloudwatch/home?region=${AWS::Region}#logsV2:log-groups/log-group/${MainStackName}" >> scripts/ibm-liberty-parameters.properties
 
           chmod 755 ./scripts/*.sh
           echo > install.log
@@ -282,6 +282,12 @@ Outputs:
   CloudWatchInstallLogs:
     Description: Cloud Watch Install Logs
     Value: !Join ["",["https://", !Ref "AWS::Region",".console.aws.amazon.com/cloudwatch/home?region=",!Ref "AWS::Region","#logsV2:log-groups/log-group/", !Ref "MainStackName"]]
-  OutputProperties:
-    Description: Output Properties
-    Value: !Join ["",["https://", !Ref "AWS::Region",".console.aws.amazon.com/cloudwatch/home?region=",!Ref "AWS::Region","#logsV2:log-groups/log-group/", !Ref "MainStackName","/log-events/output-properties"]]
+  DeploymentProperties:
+    Description: Deployment Properties
+    Value: !Join ["",["https://", !Ref "AWS::Region",".console.aws.amazon.com/cloudwatch/home?region=",!Ref "AWS::Region","#logsV2:log-groups/log-group/", !Ref "MainStackName","/log-events/deployment.properties"]]
+  LibertyAppDeployYaml:
+    Description: CR (Custom Resource) to deploy for WebSphereLibertyApplication
+    Value: !Join ["",["https://", !Ref "AWS::Region",".console.aws.amazon.com/cloudwatch/home?region=",!Ref "AWS::Region","#logsV2:log-groups/log-group/", !Ref "MainStackName","/log-events/ibm-liberty-app-deploy.yaml"]]
+  LibertyAppDeployServiceYaml:
+    Description: CR (Custom Resource) to enable HTTPS access to the WebSphereLibertyApplication
+    Value: !Join ["",["https://", !Ref "AWS::Region",".console.aws.amazon.com/cloudwatch/home?region=",!Ref "AWS::Region","#logsV2:log-groups/log-group/", !Ref "MainStackName","/log-events/ibm-liberty-app-deploy-service.yaml"]]

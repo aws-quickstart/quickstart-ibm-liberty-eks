@@ -44,58 +44,7 @@ Parameters:
     MaxLength: 250
     AllowedPattern: (?:[a-z0-9]+(?:[._-][a-z0-9]+)*/)*[a-z0-9]+(?:[._-][a-z0-9]+)*
     ConstraintDescription: The name must start with a letter and can only contain lowercase letters, numbers, hyphens, underscores, periods and forward slashes.
-Mappings:
-  AWSAMIRegionMap:
-    af-south-1:
-      AMZNLINUX2: ami-0936d2754993c364e
-    ap-northeast-1:
-      AMZNLINUX2: ami-0ca38c7440de1749a
-    ap-northeast-2:
-      AMZNLINUX2: ami-0f2c95e9fe3f8f80e
-    ap-northeast-3:
-      AMZNLINUX2: ami-06e9ad0943b200859
-    ap-south-1:
-      AMZNLINUX2: ami-010aff33ed5991201
-    ap-southeast-1:
-      AMZNLINUX2: ami-02f26adf094f51167
-    ap-southeast-2:
-      AMZNLINUX2: ami-0186908e2fdeea8f3
-    ca-central-1:
-      AMZNLINUX2: ami-0101734ab73bd9e15
-    eu-central-1:
-      AMZNLINUX2: ami-043097594a7df80ec
-    me-south-1:
-      AMZNLINUX2: ami-0880769bc15eeec4f
-    ap-east-1:
-      AMZNLINUX2: ami-0aca22cb23f122f27
-    eu-north-1:
-      AMZNLINUX2: ami-050fdc53cf6ba8f7f
-    eu-south-1:
-      AMZNLINUX2: ami-0f447354763f0eaac
-    eu-west-1:
-      AMZNLINUX2: ami-063d4ab14480ac177
-    eu-west-2:
-      AMZNLINUX2: ami-06dc09bb8854cbde3
-    eu-west-3:
-      AMZNLINUX2: ami-0b3e57ee3b63dd76b
-    sa-east-1:
-      AMZNLINUX2: ami-05373777d08895384
-    us-east-1:
-      AMZNLINUX2: ami-0d5eff06f840b45e9
-    us-gov-west-1:
-      AMZNLINUX2: ami-0bbf3595bb2fb39ec
-    us-gov-east-1:
-      AMZNLINUX2: ami-0cc17d57bec8c6017
-    us-east-2:
-      AMZNLINUX2: ami-077e31c4939f6a2f3
-    us-west-1:
-      AMZNLINUX2: ami-04468e03c37242e1e
-    us-west-2:
-      AMZNLINUX2: ami-0cf6f5c8a62fa5da6
-    cn-north-1:
-      AMZNLINUX2: ami-0c52e2685c7218558
-    cn-northwest-1:
-      AMZNLINUX2: ami-05b9b6d6acf8ae9b6
+
 Resources:
   BootNodeProfile:
     Type: AWS::IAM::InstanceProfile
@@ -151,7 +100,7 @@ Resources:
                   ClusterName: !Ref EKSClusterName
 
     Properties:
-      ImageId: !FindInMap [AWSAMIRegionMap, !Ref "AWS::Region", AMZNLINUX2]
+      ImageId: !GetAtt GetLatestAL2AMI.Id
       InstanceType: t2.micro
       IamInstanceProfile: !Ref BootNodeProfile
       SubnetId: !Ref PublicSubnet1ID
@@ -164,6 +113,78 @@ Resources:
             #!/bin/bash
             /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource BootNode --configsets Required --region ${AWS::Region}
             /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource BootNode --region ${AWS::Region}
+
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - !Sub arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Path: /
+      Policies:
+        - PolicyName: IBMLibertySSMGetParameterAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ssm:GetParameter
+                Resource: 
+                  - !Sub arn:${AWS::Partition}:ssm:${AWS::Region}::parameter/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2
+
+  GetLatestAL2AMILambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        ZipFile: |
+          import boto3
+          import cfnresponse
+          import os
+          import traceback
+          import time
+
+          def handler(event, context):
+              try:
+                response_data = {}
+
+                if event['RequestType'] == 'Create':
+                  parameter_name = '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2'
+                  region = os.environ['Region']
+
+                  print(f"Getting the most recent Amazon Linux 2 AMI ID for region {region} ({parameter_name})")
+
+                  ssm = boto3.client('ssm', region_name=region)
+                  response = ssm.get_parameter(Name=parameter_name)
+
+                  latest_ami_id = response['Parameter']['Value']
+                  print(f"Latest AMI ID is {latest_ami_id}")
+
+                  response_data['Id'] = latest_ami_id
+
+                cfnresponse.send(event, context, cfnresponse.SUCCESS, response_data, '')
+
+              except Exception as e:
+                print(e)
+                traceback.print_exc()
+                cfnresponse.send(event, context, cfnresponse.FAILED, {}, '')
+      Environment:
+        Variables:
+          Region: !Ref AWS::Region
+      Handler: index.handler
+      Role: !GetAtt 'LambdaExecutionRole.Arn'
+      Runtime: python3.7
+      Timeout: 900
+
+  GetLatestAL2AMI:
+    Type: Custom::GetLatestAL2AMI
+    Properties:
+      ServiceToken: !GetAtt 'GetLatestAL2AMILambda.Arn'
 Outputs:
   InstanceId:
     Description: The instance ID of the boot node

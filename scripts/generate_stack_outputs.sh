@@ -16,12 +16,10 @@ source $CUR_DIR/ibm-liberty-parameters.properties
 echo "Generating stack outputs..."
 
 WLO_VERSION="$(kubectl get subscription ibm-websphere-liberty -n operators -o=jsonpath='{.status.installedCSV}' | grep --color=never -o '[0-9]\.[0-9]\.[0-9]')"
-VPC_ID="$(eksctl get cluster --region ${AWS_DEFAULT_REGION} --name ${EKS_CLUSTER_NAME} -o json | jq -r '.[0].ResourcesVpcConfig.VpcId')"
 
 cat <<EOF > $CUR_DIR/stack-outputs.properties
 AppEndpoint=${APPLICATION_ENDPOINT_URL}
 WLOVersion=${WLO_VERSION}
-ClusterVpcId=${VPC_ID}
 EOF
 
 echo "Stack outputs:"

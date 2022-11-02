@@ -18,7 +18,7 @@ source $CUR_DIR/ibm-liberty-parameters.properties
 
 echo
 echo Setting up CloudWatch logs
-echo MainStackName : ${MainStackName}
+echo MAIN_STACK_NAME : ${MAIN_STACK_NAME}
 
 # Execute yum update
 sudo yum update -y
@@ -30,28 +30,40 @@ sleep 10s
 cat <<EOF > /tmp/scripts/config.json
 {
         "agent": {
-                "run_as_user": "${BootNodeUser}"
+                "run_as_user": "${BOOTNODE_USER}"
         },
         "logs": {
                 "logs_collected": {
                         "files": {
                           "collect_list": [
                                    {
-                                           "file_path": "${Install_Log_Location}",
-                                           "log_group_name": "${MainStackName}",
-                                           "log_stream_name": "install-log",
+                                           "file_path": "${INSTALL_LOG_LOCATION}",
+                                           "log_group_name": "${MAIN_STACK_NAME}",
+                                           "log_stream_name": "install.log",
                                            "retention_in_days": -1
                                    },
                                    {
                                            "file_path": "/tmp/eksctl.log",
-                                           "log_group_name": "${MainStackName}",
-                                           "log_stream_name": "eksctl-log",
+                                           "log_group_name": "${MAIN_STACK_NAME}",
+                                           "log_stream_name": "eksctl.log",
                                            "retention_in_days": -1
                                    },
                                    {
-                                           "file_path": "/tmp/output.properties",
-                                           "log_group_name": "${MainStackName}",
-                                           "log_stream_name": "output-properties",
+                                           "file_path": "/tmp/deployment.properties",
+                                           "log_group_name": "${MAIN_STACK_NAME}",
+                                           "log_stream_name": "deployment.properties",
+                                           "retention_in_days": -1
+                                   },
+                                   {
+                                           "file_path": "/tmp/ibm-liberty-app-deploy.yaml",
+                                           "log_group_name": "${MAIN_STACK_NAME}",
+                                           "log_stream_name": "ibm-liberty-app-deploy.yaml",
+                                           "retention_in_days": -1
+                                   },
+                                   {
+                                           "file_path": "/tmp/ibm-liberty-app-deploy-service.yaml",
+                                           "log_group_name": "${MAIN_STACK_NAME}",
+                                           "log_stream_name": "ibm-liberty-app-deploy-service.yaml",
                                            "retention_in_days": -1
                                    }
                            ]
@@ -65,8 +77,13 @@ sudo cp /tmp/scripts/config.json /opt/aws/amazon-cloudwatch-agent/bin/config.jso
 
 sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c file:/opt/aws/amazon-cloudwatch-agent/bin/config.json
 
-# Trigger CloudWatch logs for create EKS Cluster log.
+# Trigger CloudWatch agent to watch files to be sent to CloudWatch logs.
 sleep 5s
 sudo mv /tmp/eksctl.log /tmp/eksctl.log.tmp
 sudo cat /tmp/eksctl.log.tmp > /tmp/eksctl.log
-sudo cp /tmp/scripts/ibm-liberty-parameters.properties /tmp/output.properties
+sudo cat /tmp/scripts/ibm-liberty-parameters.properties | sort > /tmp/deployment.properties
+
+# The app-deploy and -service YAML definitions are copied over empty
+# to enable the customer to view and use these templates as-is
+sudo cp /tmp/scripts/templates/ibm-liberty-app-deploy.yaml /tmp
+sudo cp /tmp/scripts/templates/ibm-liberty-app-deploy-service.yaml /tmp

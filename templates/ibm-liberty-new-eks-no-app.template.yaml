@@ -13,7 +13,6 @@ Metadata:
           - EKSClusterName
           - SetupNewECR
           - AdditionalEKSAdminArns
-          - NumberOfAZs
           - AvailabilityZones
       - Label:
           default: AWS Quick Start configuration
@@ -34,11 +33,9 @@ Metadata:
         default: Additional EKS administrator ARNs (IAM users or roles)
       SetupNewECR:
         default: Set up new private ECR
-      NumberOfAZs:
-        default: Number of AZs
       AvailabilityZones:
         default: Availability zones
-      
+
 
 Parameters:
   EKSClusterName:
@@ -52,7 +49,7 @@ Parameters:
     Type: String
     AllowedValues: ["Yes", "No"]
     Default: "Yes"
-    Description: Set up a new private ECR? If Yes, a new ECR is set up with the name <EKS cluster name>-ecr. Default is Yes.
+    Description: If Yes, a new ECR is set up with the name <EKS cluster name>-ecr.
   QSS3BucketName:
     Type: String
     Description: Name of the S3 bucket for your copy of the Quick Start assets.
@@ -94,20 +91,13 @@ Parameters:
   AdditionalEKSAdminArns:
     Default: ""
     Description: >-
-      Provide your own IAM user ARN to be granted administrative access to the new EKS cluster. 
-      To grant access to additional users or roles, provide a comma-delimited list of ARNs. 
-      For example, to grant access to yourself and another user, use "arn:aws:iam::012345678910:user/myid@example.com, 
+      One or more IAM user or role ARNs to be granted administrative access to the new EKS cluster.
+      Use a comma-delimited list for multiple ARNs.
+      For example, "arn:aws:iam::012345678910:user/myid@example.com,
       arn:aws:iam::012345678910:user/otherid@example.com".
     Type: String
-  NumberOfAZs:
-    AllowedValues:
-      - '3'
-    Default: '3'
-    Description: >-
-      Number of Availability Zones used for the deployment.
-    Type: String
   AvailabilityZones:
-    Description: The list of Availability Zones to use for the subnet in the VPC. The Quick Start uses three Availability Zones.
+    Description: Availability Zones to use for the subnet in the new VPC. You must select 3 Availability Zones.
     Type: List<AWS::EC2::AvailabilityZone::Name>
 
 Conditions:
@@ -134,7 +124,7 @@ Resources:
           S3Region: !If [ UsingDefaultBucket, !Ref AWS::Region, !Ref QSS3BucketRegion ]
       Parameters:
         AvailabilityZones: !Join [ ',', !Ref AvailabilityZones ]
-        NumberOfAZs: !Ref NumberOfAZs
+        NumberOfAZs: 3
         PrivateSubnetATag2: "kubernetes.io/role/internal-elb="
         PublicSubnetTag2: "kubernetes.io/role/elb="
 
@@ -236,6 +226,12 @@ Outputs:
   OutputProperties:
     Description: Output properties
     Value: !GetAtt IBMLibertyWorkloadStack.Outputs.OutputProperties
+  LibertyAppDeployYaml:
+    Description: CR (Custom Resource) to deploy for WebSphereLibertyApplication
+    Value: !GetAtt IBMLibertyWorkloadStack.Outputs.LibertyAppDeployYaml
+  LibertyAppDeployServiceYaml:
+    Description: CR (Custom Resource) to enable HTTPS access to the WebSphereLibertyApplication
+    Value: !GetAtt IBMLibertyWorkloadStack.Outputs.LibertyAppDeployServiceYaml        
   WLOVersion:
     Description: The installed version of WebSphere Liberty Operator
     Value: !GetAtt IBMLibertyWorkloadStack.Outputs.WLOVersion
