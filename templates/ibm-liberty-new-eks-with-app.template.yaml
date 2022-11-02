@@ -320,9 +320,9 @@ Outputs:
   CloudWatchInstallLogs:
     Description: Installation logs (in CloudWatch)
     Value: !GetAtt IBMLibertyWorkloadStack.Outputs.CloudWatchInstallLogs
-  OutputProperties:
+  DeploymentProperties:
     Description: Output properties
-    Value: !GetAtt IBMLibertyWorkloadStack.Outputs.OutputProperties
+    Value: !GetAtt IBMLibertyWorkloadStack.Outputs.DeploymentProperties
   LibertyAppDeployYaml:
     Description: CR (Custom Resource) to deploy for WebSphereLibertyApplication
     Value: !GetAtt IBMLibertyWorkloadStack.Outputs.LibertyAppDeployYaml
