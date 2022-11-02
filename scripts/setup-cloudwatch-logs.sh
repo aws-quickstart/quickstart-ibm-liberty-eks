@@ -3,14 +3,12 @@
 # * IBM Confidential
 # * OCO Source Materials
 # *
-# * Copyright IBM Corp. 2020, 2021
+# * Copyright IBM Corp. 2022
 # *
 # * The source code for this program is not published or otherwise
 # * divested of its trade secrets, irrespective of what has been
 # * deposited with the U.S. Copyright Office.
 # *********************************************************************
-# Venu Beyagudem
-# Websphere Liberty Operator on AWS
 set -o pipefail
 CUR_DIR="$(cd $(dirname $0) && pwd)"
 echo CUR_DIR=${CUR_DIR}
