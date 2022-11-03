@@ -14,7 +14,7 @@ Review frequently asked questions for this Quick Start.
 * <<#_how_do_i_recover_from_a_failed_stack>>
 
 .{partner-product-short-name} Operator FAQs
-* <<#_what_deployments_are_in_a_successful_deployment>>
+* <<#_what_deployments_are_in_a_successful_installation>>
 * <<#_where_is_more_information_about_websphere_liberty_operator>>
 
 === General
@@ -25,9 +25,11 @@ The steps to connect to the cluster depend on whether you use the boot node.
 
 ===== With the boot node
 
-. Find the boot node.
+. Go to the boot node. The boot node is linked to from the **Resources** tab of the boot node stack. The node ID is listed in **Outputs** of the main stack.
 . Start the boot node.
-. Connect to the EKS cluster.
+. Enable SSH to the boot node. Add a rule to the VPC security group that permits inbound traffic on port 22.
+. Connect to the boot node with SSH or EC2 Instance Connect in your browser.
+. Use `kubectl` commands to manage your cluster.
 
 ===== Without the boot node
 
@@ -47,7 +49,6 @@ For example, run `kubectl get pods` and confirm that the output messages show a 
 +
 ----
 $ kubectl get pods
-error: You must be logged in to the server (Unauthorized)
 ----
 +
 An `Unauthorized` error means that your IAM user or role was not granted access to the cluster. To gain access to the cluster, provide your IAM user ARN in the _AdditionalEKSAdminArns_ parameter of the stack.
@@ -56,12 +57,12 @@ If needed, ask the creator of the EKS cluster to grant access by adding your IAM
 
 . Get the ARN of the IAM entity to which you want to grant cluster access.
 +
-* Example ARN for a role: `arn:aws:iam::439159788015:role/some-role`
-* Example ARN for a user: `arn:aws:iam::439159788015:user/user@ibm.com`
+* Example user ARN: `arn:aws:iam::123456789012:user/user@example.com`
+* Example role ARN: `arn:aws:iam::123456789012:role/some-role`
 . Run the `eksctl` command to create a mapping for that IAM entity in the `aws-auth` ConfigMap.
 +
 ----
-eksctl create iamidentitymapping --cluster "<cluster_name>" --region "<cluster_region>" --arn
+eksctl create iamidentitymapping --cluster "<cluster_name>" --region "<cluster_region>" --arn "<arn>"
 ----
 
 
@@ -75,15 +76,15 @@ During or after deployment, and even after a failed deployment, you can view log
 . On the Log groups page, enter the stack name in the search bar.
 . From the *Log streams* tab of the log group details, select the log stream to view.
 
-After deployment, you can also view log streams from the stack *Outputs* tab in the CloudWatch console.
+After deployment, you can also view log streams from the *Outputs* tab for your CloudFormation stack.
 
-. Click the *Outputs* tab for your stack.
+. Click the *Outputs* tab for your main stack.
 . Click the value of the _CloudWatchInstallLogs_ key.
 . From the *Log streams* tab of the log group details, select the output logs.
 
 ===== Lambda function logs
 
-Lambda function logs are at `/aws/lambda/` and have the file path `/aws/lambda/<name_of_lambda_resource>`, for example, `/aws/lambda/test-IBMLiberty-CleanUpLambda-68vc5iStYCJa`.
+Lambda function logs are at `/aws/lambda/` and have the file path `/aws/lambda/<name_of_lambda_resource>`.
 
 You can view Lambda function logs in CloudWatch. 
 
@@ -91,9 +92,11 @@ You can view Lambda function logs in CloudWatch.
 . Click the *Monitor* tab.
 . Click *View logs in CloudWatch*. 
 
+Nested stacks such as _IBMLibertyBootNodeStack_, _IBMLibertyEKSClusterStack_, and _IBMLibertyWorkloadStack_ have a Lambda function.
+
 ===== SSM logs
 
-SSM logs are on the boot node at `/var/log/amazon/ssm/.
+SSM logs are on the boot node at `/var/log/amazon/ssm/`.
 
 
 ==== How do I get information about my deployment?
@@ -103,29 +106,10 @@ To get information about {partner-product-short-name} Operator and any deployed 
 $ kubectl get deployments
 ----
 
-For stack outputs, go to the stack *Outputs* tab in the https://console.aws.amazon.com/cloudwatch/[CloudWatch console].
+For stack outputs, go to the *Outputs* tab for your CloudFormation stack or to the CloudWatch console.
 
-The CloudWatch `output.properties` file provides the deployment properties. The following example properties are for a deployment with the sample application, with `Standalone` entitlement from a license to the `IBM WebSphere Application Server` product edition.
+The CloudWatch `deployment.properties` file lists the deployment properties.
 
-----
-BOOTNODE_INSTANCE_ID=i-0259993b763ee9631
-Install_Log_Location=/tmp/install.log
-APPLICATION_DEPLOY='Sample'
-APPLICATION_IMAGE_URL=icr.io/appcafe/open-liberty/samples/getting-started
-APPLICATION_NAME=websphereliberty-app-sample
-APPLICATION_NAMESPACE=default
-APPLICATION_REPLICAS=1
-AWS_DEFAULT_REGION=us-west-2
-EKS_CLUSTER_NAME=taskcat-was-on-aws-fvt-1
-LAUNCH_TYPE=EC2
-LICENSE_EDITION='IBM WebSphere Application Server'
-LICENSE_ENTITLEMENT='Standalone'
-EKS_ADMIN_USER_ARNS=''
-WORKLOAD_STACK_NAME='tCaT-taskcat-was-on-aws-fvt-1-4db324b417e4471abd7872e8dde27d3d-IBMLibertyWorkloadStack-1H0JWZG5CL24T'
-MainStackName=tCaT-taskcat-was-on-aws-fvt-1-4db324b417e4471abd7872e8dde27d3d
-BootNodeUser=ec2-user
-CloudWatchInstallLogs=https://us-west-2.console.aws.amazon.com/cloudwatch/home?region=us-west-2#logsV2:log-groups/log-group/tCaT-taskcat-was-on-aws-fvt-1-4db324b417e4471abd7872e8dde27d3d
-----
 
 ==== How do I recover from a failed stack?
 
@@ -137,11 +121,13 @@ Stack deletion might fail due to timeouts or resource dependencies. Try to delet
 === {partner-product-short-name} Operator
 
 
-==== What deployments are in a successful deployment?
+==== What deployments are in a successful installation?
 
 The `kubectl get deployments` command lists the deployments. The application name and its namespace depend on your input. If you did not deploy an application, then no application or cert-manager deployments are in your list.
 
 ----
+$ kubectl get deployments -A
+
 NAMESPACE    NAME
 
 default      websphereliberty-app-sample
@@ -166,7 +152,7 @@ See the {partner-product-short-name} Operator documentation.
 
 == Customer support
 
-For {partner-product-short-name} Operator issues, open a Support Ticket with IBM Support and add information that can help IBM Support troubleshoot and fix the problem.
+For {partner-product-short-name} issues, open a Support Ticket with IBM Support and add information that can help IBM Support troubleshoot and fix the problem.
 
 . Click *Open a case* on the https://www.ibm.com/mysupport/s/topic/0TO500000001DQQGA2/websphere-application-server[WebSphere Application Server support] or https://www.ibm.com/mysupport/s/[Let's troubleshoot] page.
 . Add information that can help IBM Support determine the cause of the error.
