@@ -3,9 +3,9 @@
 :partner-product-name: IBM WebSphere Liberty for Amazon EKS
 :partner-product-short-name: WebSphere Liberty
 :partner-company-name: IBM
-:doc-month: October
+:doc-month: December
 :doc-year: 2022
-:partner-contributors: Ranjan Kumar, Venu Beyagudem, Paul Baity, and Pam Helyar, {partner-company-name}
+:partner-contributors: Ranjan Kumar, Venu Beyagudem, Paul Baity, Jarek Gawor, Barbara Jones, and Pam Helyar, {partner-company-name}
 // :other-contributors: Akua Mansa, Trek10
 :aws-contributors: Senthil Nagaraj, AWS Partner team
 :aws-ia-contributors: Troy Lindsay and Vinod Shukla, AWS Integration & Automation team
