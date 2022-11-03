@@ -16,7 +16,7 @@ As shown in <<architecture1>>, this Quick Start sets up the following:
 ** Managed network address translation (NAT) gateways to allow outbound internet access for resources in the private subnets.
 ** One Availability Zone has a boot node, Amazon Elastic Compute Cloud (Amazon EC2), to access the Amazon EKS cluster.
 * In the private subnets:
-** An EKS cluster with an application pod, WebSphere Liberty Operator, certificate manager, and Operator Lifecycle Manager.
+** An EKS cluster with an application pod, WebSphere Liberty Operator, certificate manager, and https://olm.operatorframework.io/[Operator Lifecycle Manager].
 ** Auto Scaling enabled for the EKS cluster to automatically add or remove servers based on their use, providing additional servers during peak hours and lowering costs by removing servers during off hours. The default installation sets up CPU-based thresholds for scaling the instance capacity up or down. You can modify these thresholds after deployment.
 // Add bullet points for any additional components that are included in the deployment. Ensure that the additional components are shown in the architecture diagram. End each bullet with a period.
 * Amazon CloudWatch to monitor and track metrics for your AWS resources and applications.
