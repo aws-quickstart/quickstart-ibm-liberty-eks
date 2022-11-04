@@ -1,3 +1,55 @@
 //Include any predeployment steps here, such as signing up for a Marketplace AMI or making any changes to a partner account. If there are no predeployment steps, leave this file empty.
 
 == Predeployment steps
+
+Before you launch the Quick Start, see the https://fwd.aws/rA69w?[AWS Quick Start General Information Guide]. You need an AWS account, IAM permissions, and familiarity with AWS services and the AWS CLI.
+
+Also, complete the following predeployment steps.
+
+=== Existing license
+
+Confirm that you have a valid license to use {partner-product-short-name}. See <<#_costs_and_licenses>>.
+
+
+=== Resource quotas
+
+This deployment uses the resource quotas in <<#_table1>>. If necessary, request https://console.aws.amazon.com/servicequotas[service quota increases].
+
+[#_table1]
+.Deployment resource quotas
+[cols="1,1"]
+|===
+|Resource |This deployment uses
+
+// Space needed to maintain table headers
+|VPCs | 1
+|VPC subnets | 4
+|Elastic IP addresses | 1
+|Security groups | 3
+|AWS Identity and Access Management (IAM) roles | 4
+|Classic Load Balancer | 1
+|EC2 Instance, t2.micro | 1
+|EC2 Instance, m5.large | 2
+|ECR repositories | 1
+|SSM associations | 2
+|Lambda functions | 2
+|EKS clusters | 1
+|===
+
+
+=== Other considerations
+
+Before deployment, you might consider the IAM users or roles to make administrators of the EKS cluster, and get the Kubernetes CLI to manage your cluster from the command line.
+
+==== EKS cluster access
+
+By default, you can access the EKS cluster from the boot node only. To enable direct access to the EKS cluster, provide a list of IAM entity ARNs in the *Additional EKS administrator ARNs (IAM users or roles)* parameter. Specify your and other's IAM entity ARNs in a comma-delimited list. Any IAM entity ARNs in this parameter can access the EKS cluster after the deployment. 
+
+For more information, see the <<#_how_do_i_connect_to_the_eks_cluster>> FAQ.
+
+==== Kubernetes CLI
+
+Download and configure the https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html[Kubernetes command-line interface (CLI)] so that you can manage deployed applications and resources with `kubectl` commands.
+
+[TIP]
+To monitor progress during deployment, view <<#_cloudwatch_log_streams>>.
