@@ -23,7 +23,6 @@ sudo yum update -y
 
 # Install amazon-cloudwatch-agent
 sudo yum install amazon-cloudwatch-agent -y
-sleep 10s
 
 cat <<EOF > /tmp/scripts/config.json
 {
@@ -76,7 +75,6 @@ sudo cp /tmp/scripts/config.json /opt/aws/amazon-cloudwatch-agent/bin/config.jso
 sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c file:/opt/aws/amazon-cloudwatch-agent/bin/config.json
 
 # Trigger CloudWatch agent to watch files to be sent to CloudWatch logs.
-sleep 5s
 sudo mv /tmp/eksctl.log /tmp/eksctl.log.tmp
 sudo cat /tmp/eksctl.log.tmp > /tmp/eksctl.log
 sudo cat /tmp/scripts/ibm-liberty-parameters.properties | sort > /tmp/deployment.properties

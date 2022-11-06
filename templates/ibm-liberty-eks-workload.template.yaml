@@ -280,10 +280,10 @@ Outputs:
     Description: EKS Cluster name
     Value: !Ref EKSClusterName
   CloudWatchInstallLogs:
-    Description: Cloud Watch Install Logs
+    Description: CloudWatch Install Logs
     Value: !Join ["",["https://", !Ref "AWS::Region",".console.aws.amazon.com/cloudwatch/home?region=",!Ref "AWS::Region","#logsV2:log-groups/log-group/", !Ref "MainStackName"]]
   DeploymentProperties:
-    Description: Deployment Properties
+    Description: Deployment properties
     Value: !Join ["",["https://", !Ref "AWS::Region",".console.aws.amazon.com/cloudwatch/home?region=",!Ref "AWS::Region","#logsV2:log-groups/log-group/", !Ref "MainStackName","/log-events/deployment.properties"]]
   LibertyAppDeployYaml:
     Description: CR (Custom Resource) to deploy for WebSphereLibertyApplication

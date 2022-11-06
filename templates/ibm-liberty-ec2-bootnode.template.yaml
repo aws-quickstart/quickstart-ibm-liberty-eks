@@ -16,26 +16,17 @@ Parameters:
   PublicSubnet2ID:
     Description: The ID of the public subnet in Availability Zone 2 for the EKS cluster (for example, "subnet-9bc642ac").
     Type: String
-  PublicSubnet3ID:
-    Description: The ID of the public subnet in Availability Zone 3 for the EKS cluster (for example, "subnet-9bc642ac").
-    Type: String
   PrivateSubnet1ID:
     Description: The ID of the private subnet in Availability Zone 1 for the EKS cluster (for example, "subnet-9bc642ac").
     Type: String
   PrivateSubnet2ID:
     Description: The ID of the private subnet in Availability Zone 2 for the EKS cluster (for example, "subnet-9bc642ac").
     Type: String
-  PrivateSubnet3ID:
-    Description: The ID of the private subnet in Availability Zone 3 for the EKS cluster (for example, "subnet-9bc642ac").
-    Type: String
   AvailabilityZone1:
     Description: The name of the Availability Zone 1 for the EKS cluster (for example, "ca-central-1a").
     Type: String
   AvailabilityZone2:
     Description: The name of the Availability Zone 2 for the EKS cluster (for example, "ca-central-1b").
-    Type: String
-  AvailabilityZone3:
-    Description: The name of the Availability Zone 3 for the EKS cluster (for example, "ca-central-1d").
     Type: String
   EKSClusterName:
     Type: String
@@ -78,11 +69,9 @@ Resources:
                       private:
                         ${AZ1}: { id: ${PrivateSubnet1ID} }
                         ${AZ2}: { id: ${PrivateSubnet2ID} }
-                        ${AZ3}: { id: ${PrivateSubnet3ID} }
                       public:
                         ${AZ1}: { id: ${PublicSubnet1ID} }
                         ${AZ2}: { id: ${PublicSubnet2ID} }
-                        ${AZ3}: { id: ${PublicSubnet3ID} }
                   nodeGroups:
                     - name: ng-1-workers
                       labels: { role: workers }
@@ -90,13 +79,10 @@ Resources:
                       desiredCapacity: 2
                 - AZ1: !Ref AvailabilityZone1
                   AZ2: !Ref AvailabilityZone2
-                  AZ3: !Ref AvailabilityZone3
                   PrivateSubnet1ID: !Ref PrivateSubnet1ID
                   PrivateSubnet2ID: !Ref PrivateSubnet2ID
-                  PrivateSubnet3ID: !Ref PrivateSubnet3ID
                   PublicSubnet1ID: !Ref PublicSubnet1ID
                   PublicSubnet2ID: !Ref PublicSubnet2ID
-                  PublicSubnet3ID: !Ref PublicSubnet3ID
                   ClusterName: !Ref EKSClusterName
 
     Properties:

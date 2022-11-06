@@ -64,11 +64,11 @@ Metadata:
       SetupNewECR:
         default: Private ECR
       AvailabilityZones:
-        default: Availability zones
+        default: Availability zones*
 
 Parameters:
   AvailabilityZones:
-    Description: Availability Zones to use for the subnet in the new VPC. You must select 3 Availability Zones.
+    Description: Availability Zones to use for the subnet in the new VPC. You must select 2 Availability Zones.
     Type: List<AWS::EC2::AvailabilityZone::Name>
   AcceptLicense:
     Type: String
@@ -209,7 +209,7 @@ Resources:
           S3Region: !If [ UsingDefaultBucket, !Ref AWS::Region, !Ref QSS3BucketRegion ]
       Parameters:
         AvailabilityZones: !Join [ ',', !Ref AvailabilityZones ]
-        NumberOfAZs: 3
+        NumberOfAZs: 2
         PrivateSubnetATag2: "kubernetes.io/role/internal-elb="
         PublicSubnetTag2: "kubernetes.io/role/elb="
 
@@ -226,13 +226,10 @@ Resources:
         EKSClusterName: !Ref EKSClusterName
         PublicSubnet1ID: !GetAtt 'IBMLibertyVPCStack.Outputs.PublicSubnet1ID'
         PublicSubnet2ID: !GetAtt 'IBMLibertyVPCStack.Outputs.PublicSubnet2ID'
-        PublicSubnet3ID: !GetAtt 'IBMLibertyVPCStack.Outputs.PublicSubnet3ID'
         AvailabilityZone1: !Select [0, !Ref AvailabilityZones]
         AvailabilityZone2: !Select [1, !Ref AvailabilityZones]
-        AvailabilityZone3: !Select [2, !Ref AvailabilityZones]
         PrivateSubnet1ID: !GetAtt 'IBMLibertyVPCStack.Outputs.PrivateSubnet1AID'
-        PrivateSubnet2ID: !GetAtt 'IBMLibertyVPCStack.Outputs.PrivateSubnet3AID'
-        PrivateSubnet3ID: !GetAtt 'IBMLibertyVPCStack.Outputs.PrivateSubnet3AID'
+        PrivateSubnet2ID: !GetAtt 'IBMLibertyVPCStack.Outputs.PrivateSubnet2AID'
 
   IBMLibertyEKSClusterStack:
     Type: 'AWS::CloudFormation::Stack'
@@ -321,7 +318,7 @@ Outputs:
     Description: Installation logs (in CloudWatch)
     Value: !GetAtt IBMLibertyWorkloadStack.Outputs.CloudWatchInstallLogs
   DeploymentProperties:
-    Description: Output properties
+    Description: Deployment properties
     Value: !GetAtt IBMLibertyWorkloadStack.Outputs.DeploymentProperties
   LibertyAppDeployYaml:
     Description: CR (Custom Resource) to deploy for WebSphereLibertyApplication

@@ -112,9 +112,6 @@ if [[ $? != 0 ]]; then
     echo "IBM Operator Catalog failed to install."
     exit 1
 fi
-# TODO remove sleep
-sleep 30s
-kubectl get pods -n olm
 
 separator
 
@@ -122,8 +119,6 @@ separator
 echo "Subscribing for WLO..."
 echo kubectl apply -f $CUR_DIR/templates/wlo_subscription.yaml
 kubectl apply -f $CUR_DIR/templates/wlo_subscription.yaml
-sleep 30s
-kubectl -n operators get csv
 
 wait_for deployment wlo-controller-manager operators
 if [[ $? != 0 ]]; then

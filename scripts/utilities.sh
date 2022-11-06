@@ -23,8 +23,6 @@ wait_for() {
     namespace=${3:-default}
 
     MAX_RETRIES=99
-
-    sleep 10s
     count=0
 
     echo "Waiting for ${type} ${name} to be ready..."
