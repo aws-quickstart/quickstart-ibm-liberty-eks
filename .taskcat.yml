@@ -1,46 +1,34 @@
 project:
   name: quickstart-ibm-liberty-eks
-  owner: quickstart@amazon.com
-  package_lambda: false
   shorten_stack_name: true
-  template: templates/liberty-eks-main.template.yaml
   regions:
-    - af-south-1
-    - ap-east-1
-    - ap-northeast-1
-    - ap-northeast-2
-    - ap-northeast-3
-    - ap-south-1
-    - ap-southeast-1
-    - ap-southeast-2
-    - ap-southeast-3
-    - ca-central-1
-    - eu-central-1
-    - eu-north-1
-    - eu-south-1
-    - eu-west-1
-    - eu-west-2
-    - eu-west-3
-    - me-south-1
-    - sa-east-1
-    - us-east-1
-    - us-east-2
-    - us-west-1
-    - us-west-2
-    - us-gov-east-1
-    - us-gov-west-1
-    - cn-north-1
-    - cn-northwest-1
+  - ca-central-1
+  - eu-west-1
+  package_lambda: false
 tests:
-  liberty-main-3az:
+  liberty-eks-with-app:
+    template: ./templates/ibm-liberty-new-eks-with-app.template.yaml
     parameters:
-      AvailabilityZones: $[taskcat_getaz_3]
-      KeyPairName: $[taskcat_getkeypair]
-      CreateAdditionalPrivateSubnets: 'true'
-      CreatePrivateSubnets: 'true'
-      NumberOfAZs: '3'
+      EKSClusterName: was-cluster-$[taskcat_random-string]
+      SetupNewECR: "Yes"
+      AcceptLicense: "Accept: Proceed with the installation"
+      LicenseEdition: "IBM WebSphere Application Server"
+      LicenseProductEntitlementSource: "Standalone"
+      AppContainerImageURL: icr.io/appcafe/open-liberty/samples/getting-started
       QSS3BucketName: $[taskcat_autobucket]
       QSS3BucketRegion: $[taskcat_current_region]
+      QSS3KeyPrefix: $[taskcat_project_name]/
+      AvailabilityZones: $[taskcat_genaz_2]
     regions:
-      - us-east-1
-      - ap-south-1
+      - ca-central-1      
+  liberty-eks-no-app:
+    template: ./templates/ibm-liberty-new-eks-no-app.template.yaml
+    parameters:
+      EKSClusterName: was-cluster-$[taskcat_random-string]
+      SetupNewECR: "Yes"
+      QSS3BucketName: $[taskcat_autobucket]
+      QSS3BucketRegion: $[taskcat_current_region]
+      QSS3KeyPrefix: $[taskcat_project_name]/
+      AvailabilityZones: $[taskcat_genaz_2]
+    regions:
+      - eu-west-1      

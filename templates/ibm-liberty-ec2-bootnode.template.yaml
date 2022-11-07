@@ -1,0 +1,183 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: This template creates an EC2 instance which is used to run eksctl and kubectl. (qs-1tdrmii5o)
+Metadata:
+  ParameterLabels:
+      RoleName:
+        default: Role name
+Parameters:
+  RoleName:
+    Description: The name of the role to attach to the boot node
+    Type: String
+  BootNodeName:
+    Type: String
+  PublicSubnet1ID:
+    Description: The ID of the public subnet in Availability Zone 1 for the boot node and EKS cluster (for example, "subnet-9bc642ac").
+    Type: String
+  PublicSubnet2ID:
+    Description: The ID of the public subnet in Availability Zone 2 for the EKS cluster (for example, "subnet-9bc642ac").
+    Type: String
+  PrivateSubnet1ID:
+    Description: The ID of the private subnet in Availability Zone 1 for the EKS cluster (for example, "subnet-9bc642ac").
+    Type: String
+  PrivateSubnet2ID:
+    Description: The ID of the private subnet in Availability Zone 2 for the EKS cluster (for example, "subnet-9bc642ac").
+    Type: String
+  AvailabilityZone1:
+    Description: The name of the Availability Zone 1 for the EKS cluster (for example, "ca-central-1a").
+    Type: String
+  AvailabilityZone2:
+    Description: The name of the Availability Zone 2 for the EKS cluster (for example, "ca-central-1b").
+    Type: String
+  EKSClusterName:
+    Type: String
+    Description: Name of the new EKS cluster (length 2-250) (required). The name must start with a letter and contain only lowercase letters, numbers, hyphens, underscores, periods, and forward slashes.
+    MinLength: 2
+    MaxLength: 250
+    AllowedPattern: (?:[a-z0-9]+(?:[._-][a-z0-9]+)*/)*[a-z0-9]+(?:[._-][a-z0-9]+)*
+    ConstraintDescription: The name must start with a letter and can only contain lowercase letters, numbers, hyphens, underscores, periods and forward slashes.
+
+Resources:
+  BootNodeProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - !Ref RoleName
+      Path: /
+  BootNode:
+    Type: AWS::EC2::Instance
+    Metadata:
+      AWS::CloudFormation::Init:
+        configSets:
+          Required:
+            - StackPropertiesFile
+        StackPropertiesFile:
+          files:
+            /tmp/cluster.yaml:
+              mode: '000755'
+              owner: root
+              group: root
+              content:
+                !Sub
+                - |
+                  apiVersion: eksctl.io/v1alpha5
+                  kind: ClusterConfig
+                  metadata:
+                    name: ${ClusterName}
+                    region: ${AWS::Region}
+                  vpc:
+                    subnets:
+                      private:
+                        ${AZ1}: { id: ${PrivateSubnet1ID} }
+                        ${AZ2}: { id: ${PrivateSubnet2ID} }
+                      public:
+                        ${AZ1}: { id: ${PublicSubnet1ID} }
+                        ${AZ2}: { id: ${PublicSubnet2ID} }
+                  nodeGroups:
+                    - name: ng-1-workers
+                      labels: { role: workers }
+                      instanceType: m5.large
+                      desiredCapacity: 2
+                - AZ1: !Ref AvailabilityZone1
+                  AZ2: !Ref AvailabilityZone2
+                  PrivateSubnet1ID: !Ref PrivateSubnet1ID
+                  PrivateSubnet2ID: !Ref PrivateSubnet2ID
+                  PublicSubnet1ID: !Ref PublicSubnet1ID
+                  PublicSubnet2ID: !Ref PublicSubnet2ID
+                  ClusterName: !Ref EKSClusterName
+
+    Properties:
+      ImageId: !GetAtt GetLatestAL2AMI.Id
+      InstanceType: t2.micro
+      IamInstanceProfile: !Ref BootNodeProfile
+      SubnetId: !Ref PublicSubnet1ID
+      Tags:
+        - Key: "Name"
+          Value:  !Ref BootNodeName
+      UserData:
+        Fn::Base64:
+          !Sub |
+            #!/bin/bash
+            /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource BootNode --configsets Required --region ${AWS::Region}
+            /opt/aws/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource BootNode --region ${AWS::Region}
+
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - !Sub arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Path: /
+      Policies:
+        - PolicyName: IBMLibertySSMGetParameterAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ssm:GetParameter
+                Resource: 
+                  - !Sub arn:${AWS::Partition}:ssm:${AWS::Region}::parameter/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2
+
+  GetLatestAL2AMILambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        ZipFile: |
+          import boto3
+          import cfnresponse
+          import os
+          import traceback
+          import time
+
+          def handler(event, context):
+              try:
+                response_data = {}
+
+                if event['RequestType'] == 'Create':
+                  parameter_name = '/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2'
+                  region = os.environ['Region']
+
+                  print(f"Getting the most recent Amazon Linux 2 AMI ID for region {region} ({parameter_name})")
+
+                  ssm = boto3.client('ssm', region_name=region)
+                  response = ssm.get_parameter(Name=parameter_name)
+
+                  latest_ami_id = response['Parameter']['Value']
+                  print(f"Latest AMI ID is {latest_ami_id}")
+
+                  response_data['Id'] = latest_ami_id
+
+                cfnresponse.send(event, context, cfnresponse.SUCCESS, response_data, '')
+
+              except Exception as e:
+                print(e)
+                traceback.print_exc()
+                cfnresponse.send(event, context, cfnresponse.FAILED, {}, '')
+      Environment:
+        Variables:
+          Region: !Ref AWS::Region
+      Handler: index.handler
+      Role: !GetAtt 'LambdaExecutionRole.Arn'
+      Runtime: python3.7
+      Timeout: 900
+
+  GetLatestAL2AMI:
+    Type: Custom::GetLatestAL2AMI
+    Properties:
+      ServiceToken: !GetAtt 'GetLatestAL2AMILambda.Arn'
+Outputs:
+  InstanceId:
+    Description: The instance ID of the boot node
+    Value: !Ref BootNode
+  InstanceName:
+    Description: The name of the boot node
+    Value: !Ref BootNodeName
+  User:
+    Description: The user of the boot node
+    Value: "ec2-user"
