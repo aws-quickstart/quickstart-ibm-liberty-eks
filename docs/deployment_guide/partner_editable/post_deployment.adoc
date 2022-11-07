@@ -1,3 +1,10 @@
 // Include any postdeployment steps here, such as steps necessary to test that the deployment was successful. If there are no postdeployment steps, leave this file empty.
 
 == Postdeployment steps
+
+. https://www.ibm.com/docs/SSHKN6/license-service/1.x.x/standalone-LS.html[Deploy License Service] on your Kubernetes cluster. License Service is required to measure and track license use of IBM Containerized Software such as {partner-product-short-name} application. Manual license measurements are not allowed.
+. If you selected to deploy the sample or a custom application, launch the application. From the *Outputs* tab of the main stack, click the value of the _AppEndpoint_ key.
+
+For general information about your deployment, see the <<#_how_do_i_get_information_about_my_deployment>> FAQ.
+
+To manually deploy a custom application, https://www.ibm.com/docs/SSEQTP_liberty/opr/ae/cfg-t-main.html[use a WebSphereLibertyApplication custom resource (CR) file] that sets parameter values for your application image deployment.
