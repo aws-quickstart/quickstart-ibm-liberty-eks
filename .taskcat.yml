@@ -3,6 +3,7 @@ project:
   shorten_stack_name: true
   regions:
   - ca-central-1
+  - eu-west-1
   package_lambda: false
 tests:
   liberty-eks-with-app:
