@@ -30,3 +30,5 @@ tests:
       QSS3BucketRegion: $[taskcat_current_region]
       QSS3KeyPrefix: $[taskcat_project_name]/
       AvailabilityZones: $[taskcat_genaz_2]
+    regions:
+      - eu-west-1      
