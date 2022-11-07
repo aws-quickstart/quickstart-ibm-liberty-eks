@@ -19,6 +19,8 @@ tests:
       QSS3BucketRegion: $[taskcat_current_region]
       QSS3KeyPrefix: $[taskcat_project_name]/
       AvailabilityZones: $[taskcat_genaz_2]
+    regions:
+      - ca-central-1      
   liberty-eks-no-app:
     template: ./templates/ibm-liberty-new-eks-no-app.template.yaml
     parameters:
