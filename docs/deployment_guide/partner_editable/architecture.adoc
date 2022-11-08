@@ -17,11 +17,10 @@ As shown in <<architecture1>>, this Quick Start sets up the following:
 ** One Availability Zone has a boot node, Amazon Elastic Compute Cloud (Amazon EC2), to access the Amazon EKS cluster.
 * In the private subnets:
 ** An EKS cluster with an application pod, WebSphere Liberty Operator, certificate manager, and https://olm.operatorframework.io/[Operator Lifecycle Manager].
-** Auto Scaling enabled for the EKS cluster to automatically add or remove servers based on their use, providing additional servers during peak hours and lowering costs by removing servers during off hours. The default installation sets up CPU-based thresholds for scaling the instance capacity up or down. You can modify these thresholds after deployment.
+** Amazon EKS managed node groups to automate the provisioning and lifecycle management of nodes (Amazon EC2 instances) for Amazon EKS Kubernetes clusters.
 // Add bullet points for any additional components that are included in the deployment. Ensure that the additional components are shown in the architecture diagram. End each bullet with a period.
 * Amazon CloudWatch to monitor and track metrics for your AWS resources and applications.
 * Amazon Elastic Container Registry (Amazon ECR) to store, share, and deploy container software such as application images and artifacts.
-* Grouping of the private subnets with an Auto Scaling Group for inbound Secure Shell (SSH) access and Amazon EKS for the underlying Kubernetes infrastructure and platform.
 * Classic Load Balancer to enable HTTPS access to an application.
 
 //[.small]#* The template that deploys this Quick Start into an existing VPC skips the components marked by asterisks and prompts you for your existing VPC configuration.#
