@@ -11,10 +11,11 @@ image::../docs/deployment_guide/images/architecture_diagram.png[The figure is an
 
 As shown in <<architecture1>>, this Partner Solution sets up the following:
 
+* A highly available architecture that spans either two Availability Zones.*
 * A virtual private cloud (VPC) configured across two Availability Zones. In each Availability Zone, this Partner Solution provisions one public subnet and one private subnet. This creates a logically isolated networking environment that you can connect to your on-premises data centers or use as a standalone environment.
 * In the public subnets:
 ** Managed network address translation (NAT) gateways to allow outbound internet access for resources in the private subnets.
-** One Availability Zone has a boot node, Amazon Elastic Compute Cloud (Amazon EC2), to access the Amazon EKS cluster.
+** One public subnet has a boot node, an Amazon Elastic Compute Cloud (Amazon EC2) instance, to access the Amazon EKS cluster.
 * In the private subnets:
 ** An EKS cluster with an application pod, WebSphere Liberty Operator, certificate manager, and https://olm.operatorframework.io/[Operator Lifecycle Manager].
 ** Amazon EKS managed node groups to automate the provisioning and lifecycle management of nodes (Amazon EC2 instances) for Amazon EKS Kubernetes clusters.
