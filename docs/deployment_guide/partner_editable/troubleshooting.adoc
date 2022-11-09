@@ -1,11 +1,11 @@
 // Add any unique troubleshooting steps here.
 
-For troubleshooting common Quick Start issues, refer to the https://fwd.aws/rA69w?[AWS Quick Start General Information Guide^] and https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/troubleshooting.html[Troubleshooting CloudFormation^].
+For troubleshooting common Partner Solution issues, refer to the https://fwd.aws/rA69w?[AWS Partner Solution General Information Guide^] and https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/troubleshooting.html[Troubleshooting CloudFormation^].
 
 
 == FAQs
 
-Review frequently asked questions for this Quick Start.
+Review frequently asked questions for this Partner Solution.
 
 .General FAQs
 * <<#_how_do_i_connect_to_the_eks_cluster>>
@@ -43,7 +43,7 @@ aws eks update-kubeconfig --name <cluster_name> --region <cluster_region>
 ----
 +
 Replace `<cluster_name>` with your cluster name and `<cluster_region>` with your AWS Region.
-.. Run any `kubectl` command to confirm that you can access the cluster. 
+.. Run any `kubectl` command to confirm that you can access the cluster.
 +
 For example, run `kubectl get pods` and confirm that the output messages show a successful connection to the cluster.
 +
@@ -86,11 +86,11 @@ After deployment, you can also view log streams from the *Outputs* tab for your 
 
 Lambda function logs are at `/aws/lambda/` and have the file path `/aws/lambda/<name_of_lambda_resource>`.
 
-You can view Lambda function logs in CloudWatch. 
+You can view Lambda function logs in CloudWatch.
 
 . From the stack *Resources* tab, select a Lambda function.
 . Click the *Monitor* tab.
-. Click *View logs in CloudWatch*. 
+. Click *View logs in CloudWatch*.
 
 Nested stacks such as _IBMLibertyBootNodeStack_, _IBMLibertyEKSClusterStack_, and _IBMLibertyWorkloadStack_ have a Lambda function.
 
@@ -113,7 +113,7 @@ The CloudWatch `deployment.properties` file lists the deployment properties.
 
 ==== How do I recover from a failed stack?
 
-Delete the stack and retry the deployment. Stack deletion deletes all the artifacts that the stack created, including the EKS cluster and everything deployed in the cluster. 
+Delete the stack and retry the deployment. Stack deletion deletes all the artifacts that the stack created, including the EKS cluster and everything deployed in the cluster.
 
 Stack deletion might fail due to timeouts or resource dependencies. Try to delete the failed stack again. If you installed any external components after the deployment, like Ingress, then those resources are not deleted and might prevent stack deletion. In which case, try to manually delete the resources that prevent stack deletion.
 

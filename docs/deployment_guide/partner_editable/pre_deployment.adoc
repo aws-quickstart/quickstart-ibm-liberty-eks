@@ -2,7 +2,7 @@
 
 == Predeployment steps
 
-Before you launch the Quick Start, see the https://fwd.aws/rA69w?[AWS Quick Start General Information Guide]. You need an AWS account, IAM permissions, and familiarity with AWS services and the AWS CLI.
+Before you launch the Partner Solution, see the https://fwd.aws/rA69w?[AWS Partner Solution General Information Guide]. You need an AWS account, IAM permissions, and familiarity with AWS services and the AWS CLI.
 
 Also, complete the following predeployment steps.
 
@@ -43,7 +43,7 @@ Before deployment, you might consider the IAM users or roles to make administrat
 
 ==== EKS cluster access
 
-By default, you can access the EKS cluster from the boot node only. To enable direct access to the EKS cluster, provide a list of IAM entity ARNs in the *Additional EKS administrator ARNs (IAM users or roles)* parameter. Specify your and other's IAM entity ARNs in a comma-delimited list. Any IAM entity ARNs in this parameter can access the EKS cluster after the deployment. 
+By default, you can access the EKS cluster from the boot node only. To enable direct access to the EKS cluster, provide a list of IAM entity ARNs in the *Additional EKS administrator ARNs (IAM users or roles)* parameter. Specify your and other's IAM entity ARNs in a comma-delimited list. Any IAM entity ARNs in this parameter can access the EKS cluster after the deployment.
 
 For more information, see the <<#_how_do_i_connect_to_the_eks_cluster>> FAQ.
 
