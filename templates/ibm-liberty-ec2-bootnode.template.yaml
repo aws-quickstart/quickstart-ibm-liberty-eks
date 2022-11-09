@@ -72,7 +72,7 @@ Resources:
                       public:
                         ${AZ1}: { id: ${PublicSubnet1ID} }
                         ${AZ2}: { id: ${PublicSubnet2ID} }
-                  nodeGroups:
+                  managedNodeGroups:
                     - name: ng-1-workers
                       labels: { role: workers }
                       instanceType: m5.large
