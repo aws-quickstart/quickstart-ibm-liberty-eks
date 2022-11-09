@@ -1,0 +1,293 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: This template installs WebSphere LIberty Operator and Application on EKS cluster. (qs-1tdrmii93)
+Metadata:
+  LICENSE: Apache License, Version 2.0
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: EKS configuration
+        Parameters:
+          - EKSClusterName
+          - AdditionalEKSAdminArns
+          - LaunchType
+      - Label:
+          default: Application configuration
+        Parameters:
+          - DeployApp
+          - AppContainerImageURL
+          - AppName
+          - AppNamespace
+          - AppReplicas
+          - QSS3CodeLocation
+      - Label:
+          default: License
+        Parameters:
+          - LicenseEdition
+          - LicenseProductEntitlementSource
+      - Label:
+          default: Boot node configuration
+        Parameters:
+          - BootNodeInstanceId
+          - BootNodeUser
+      - Label:
+          default: Other configuration
+        Parameters:
+          - MainStackName
+    ParameterLabels:
+      AppContainerImageURL:
+        default: Custom application image name
+      AppName:
+        default: Application name
+      AppNamespace:
+        default: EKS namespace to deploy the app
+      AppReplicas:
+        default: Number of app replicas
+      DeployApp:
+        default: Deploy application
+      EKSClusterName:
+        default: EKS cluster name
+      LicenseEdition:
+        default: Edition
+      LicenseProductEntitlementSource:
+        default: Product entitlement source
+      BootNodeInstanceId:
+        default: Boot node
+      BootNodeUser:
+        default: Boot node login user
+      AdditionalEKSAdminArns:
+        default: Additional EKS administrator ARNs (IAM users or roles)
+      QSS3CodeLocation:
+        default: Quick Start S3 location
+      MainStackName:
+        default: Main stack name
+Parameters:
+  DeployApp:
+    Type: String
+    AllowedValues: [ "Sample", "Custom", None ]
+    Default: "Sample"
+    Description: Type of application to deploy. If "None", deploy no application. If "Sample" or "Custom", also see the "License" parameters.
+  AppContainerImageURL:
+    Type: String
+    Description: >-
+      Custom application container image. For example, icr.io/appcafe/open-liberty/samples/getting-started.
+      This value is only required when "Deploy application"="Custom" is selected.
+    AllowedPattern: ^(?:(?=[^:\/]{4,253})(?!-)[a-zA-Z0-9-]{1,63}(?<!-)(?:\\.(?!-)[a-zA-Z0-9-]{1,63}(?<!-))*(?::[0-9]{1,5})?/)?((?![._-])(?:[a-z0-9._-]*)(?<![._-])(?:/(?![._-])[a-z0-9._-]*(?<![._-]))*)(?::(?![.-])[a-zA-Z0-9_.-]{1,128})?$
+    ConstraintDescription: The value must be a valid container image path. For example, icr.io/appcafe/open-liberty/samples/getting-started
+    Default: ""
+  AppName:
+    Type: String
+    Default: "websphereliberty-app-sample"
+    Description: Application Name.
+  AppNamespace:
+    Type: String
+    Default: "default"
+    Description: Namespace in the EKS cluster where app will be deployed.
+  AppReplicas:
+    Type: Number
+    MinValue: 1
+    MaxValue: 20
+    Default: 2
+    Description: Number of app replicas. Ignore this parameter if DeployApp=None.
+  BootNodeInstanceId:
+    Type: AWS::EC2::Instance::Id
+    Description: Boot Node Instance Id
+  BootNodeUser:
+    Type: String
+    Default: "ec2-user"
+    Description: Boot Node User
+  EKSClusterName:
+    Type: String
+    Description: Name for the new cluster (required).
+  LaunchType:
+    Type: String
+    AllowedValues: [ EC2 ]
+    Default: EC2
+    Description: Select which launch type to use for your EKS cluster (required).
+  LicenseEdition:
+    Type: String
+    AllowedValues: ["", "IBM WebSphere Application Server", "IBM WebSphere Application Server Liberty Core", "IBM WebSphere Application Server Network Deployment"]
+    Description:  Product edition.
+    Default: ""
+  LicenseProductEntitlementSource:
+    Type: String
+    AllowedValues: ["", "Standalone", "IBM Cloud Pak for Applications", "IBM WebSphere Application Server Family Edition", "IBM WebSphere Hybrid Edition"]
+    Description: Entitlement source for the product.
+    Default: ""
+  QSS3CodeLocation:
+    Type: String
+    Description: The S3 location for your copy of the Quick Start assets.
+  AdditionalEKSAdminArns:
+    Default: ""
+    Description: >-
+      (Optional) A comma-delimited list of IAM user or role Amazon Resource Names (ARNs)
+      to be granted administrative access to the Amazon EKS cluster. For example, grant
+      access to two users with their ARNs: "arn:aws:iam::012345678910:user/user1@example.com,
+      arn:aws:iam::012345678910:user/user2@example.com"
+    Type: String
+  MainStackName:
+    Type: String
+    Description: The name of the main (parent) stack. This is used to title the CloudWatch log group to which installation output is written.
+
+Conditions:
+  DeployAppSet: !Not [!Equals [!Ref DeployApp, None]]
+
+Resources:
+  InstallWLO:
+    Type: AWS::SSM::Association
+    Properties:
+      Name: AWS-RunShellScript
+      Targets:
+      - Key: InstanceIds
+        Values:
+        - !Ref BootNodeInstanceId
+      Parameters:
+        commands:
+        - !Sub |
+          #!/bin/bash
+          aws s3 cp ${QSS3CodeLocation} . --recursive
+
+          echo "APPLICATION_DEPLOY='${DeployApp}'" > scripts/ibm-liberty-parameters.properties
+          echo "APPLICATION_IMAGE_URL=${AppContainerImageURL}" >> scripts/ibm-liberty-parameters.properties
+          echo "APPLICATION_NAMESPACE=${AppNamespace}" >> scripts/ibm-liberty-parameters.properties
+          echo "APPLICATION_NAME=${AppName}" >> scripts/ibm-liberty-parameters.properties
+          echo "APPLICATION_REPLICAS=${AppReplicas}" >> scripts/ibm-liberty-parameters.properties
+          echo "AWS_DEFAULT_REGION=${AWS::Region}" >> scripts/ibm-liberty-parameters.properties
+          echo "BOOTNODE_INSTANCE_ID=${BootNodeInstanceId}" >> scripts/ibm-liberty-parameters.properties
+          echo "BOOTNODE_USER=${BootNodeUser}" >> scripts/ibm-liberty-parameters.properties
+          echo "CLOUDWATCH_INSTALL_LOGS=https://${AWS::Region}.console.aws.amazon.com/cloudwatch/home?region=${AWS::Region}#logsV2:log-groups/log-group/${MainStackName}" >> scripts/ibm-liberty-parameters.properties
+          echo "EKS_ADMIN_USER_ARNS='${AdditionalEKSAdminArns}'" >> scripts/ibm-liberty-parameters.properties
+          echo "EKS_CLUSTER_NAME=${EKSClusterName}" >> scripts/ibm-liberty-parameters.properties
+          echo "INSTALL_LOG_LOCATION=/tmp/install.log" >> scripts/ibm-liberty-parameters.properties
+          echo "LAUNCH_TYPE=${LaunchType}" >> scripts/ibm-liberty-parameters.properties
+          echo "LICENSE_EDITION='${LicenseEdition}'" >> scripts/ibm-liberty-parameters.properties
+          echo "LICENSE_ENTITLEMENT='${LicenseProductEntitlementSource}'" >> scripts/ibm-liberty-parameters.properties
+          echo "MAIN_STACK_NAME=${MainStackName}" >> scripts/ibm-liberty-parameters.properties
+          echo "WORKLOAD_STACK_NAME='${AWS::StackName}'" >> scripts/ibm-liberty-parameters.properties
+
+          chmod 755 ./scripts/*.sh
+          echo > install.log
+
+          chown -R ${BootNodeUser} ./templates ./scripts ./install.log
+          chgrp -R ${BootNodeUser} ./templates ./scripts ./install.log
+
+          su - ${BootNodeUser} -c '/tmp/scripts/install.sh' | tee install.log
+
+        workingDirectory:
+        - /tmp
+      WaitForSuccessTimeoutSeconds: 1200
+
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - !Sub arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - !Sub arn:${AWS::Partition}:iam::aws:policy/AmazonSSMManagedInstanceCore
+        - !Sub arn:${AWS::Partition}:iam::aws:policy/CloudWatchAgentServerPolicy
+      Path: /
+      Policies:
+        - PolicyName: IBMLibertySSMLimitedAccess
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - ssm:PutParameter
+                  - ssm:GetParameter
+                  - ssm:DeleteParameter
+                Resource: !Sub arn:${AWS::Partition}:ssm:*:${AWS::AccountId}:parameter/*
+              - Effect: Allow
+                Action:
+                  - logs:FilterLogEvents
+                Resource: !Sub arn:${AWS::Partition}:logs:*:${AWS::AccountId}:log-group:*
+
+  GetInstallOutputsLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        ZipFile: |
+          import boto3
+          import cfnresponse
+          import os
+          import traceback
+
+          def handler(event, context):
+
+              try:
+                response_data = {}
+
+                if event["RequestType"] == "Create":
+                  print("Retrieve outputs from WLO install")
+
+                  region = os.environ["Region"]
+                  stack_name = os.environ["StackName"]
+
+                  ssm = boto3.client("ssm", region_name=region)
+
+                  parameter_name = f"/ibm/liberty-for-eks/{region}/{stack_name}/install-outputs"
+
+                  print(f"Getting parameter {parameter_name}...")
+
+                  response = ssm.get_parameter(Name=parameter_name)
+
+                  for line in response["Parameter"]["Value"].split("\n"):
+                    name, value = line.split("=", 1)
+                    response_data[name.strip()] = value.strip(" \"'")
+
+                  print(f"Parameter value retrieved: {response_data}")
+
+                  print(f"Deleting parameter {parameter_name}...")
+                  ssm.delete_parameter(Name=parameter_name)
+                  print("Parameter deleted.")
+
+                cfnresponse.send(event, context, cfnresponse.SUCCESS, response_data)
+
+              except Exception as e:
+                print(e)
+                traceback.print_exc()
+                cfnresponse.send(event, context, cfnresponse.FAILED, {})
+      Environment:
+        Variables:
+          Region: !Ref AWS::Region
+          StackName: !Ref AWS::StackName
+      Handler: index.handler
+      Role: !GetAtt 'LambdaExecutionRole.Arn'
+      Runtime: python3.7
+      Timeout: 60
+
+  InstallOutputs:
+    Type: Custom::InstallOutputs
+    DependsOn:
+      - InstallWLO
+    Properties:
+      ServiceToken: !GetAtt 'GetInstallOutputsLambda.Arn'
+
+Outputs:
+  AppEndpoint:
+    Description: The URL for the deployed application
+    Value: !GetAtt InstallOutputs.AppEndpoint
+    Condition: DeployAppSet
+  WLOVersion:
+    Description: The installed version of WebSphere Liberty Operator
+    Value: !GetAtt InstallOutputs.WLOVersion
+  EKSName:
+    Description: EKS Cluster name
+    Value: !Ref EKSClusterName
+  CloudWatchInstallLogs:
+    Description: CloudWatch Install Logs
+    Value: !Join ["",["https://", !Ref "AWS::Region",".console.aws.amazon.com/cloudwatch/home?region=",!Ref "AWS::Region","#logsV2:log-groups/log-group/", !Ref "MainStackName"]]
+  DeploymentProperties:
+    Description: Deployment properties
+    Value: !Join ["",["https://", !Ref "AWS::Region",".console.aws.amazon.com/cloudwatch/home?region=",!Ref "AWS::Region","#logsV2:log-groups/log-group/", !Ref "MainStackName","/log-events/deployment.properties"]]
+  LibertyAppDeployYaml:
+    Description: CR (Custom Resource) to deploy for WebSphereLibertyApplication
+    Value: !Join ["",["https://", !Ref "AWS::Region",".console.aws.amazon.com/cloudwatch/home?region=",!Ref "AWS::Region","#logsV2:log-groups/log-group/", !Ref "MainStackName","/log-events/ibm-liberty-app-deploy.yaml"]]
+  LibertyAppDeployServiceYaml:
+    Description: CR (Custom Resource) to enable HTTPS access to the WebSphereLibertyApplication
+    Value: !Join ["",["https://", !Ref "AWS::Region",".console.aws.amazon.com/cloudwatch/home?region=",!Ref "AWS::Region","#logsV2:log-groups/log-group/", !Ref "MainStackName","/log-events/ibm-liberty-app-deploy-service.yaml"]]

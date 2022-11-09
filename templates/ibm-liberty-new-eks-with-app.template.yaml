@@ -1,0 +1,346 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: "This template deploys WebSphere Liberty Operator and application into a new EKS cluster in a new VPC. (qs-1tdrllesf)"
+Metadata:
+  QuickStartDocumentation:
+    EntrypointName: Deploy into a new VPC and a new Amazon EKS cluster
+    Order: 1
+  LICENSE: Apache License, Version 2.0
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: EKS configuration
+        Parameters:
+          - EKSClusterName
+          - SetupNewECR
+          - AdditionalEKSAdminArns
+          - AvailabilityZones
+      - Label:
+          default: Application configuration
+        Parameters:
+          - DeployApp
+          - AppContainerImageURL
+          - AppName
+          - AppNamespace
+          - AppReplicas
+      - Label:
+          default: License
+        Parameters:
+          - LicenseEdition
+          - LicenseProductEntitlementSource
+          - AcceptLicense
+      - Label:
+          default: AWS Quick Start configuration
+        Parameters:
+          - QSS3BucketName
+          - QSS3KeyPrefix
+          - QSS3BucketRegion
+    ParameterLabels:
+      AcceptLicense:
+        default: Accept (https://ibm.biz/was-license)
+      AppContainerImageURL:
+        default: Custom application image
+      AppName:
+        default: Application name
+      AppNamespace:
+        default: Application namespace
+      AppReplicas:
+        default: Application replicas
+      DeployApp:
+        default: Deploy application
+      EKSClusterName:
+        default: EKS cluster name*
+      LicenseEdition:
+        default: Edition
+      LicenseProductEntitlementSource:
+        default: Product entitlement source
+      QSS3BucketName:
+        default: Quick Start S3 bucket name
+      QSS3BucketRegion:
+        default: Quick Start S3 bucket Region
+      QSS3KeyPrefix:
+        default: Quick Start S3 key prefix
+      AdditionalEKSAdminArns:
+        default: Additional EKS administrator ARNs (IAM users or roles)
+      SetupNewECR:
+        default: Private ECR
+      AvailabilityZones:
+        default: Availability zones*
+
+Parameters:
+  AvailabilityZones:
+    Description: Availability Zones to use for the subnet in the new VPC. You must select 2 Availability Zones.
+    Type: List<AWS::EC2::AvailabilityZone::Name>
+  AcceptLicense:
+    Type: String
+    AllowedValues: ["Accept: Proceed with the installation", "Decline: Exit without installing"]
+    Description: >-
+      I accept the terms on the license agreement corresponding to the version of IBM program
+      in the application container by setting this value to true. See https://ibm.biz/was-license
+      for the license agreement applicable to this IBM program. You must accept the license if you are deploying sample or custom application.
+    ConstraintDescription: You must accept the license (https://ibm.biz/was-license) to proceed with installation.
+  AppContainerImageURL:
+    Type: String
+    Description: >-
+      For example, icr.io/appcafe/open-liberty/samples/getting-started. This value is only required when "Deploy application" is set to "Custom". The image must be accessible without any credentials.
+    AllowedPattern: ^(?:(?=[^:\/]{4,253})(?!-)[a-zA-Z0-9-]{1,63}(?<!-)(?:\\.(?!-)[a-zA-Z0-9-]{1,63}(?<!-))*(?::[0-9]{1,5})?/)?((?![._-])(?:[a-z0-9._-]*)(?<![._-])(?:/(?![._-])[a-z0-9._-]*(?<![._-]))*)(?::(?![.-])[a-zA-Z0-9_.-]{1,128})?$
+    ConstraintDescription: The value must be a valid application image path. For example, icr.io/appcafe/open-liberty/samples/getting-started
+  AppName:
+    Type: String
+    Default: "websphereliberty-app-sample"
+    Description: Name of application to deploy.
+    AllowedPattern: (?:[a-z0-9]+(?:[._-][a-z0-9]+)*/)*[a-z0-9]+(?:[._-][a-z0-9]+)*
+    ConstraintDescription: The name must start with a letter and can only contain lowercase letters, numbers, hyphens, underscores, periods and forward slashes.
+  AppNamespace:
+    Type: String
+    Default: "default"
+    Description: Namespace in the EKS cluster where the application will be deployed.
+    AllowedPattern: (?:[a-z0-9]+(?:[._-][a-z0-9]+)*/)*[a-z0-9]+(?:[._-][a-z0-9]+)*
+    ConstraintDescription: The name must start with a letter and can only contain lowercase letters, numbers, hyphens, underscores, periods and forward slashes.
+  AppReplicas:
+    Type: Number
+    MinValue: 1
+    Default: 2
+    Description: Number of application replicas (minimum 1).
+  DeployApp:
+    Type: String
+    AllowedValues: [ "Sample", "Custom" ]
+    Default: "Sample"
+    Description: Deploy sample or custom application or skip application deployment. Details on sample application is available at https://github.com/OpenLiberty/sample-getting-started.
+  EKSClusterName:
+    Type: String
+    Description: Name of the new EKS cluster (length 2-250) (required). The name must start with a letter and contain only lowercase letters, numbers, hyphens, underscores, periods, and forward slashes.
+    MinLength: 2
+    MaxLength: 250
+    AllowedPattern: (?:[a-z0-9]+(?:[._-][a-z0-9]+)*/)*[a-z0-9]+(?:[._-][a-z0-9]+)*
+    ConstraintDescription: The name must start with a letter and can only contain lowercase letters, numbers, hyphens, underscores, periods and forward slashes.
+  LicenseEdition:
+    Type: String
+    AllowedValues: ["IBM WebSphere Application Server", "IBM WebSphere Application Server Liberty Core", "IBM WebSphere Application Server Network Deployment"]
+    Description:  Product edition.
+  LicenseProductEntitlementSource:
+    Type: String
+    AllowedValues: ["Standalone", "IBM WebSphere Hybrid Edition", "IBM Cloud Pak for Applications", "IBM WebSphere Application Server Family Edition"]
+    Description: Entitlement source for the product. Select "Standalone" if the entitlement source is IBM WebSphere Application Server, IBM WebSphere Application Server Liberty Core, or IBM WebSphere Application Server Network Deployment.
+  SetupNewECR:
+    Type: String
+    AllowedValues: ["Yes", "No"]
+    Default: "Yes"
+    Description: If Yes, a new ECR is set up with the name <EKS cluster name>-ecr.
+  QSS3BucketName:
+    Type: String
+    Description: Name of the S3 bucket for your copy of the Quick Start assets.
+      Keep the default name unless you are customizing the template.
+      Changing the name updates code references to point to a new Quick
+      Start location. This name can include numbers, lowercase letters,
+      uppercase letters, and hyphens, but must not start or end with a hyphen (-).
+      See https://aws-quickstart.github.io/option1.html.
+    AllowedPattern: ^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$
+    ConstraintDescription:
+      The Quick Start bucket name can include numbers, lowercase
+      letters, uppercase letters, and hyphens (-). It cannot start or end with a
+      hyphen (-).
+    Default: aws-quickstart
+  QSS3KeyPrefix:
+    Type: String
+    Description:
+      S3 key prefix that is used to simulate a directory for your copy of the
+      Quick Start assets. Keep the default prefix unless you are customizing
+      the template. Changing this prefix updates code references to point to
+      a new Quick Start location. This prefix can include numbers, lowercase
+      letters, uppercase letters, hyphens (-), and forward slashes (/). End with a forward slash.
+      See https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html
+      and https://aws-quickstart.github.io/option1.html.
+    AllowedPattern: ^([0-9a-zA-Z-.]+/)*$
+    ConstraintDescription:
+      The Quick Start S3 key prefix can include numbers, lowercase letters,
+      uppercase letters, hyphens (-), and forward slashes (/).
+    Default: quickstart-ibm-liberty-eks/
+  QSS3BucketRegion:
+    Type: String
+    Description: >-
+      AWS Region where the Quick Start S3 bucket (QSS3BucketName) is
+      hosted. Keep the default Region unless you are customizing the template.
+      Changing this Region updates code references to point to a new Quick Start location.
+      When using your own bucket, specify the Region.
+      See https://aws-quickstart.github.io/option1.html.
+    Default: us-east-1
+  AdditionalEKSAdminArns:
+    Default: ""
+    Description: >-
+      One or more IAM user or role ARNs to be granted administrative access to the new EKS cluster.
+      Use a comma-delimited list for multiple ARNs.
+      For example, "arn:aws:iam::012345678910:user/myid@example.com,
+      arn:aws:iam::012345678910:user/otherid@example.com".
+    Type: String
+
+Conditions:
+  UsingDefaultBucket: !Equals [!Ref QSS3BucketName, aws-quickstart]
+  SetupECR: !Equals [!Ref SetupNewECR, "Yes"]
+  DeploySample: !Equals [!Ref DeployApp, Sample]
+
+Rules:
+  RequireAcceptLicense:
+    Assertions:
+      - Assert: !Equals [!Ref AcceptLicense, "Accept: Proceed with the installation"]
+        AssertDescription: In order to proceed with installation, you must accept the license.
+  RequireImageWhenCustom:
+    RuleCondition: !Equals [!Ref DeployApp, Custom]
+    Assertions:
+      - Assert: !Not [!Equals [!Ref AppContainerImageURL, ""]]
+        AssertDescription: You must provide an image when deploying a custom application.
+
+Resources:
+  IBMLibertyIAMRoleStack:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ibm-liberty-iam-role.template.yaml
+        - S3Bucket: !If [UsingDefaultBucket, !Sub 'aws-quickstart-${AWS::Region}', !Ref QSS3BucketName]
+          S3Region: !If [UsingDefaultBucket, !Ref AWS::Region, !Ref QSS3BucketRegion]
+      Parameters:
+        RoleName: !Join [ "", [ "ibm-liberty-", !Ref EKSClusterName, "-", !Ref "AWS::Region", "-role" ] ]
+
+  IBMLibertyVPCStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}submodules/quickstart-aws-vpc/templates/aws-vpc.template.yaml
+        - S3Bucket: !If [ UsingDefaultBucket, !Sub 'aws-quickstart-${AWS::Region}', !Ref QSS3BucketName ]
+          S3Region: !If [ UsingDefaultBucket, !Ref AWS::Region, !Ref QSS3BucketRegion ]
+      Parameters:
+        AvailabilityZones: !Join [ ',', !Ref AvailabilityZones ]
+        NumberOfAZs: 2
+        PrivateSubnetATag2: "kubernetes.io/role/internal-elb="
+        PublicSubnetTag2: "kubernetes.io/role/elb="
+
+  IBMLibertyBootNodeStack:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ibm-liberty-ec2-bootnode.template.yaml
+        - S3Bucket: !If [UsingDefaultBucket, !Sub 'aws-quickstart-${AWS::Region}', !Ref QSS3BucketName]
+          S3Region: !If [UsingDefaultBucket, !Ref AWS::Region, !Ref QSS3BucketRegion]
+      Parameters:
+        RoleName: !GetAtt IBMLibertyIAMRoleStack.Outputs.RoleName
+        BootNodeName: !Join ["-", [!Ref EKSClusterName, "bootnode"]]
+        EKSClusterName: !Ref EKSClusterName
+        PublicSubnet1ID: !GetAtt 'IBMLibertyVPCStack.Outputs.PublicSubnet1ID'
+        PublicSubnet2ID: !GetAtt 'IBMLibertyVPCStack.Outputs.PublicSubnet2ID'
+        AvailabilityZone1: !Select [0, !Ref AvailabilityZones]
+        AvailabilityZone2: !Select [1, !Ref AvailabilityZones]
+        PrivateSubnet1ID: !GetAtt 'IBMLibertyVPCStack.Outputs.PrivateSubnet1AID'
+        PrivateSubnet2ID: !GetAtt 'IBMLibertyVPCStack.Outputs.PrivateSubnet2AID'
+
+  IBMLibertyEKSClusterStack:
+    Type: 'AWS::CloudFormation::Stack'
+    Properties:
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ibm-liberty-create-eks.template.yaml
+        - S3Bucket: !If [UsingDefaultBucket, !Sub 'aws-quickstart-${AWS::Region}', !Ref QSS3BucketName]
+          S3Region: !If [UsingDefaultBucket, !Ref AWS::Region, !Ref QSS3BucketRegion]
+      Parameters:
+        BootNodeInstanceId: !GetAtt IBMLibertyBootNodeStack.Outputs.InstanceId
+        EKSClusterName: !Ref EKSClusterName
+        LaunchType: "EC2"
+
+  IBMLibertyWorkloadStack:
+    Type: 'AWS::CloudFormation::Stack'
+    DependsOn:
+      - IBMLibertyEKSClusterStack
+    Properties:
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ibm-liberty-eks-workload.template.yaml
+        - S3Bucket: !If [UsingDefaultBucket, !Sub 'aws-quickstart-${AWS::Region}', !Ref QSS3BucketName]
+          S3Region: !If [UsingDefaultBucket, !Ref AWS::Region, !Ref QSS3BucketRegion]
+      Parameters:
+        BootNodeInstanceId: !GetAtt IBMLibertyBootNodeStack.Outputs.InstanceId
+        BootNodeUser: !GetAtt IBMLibertyBootNodeStack.Outputs.User
+        EKSClusterName: !Ref EKSClusterName
+        LaunchType: "EC2"
+        LicenseEdition: !Ref LicenseEdition
+        LicenseProductEntitlementSource: !Ref LicenseProductEntitlementSource
+        DeployApp: !Ref DeployApp
+        AppNamespace: !Ref AppNamespace
+        AppName: !Ref AppName
+        AppContainerImageURL: !If [DeploySample, "icr.io/appcafe/open-liberty/samples/getting-started", !Ref AppContainerImageURL]
+        AppReplicas: !Ref AppReplicas
+        MainStackName: !Ref "AWS::StackName"
+        QSS3CodeLocation: !Sub
+          - s3://${S3Bucket}/${QSS3KeyPrefix}
+          - S3Bucket: !If [UsingDefaultBucket, !Sub 'aws-quickstart-${AWS::Region}', !Ref QSS3BucketName]
+        AdditionalEKSAdminArns: !Ref AdditionalEKSAdminArns
+
+  IBMLibertyECRStack:
+    Type: 'AWS::CloudFormation::Stack'
+    Condition: SetupECR
+    DependsOn:
+      - IBMLibertyEKSClusterStack
+    Properties:
+      TemplateURL: !Sub
+        - https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/ibm-liberty-create-ecr.template.yaml
+        - S3Bucket: !If [UsingDefaultBucket, !Sub 'aws-quickstart-${AWS::Region}', !Ref QSS3BucketName]
+          S3Region: !If [UsingDefaultBucket, !Ref AWS::Region, !Ref QSS3BucketRegion]
+      Parameters:
+        ECRName: !Join ["-", [!Ref EKSClusterName, "ecr"]]
+
+Outputs:
+  EKSClusterName:
+    Description: EKS cluster name
+    Value: !Ref EKSClusterName
+  EKSClusterUrl:
+    Description: EKS cluster URL
+    Value: !GetAtt IBMLibertyEKSClusterStack.Outputs.EKSUrl
+  ECRName:
+    Condition: SetupECR
+    Description: ECR name
+    Value: !GetAtt IBMLibertyECRStack.Outputs.ECRName
+  ECRArn:
+    Condition: SetupECR
+    Description: ECR ARN
+    Value: !GetAtt IBMLibertyECRStack.Outputs.ECRArn
+  ECRRepositoryUri:
+    Condition: SetupECR
+    Description: ECR URI
+    Value: !GetAtt IBMLibertyECRStack.Outputs.ECRRepositoryUri
+  BootNodeInstanceId:
+    Description: Boot node EC2 instance ID
+    Value: !GetAtt IBMLibertyBootNodeStack.Outputs.InstanceId
+  BootNodeName:
+    Description: Boot node name
+    Value: !GetAtt IBMLibertyBootNodeStack.Outputs.InstanceName
+  InstallLogsLocation:
+    Description: Install logs location (on boot node)
+    Value: "/tmp/install.log"
+  LibertyAppCRLocation:
+    Description: Location (on boot node) of the deployed Liberty app CR
+    Value: "/tmp/scripts/templates/ibm-liberty-app-deploy.yaml"
+  CloudWatchInstallLogs:
+    Description: Installation logs (in CloudWatch)
+    Value: !GetAtt IBMLibertyWorkloadStack.Outputs.CloudWatchInstallLogs
+  DeploymentProperties:
+    Description: Deployment properties
+    Value: !GetAtt IBMLibertyWorkloadStack.Outputs.DeploymentProperties
+  LibertyAppDeployYaml:
+    Description: CR (Custom Resource) to deploy for WebSphereLibertyApplication
+    Value: !GetAtt IBMLibertyWorkloadStack.Outputs.LibertyAppDeployYaml
+  LibertyAppDeployServiceYaml:
+    Description: CR (Custom Resource) to enable HTTPS access to the WebSphereLibertyApplication
+    Value: !GetAtt IBMLibertyWorkloadStack.Outputs.LibertyAppDeployServiceYaml
+  AppEndpoint:
+    Description: The URL for the deployed application
+    Value: !GetAtt IBMLibertyWorkloadStack.Outputs.AppEndpoint
+  WLOVersion:
+    Description: The installed version of WebSphere Liberty Operator
+    Value: !GetAtt IBMLibertyWorkloadStack.Outputs.WLOVersion
+  EKSClusterVpcId:
+    Description: The ID of the VPC which was created for your EKS cluster
+    Value: !GetAtt IBMLibertyVPCStack.Outputs.VPCID
+  EKSClusterVpcUrl:
+    Description: URL to manage the VPC which was created for your EKS cluster
+    Value: !Join ["", ["https://", !Ref "AWS::Region", ".console.aws.amazon.com/vpc/home?region=", !Ref "AWS::Region", "#VpcDetails:VpcId=", !GetAtt IBMLibertyVPCStack.Outputs.VPCID]]
+  IAMRoleName:
+    Description: Role name to manage EKS
+    Value: !GetAtt IBMLibertyIAMRoleStack.Outputs.RoleName
+  IAMRoleUrl:
+    Description: The URL to view the IAM role that was used to create the EKS cluster
+    Value: !GetAtt IBMLibertyIAMRoleStack.Outputs.RoleURL

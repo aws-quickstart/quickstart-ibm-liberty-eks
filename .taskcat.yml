@@ -1,0 +1,34 @@
+project:
+  name: quickstart-ibm-liberty-eks
+  shorten_stack_name: true
+  regions:
+  - ca-central-1
+  - eu-west-1
+  package_lambda: false
+tests:
+  liberty-eks-with-app:
+    template: ./templates/ibm-liberty-new-eks-with-app.template.yaml
+    parameters:
+      EKSClusterName: was-cluster-$[taskcat_random-string]
+      SetupNewECR: "Yes"
+      AcceptLicense: "Accept: Proceed with the installation"
+      LicenseEdition: "IBM WebSphere Application Server"
+      LicenseProductEntitlementSource: "Standalone"
+      AppContainerImageURL: icr.io/appcafe/open-liberty/samples/getting-started
+      QSS3BucketName: $[taskcat_autobucket]
+      QSS3BucketRegion: $[taskcat_current_region]
+      QSS3KeyPrefix: $[taskcat_project_name]/
+      AvailabilityZones: $[taskcat_genaz_2]
+    regions:
+      - ca-central-1      
+  liberty-eks-no-app:
+    template: ./templates/ibm-liberty-new-eks-no-app.template.yaml
+    parameters:
+      EKSClusterName: was-cluster-$[taskcat_random-string]
+      SetupNewECR: "Yes"
+      QSS3BucketName: $[taskcat_autobucket]
+      QSS3BucketRegion: $[taskcat_current_region]
+      QSS3KeyPrefix: $[taskcat_project_name]/
+      AvailabilityZones: $[taskcat_genaz_2]
+    regions:
+      - eu-west-1      
