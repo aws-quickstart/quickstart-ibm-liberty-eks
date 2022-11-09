@@ -11,7 +11,7 @@ image::../docs/deployment_guide/images/architecture_diagram.png[The figure is an
 
 As shown in <<architecture1>>, this Partner Solution sets up the following:
 
-* A highly available architecture that spans either two Availability Zones.*
+* A highly available architecture that spans either two Availability Zones.
 * A virtual private cloud (VPC) configured across two Availability Zones. In each Availability Zone, this Partner Solution provisions one public subnet and one private subnet. This creates a logically isolated networking environment that you can connect to your on-premises data centers or use as a standalone environment.
 * In the public subnets:
 ** Managed network address translation (NAT) gateways to allow outbound internet access for resources in the private subnets.
