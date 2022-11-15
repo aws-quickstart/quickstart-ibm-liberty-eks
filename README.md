@@ -80,14 +80,14 @@ IBM WebSphere Liberty for Amazon EKS on AWS custom resource (CR) file](https://w
 ### Troubleshooting
 For troubleshooting common Quick Start issues, refer to the [AWS Quick Start General Information Guide](https://fwd.aws/rA69w?) and [Troubleshooting CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/troubleshooting.html).
 
-### FAQ
-Review the [frequently asked questions](docs/FAQ.md) for this solution.
+### FAQs
+Review the [frequently asked questions](docs/deployment_guide/FAQs.md) for this solution.
 
 ### Customer support
 For WebSphere Liberty Operator issues, open a Support Ticket with IBM Support and add information that can help IBM Support troubleshoot and fix the problem.
 1. Click **Open a case** on the [WebSphere Application Server support](https://www.ibm.com/mysupport/s/topic/0TO500000001DQQGA2/websphere-application-server) or [Let’s troubleshoot](https://www.ibm.com/mysupport/s/) page.
 2. Add information that can help IBM Support determine the cause of the error. In the ticket, describe the error. If the error is difficult to describe, then provide a screen capture of the error. Also, provide pertinent information, such as a description of your cluster configuration and the component that is failing or having issues. 
-Review the [frequently asked questions](docs/FAQ.md) to find the deployment logs. See [Gathering information about clusters with MustGather](https://www.ibm.com/docs/SSEQTP_liberty/opr/ae/t-troubleshooting.html#t-troubleshooting__must-gather) to learn how to use MustGather to collect information for a Support Ticket.
+Review the [frequently asked questions](docs/deployment_guide/FAQs.md) to find the deployment logs. See [Gathering information about clusters with MustGather](https://www.ibm.com/docs/SSEQTP_liberty/opr/ae/t-troubleshooting.html#t-troubleshooting__must-gather) to learn how to use MustGather to collect information for a Support Ticket.
 
 ### Customer responsibility
 After you deploy a Partner Solution, confirm that your resources and services are updated and configured—including any required patches—to meet your security and other needs. For more information, refer to the [Shared Responsibility Model](https://aws.amazon.com/compliance/shared-responsibility-model/).
