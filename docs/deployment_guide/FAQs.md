@@ -8,30 +8,29 @@
 - [What deployments are in a successful installation?](#what-deployments-are-in-a-successful-installation)
 - [Where is more information about WebSphere Liberty Operator?](#where-is-more-information-about-websphere-liberty-operator)
 
-### General FAQa
+### General FAQs
 
 #### How do I connect to the EKS cluster?
 
 The steps to connect to the cluster depend on whether you use the boot node.
 
 ##### With the boot node
-- Go to the boot node. The boot node is linked to from the **Resources** tab of the boot node stack. The node ID is listed in **Outputs** of the main stack.
+- Go to the boot node. The boot node is linked to from the _Resources_ tab of the boot node stack. The node ID is listed in _Outputs_ of the main stack.
 - Start the boot node.
 - Enable SSH to the boot node. Add a rule to the VPC security group that permits inbound traffic on port 22.
 - Connect to the boot node with SSH or EC2 Instance Connect in your browser.
 - Use `kubectl` commands to manage your cluster.
 
 ##### Without the boot node
-
-- Check your ARN configuration. Configure <<#_eks_cluster_access>>, if not done so already.
-- Use the kubernetes cli to access the EKS cluster.
-    - Run the following command to update your `kubeconfig` file so that you can use `kubectl` commands to work with your cluster.
+- Use the [kubernetes cli](https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html) to access the EKS cluster.
+- Run the following command to update your `kubeconfig` file so that you can use `kubectl` commands to work with your cluster.
 ```
 aws eks update-kubeconfig --name <cluster_name> --region <cluster_region>
 ```
-    - Replace `<cluster_name>` with your cluster name and `<cluster_region>` with your AWS Region.
-    - Run any `kubectl` command to confirm that you can access the cluster.
-    - For example, run `kubectl get pods` and confirm that the output messages show a successful connection to the cluster.
+
+- Replace `<cluster_name>` with your cluster name and `<cluster_region>` with your AWS Region.
+- Run any `kubectl` command to confirm that you can access the cluster.
+- For example, run `kubectl get pods` and confirm that the output messages show a successful connection to the cluster.
 ```
 $ kubectl get pods
 ```
@@ -45,7 +44,7 @@ If needed, ask the creator of the EKS cluster to grant access by adding your IAM
     - Example role ARN: `arn:aws:iam::123456789012:role/some-role`
 - Run the `eksctl` command to create a mapping for that IAM entity in the `aws-auth` ConfigMap.
 ```
-eksctl create iamidentitymapping --cluster "<cluster_name>" --region "<cluster_region>" --arn "<arn>"
+eksctl create iamidentitymapping --cluster <cluster_name> --region <cluster_region> --arn <arn>
 ```
 
 
