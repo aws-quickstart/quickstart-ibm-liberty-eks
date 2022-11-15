@@ -2,16 +2,14 @@
 ## quickstart-ibm-liberty-eks
 
 ### IBM WebSphere Liberty for Amazon EKS
-Use this Partner Solution (formerly Quick Start) to provisions a highly-available architecture that spans two Availability Zones, with an EKS Cluster in each, along with the [WebSphere Liberty Operator](https://ibm.biz/wlo-docs) ready for you to deploy your applications.
+Use this Partner Solution (formerly Quick Start) to provision a highly-available architecture with and EKS cluster that spans two Availability Zones, along with the [WebSphere Liberty Operator](https://ibm.biz/wlo-docs) ready for you to deploy your applications. You can use WebSphere Liberty Operator to deploy and manage Liberty applications on Kubernetes-based clusters. This Partner Solution can also deploy a provided sample application or your own custom application.
 
- [IBM WebSphere Liberty](https://www.ibm.com/products/websphere-liberty) is a fast, lightweight, modular, and container-friendly cloud-native runtime that supports industry standards such as Java EE, Jakarta EE, and MicroProfile.
+[IBM WebSphere Liberty](https://www.ibm.com/products/websphere-liberty) is a fast, lightweight, modular, and container-friendly cloud-native runtime that supports industry standards such as Java EE, Jakarta EE, and MicroProfile.
 
 ### Architecture
-Deploying this Quick Start builds the following WebSphere Liberty environment in the AWS Cloud.
+Deploying this Partner Solution  builds the following WebSphere Liberty environment in the AWS Cloud.
 
-**UPDATE Arch diag URL TO before creating the PR**: (https://github.com/quickstart-ibm-liberty-eks/blob/docs/deployment_guide/images/architecture_diagram.png)
-![Architecture for IBM WebSphere Liberty for Amazon EKS](https://github.com/git4rk/quickstart-ibm-liberty-eks/blob/re-invent-readme/docs/deployment_guide/images/architecture_diagram.png)
-
+![Architecture for IBM WebSphere Liberty for Amazon EKS](https://github.com/quickstart-ibm-liberty-eks/blob/docs/deployment_guide/images/architecture_diagram.png)
 
 - A virtual private cloud (VPC) configured across two Availability Zones. In each Availability Zone, this solution provisions one public subnet and one private subnet. This creates a logically isolated networking environment that you can connect to your on-premises data centers or use as a standalone environment.
 - In the public subnets:
@@ -25,12 +23,12 @@ Deploying this Quick Start builds the following WebSphere Liberty environment in
 
 ### Deploymen options
 This Partner Solution provides the following deployment options:
-- **Deploy into a new VPC and a new Amazon EKS cluster with an application**:  This option builds a new AWS environment outlined in the architecture diargam. It then deploys WebSphere Liberty Operator, an application, and related artifacts into this EKS cluster. 
+- **Deploy into a new VPC and a new Amazon EKS cluster with an application**:  This option builds a new AWS environment outlined in the architecture diagram. It then deploys WebSphere Liberty Operator, an application, and related artifacts into this EKS cluster. 
 - **Deploy into a new VPC and a new Amazon EKS cluster without an application**: This option builds a new AWS environment outlined in the architecture diargam. It then deploys WebSphere Liberty Operator and related artifacts into this EKS cluster. 
 
 
 ### Predeployment steps
-Before you launch the Quick Start, see the [AWS QuickStart General Information Guide](https://fwd.aws/rA69w?).
+Before you launch the Partner Solution, see the [AWS Partner Solutions General Information Guide](https://fwd.aws/rA69w?).
 
 #### Existing license
 To use IBM WebSphere Liberty, ensure that you have an active [WebSphere entitlement](https://ibm.biz/was-license) for any of the following products.
@@ -45,7 +43,7 @@ To use IBM WebSphere Liberty, ensure that you have an active [WebSphere entitlem
     - IBM WebSphere Application Server Family Edition
 
 ### Deployment steps
-1. Clone the Quick Start templates (including all of its submodules) to your local machine. From the command line, run:
+1. Clone the Partner Solution templates (including all of its submodules) to your local machine. From the command line, run:
 ```
 git clone --recurse-submodules https://github.com/aws-quickstart/quickstart-ibm-liberty-eks.git
 ```
@@ -54,13 +52,13 @@ git clone --recurse-submodules https://github.com/aws-quickstart/quickstart-ibm-
 ```
 aws s3 mb s3://<bucket-name> --region <AWS_REGION>
 ```
-4. Go into the parent directory of your local clone of the Quick Start templates and upload all the files to your S3 bucket:
+4. Go into the parent directory of your local clone of the Partner Solution templates and upload all the files to your S3 bucket:
 ```
 aws s3 cp quickstart-ibm-liberty-eks s3://<bucket-name>/quickstart-ibm-liberty-eks --recursive --acl public-read
 ```
-5. Once you’ve uploaded everything, you’re ready to deploy your stack from your S3 bucket. Login to [AWS console](https://aws.amazon.com/) and go to S3 bucket to copy the main template URL.
+5. Once you’ve uploaded everything, you’re ready to deploy your stack from your S3 bucket. Login to [AWS console](https://aws.amazon.com/) and go to S3 bucket → quickstart-ibm-liberty-eks folder to copy the main template's Object URL.
     1. To deploy into a new VPC and a new Amazon EKS cluster with an application, copy the Object URL of `templates/ibm-liberty-new-eks-with-app.template.yaml`
-    2. To Deploy into a new VPC and a new Amazon EKS cluster without an application, copy the Object URL of  `templates/ibm-liberty-new-eks-no-app.template.yaml`
+    2. To deploy into a new VPC and a new Amazon EKS cluster without an application, copy the Object URL of  `templates/ibm-liberty-new-eks-no-app.template.yaml`
 6. From AWS console go to Cloudformation → Create Stack. When specifying a template, paste in the Object URL copied in the previous step.
 7. Follow the parameter details to fill in the values and follow UI prompts to create the stack
     1. Provide following values for these parameters:
@@ -78,7 +76,7 @@ To manually deploy a custom application, [use a
 IBM WebSphere Liberty for Amazon EKS on AWS custom resource (CR) file](https://www.ibm.com/docs/SSEQTP_liberty/opr/ae/cfg-t-main.html) that sets parameter values for your application image deployment.
 
 ### Troubleshooting
-For troubleshooting common Quick Start issues, refer to the [AWS Quick Start General Information Guide](https://fwd.aws/rA69w?) and [Troubleshooting CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/troubleshooting.html).
+For troubleshooting common Partner Solution issues, refer to the [AWS Partner Solutions General Information Guide](https://fwd.aws/rA69w?) and [Troubleshooting CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/troubleshooting.html).
 
 ### FAQs
 Review the [frequently asked questions](docs/deployment_guide/FAQs.md) for this solution.
