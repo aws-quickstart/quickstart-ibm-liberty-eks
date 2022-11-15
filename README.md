@@ -38,7 +38,7 @@ To use IBM WebSphere Liberty, ensure that you have an active [WebSphere entitlem
 - Standalone product editions:
     - IBM WebSphere Application Server
     - IBM WebSphere Application Server Liberty Core
-    - IBM WebSphere Application Server NetworkDeployment
+    - IBM WebSphere Application Server Network Deployment
 - Other product entitlement sources:
     - IBM WebSphere Hybrid Edition
     - IBM Cloud Pak for Applications
