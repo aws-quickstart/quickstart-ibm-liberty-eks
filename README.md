@@ -9,7 +9,7 @@ Use this Partner Solution (formerly Quick Start) to provision a highly-available
 ### Architecture
 Deploying this Partner Solution  builds the following WebSphere Liberty environment in the AWS Cloud.
 
-![Architecture for IBM WebSphere Liberty for Amazon EKS](https://github.com/quickstart-ibm-liberty-eks/blob/docs/deployment_guide/images/architecture_diagram.png)
+![Architecture for IBM WebSphere Liberty for Amazon EKS](docs/deployment_guide/images/architecture_diagram.png)
 
 - A virtual private cloud (VPC) configured across two Availability Zones. In each Availability Zone, this solution provisions one public subnet and one private subnet. This creates a logically isolated networking environment that you can connect to your on-premises data centers or use as a standalone environment.
 - In the public subnets:
@@ -69,8 +69,8 @@ aws s3 cp quickstart-ibm-liberty-eks s3://<bucket-name>/quickstart-ibm-liberty-e
 9. To view the created resources, choose the Outputs tab.
 
 ### Postdeployment steps
-1. [Deploy License Service](https://www.ibm.com/docs/SSHKN6/license-service/1.x.x/standalone-LS.html) on your Kubernetes cluster.License Service is required to measure and track license use of IBM Containerized Software such as WebSphere Liberty application. Manual license measurements are not allowed.
-2. If you selected to deploy the sample or a custom application, launch the application. From the Outputs tab of the main stack, click the value of the `AppEndpoint` key
+1. [Deploy License Service](https://www.ibm.com/docs/SSHKN6/license-service/1.x.x/standalone-LS.html) on your Kubernetes cluster. License Service is required to measure and track license use of IBM Containerized Software such as WebSphere Liberty application. Manual license measurements are not allowed.
+2. If you selected to deploy the sample or a custom application, launch the application. From the _Outputs_ tab of the main stack, click the value of the `AppEndpoint` key
 
 To manually deploy a custom application, [use a
 IBM WebSphere Liberty for Amazon EKS on AWS custom resource (CR) file](https://www.ibm.com/docs/SSEQTP_liberty/opr/ae/cfg-t-main.html) that sets parameter values for your application image deployment.
@@ -93,4 +93,4 @@ After you deploy a Partner Solution, confirm that your resources and services ar
 ### Feedback
 To post feedback, submit feature ideas, or report bugs, use the **Issues** section of this GitHub repo. 
 
-To submit code for this Quick Start, see the [AWS Quick Start Contributor's Kit](https://aws-quickstart.github.io/).
+To submit code for this Partner Solution, see the [AWS Quick Start Contributor's Kit](https://aws-quickstart.github.io/).
