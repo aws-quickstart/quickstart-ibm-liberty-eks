@@ -1,21 +1,28 @@
-//Include any predeployment steps here, such as signing up for a Marketplace AMI or making any changes to a partner account. If there are no predeployment steps, leave this file empty.
-
 == Predeployment steps
 
-Before you launch the Partner Solution, see the https://fwd.aws/rA69w?[AWS Partner Solution General Information Guide]. You need an AWS account, IAM permissions, and familiarity with AWS services and the AWS CLI.
+Before you launch the {partner-product-short-name} Partner Solution, complete the following.
 
-Also, complete the following predeployment steps.
+=== Set up your AWS account
 
-=== Existing license
+Set up AWS Identity and Access Management (IAM) permissions in your AWS account, and familiarize yourself with AWS services and AWS Command Line Interface (AWS CLI). Consider making the IAM users or roles administrators of the EKS cluster, and set up the Kubernetes CLI to manage your cluster from the command line.
 
-Confirm that you have a valid license to use {partner-product-short-name}. See <<#_costs_and_licenses>>.
+For more information, refer to the https://fwd.aws/rA69w?[AWS Partner Solution General Information Guide^]. 
 
+//TODO Vinod, Does the second sentence basically repeat what we say later under "Download and configure the Kubernetes CLI"? 
 
-=== Resource quotas
+//TODO Vinod, Can IAM users and roles be made administrators of the EKS cluster prior to deployment?
 
-This deployment uses the resource quotas in <<#_table1>>. If necessary, request https://console.aws.amazon.com/servicequotas[service quota increases].
+//TODO Vinod, Which AWS services are we referring to in the first sentence? I suggest that we delete this "Set up your AWS account" section. We don't normally include it any more since this content is covered in the General Info Guide.
 
-[#_table1]
+=== Check your license
+
+Confirm that you have a license that entitles you to use {partner-product-short-name}. Refer to <<#_costs_and_licenses>> earlier in this guide.
+
+=== Check your resource quotas
+
+Check the resource quotas listed in <<#_resource_table>>. If necessary, request https://console.aws.amazon.com/servicequotas[service quota increases]. 
+
+[#_resource_table]
 .Deployment resource quotas
 [cols="1,1"]
 |===
@@ -26,30 +33,34 @@ This deployment uses the resource quotas in <<#_table1>>. If necessary, request 
 |VPC subnets | 4
 |Elastic IP addresses | 1
 |Security groups | 3
-|AWS Identity and Access Management (IAM) roles | 4
+|IAM roles | 4
 |Classic Load Balancer | 1
-|EC2 Instance, t2.micro | 1
-|EC2 Instance, m5.large | 2
+|EC2 instance, t2.micro | 1
+|EC2 instance, m5.large | 2
 |ECR repositories | 1
 |SSM associations | 2
 |Lambda functions | 2
 |EKS clusters | 1
 |===
 
+//TODO Vinod, I haven't seen a resource table like this or references to quotas in a deployment guide in a long time. We cover the topic at a high level in our General Info Guide. Is there a special need to include this section in this case?
 
-=== Other considerations
+=== Download and configure the Kubernetes CLI
 
-Before deployment, you might consider the IAM users or roles to make administrators of the EKS cluster, and get the Kubernetes CLI to manage your cluster from the command line.
+Download and configure the Kubernetes CLI so that you can manage deployed applications and resources with `kubectl` commands. For more information, refer to https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html[Installing or updating kubectl^].
 
-==== EKS cluster access
+//TODO Vinod, Does this section basically repeating what we said earlier about the Kubernetes CLI (under "Set up your AWS account")? Please revise to avoid redundancy.
 
-By default, you can access the EKS cluster from the boot node only. To enable direct access to the EKS cluster, provide a list of IAM entity ARNs in the *Additional EKS administrator ARNs (IAM users or roles)* parameter. Specify your and other's IAM entity ARNs in a comma-delimited list. Any IAM entity ARNs in this parameter can access the EKS cluster after the deployment.
+=== (Optional) Note the ARNs that need to access the EKS cluster
 
-For more information, see the <<#_how_do_i_connect_to_the_eks_cluster>> FAQ.
+By default, you can access the EKS cluster from the boot node only. If you want to enable direct access to the EKS cluster, prepare a list of IAM entity Amazon Resource Names (ARNs) that need to have this access. When you deploy this solution, you'll enter those ARNS in a comma-delimited list in the parameter *Additional EKS administrator ARNs (IAM users or roles)*.
 
-==== Kubernetes CLI
+For more information, refer to <<#_how_do_i_connect_to_the_eks_cluster>> later in this guide.
 
-Download and configure the https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html[Kubernetes command-line interface (CLI)] so that you can manage deployed applications and resources with `kubectl` commands.
+//TODO Marcia, Remember to align this guidance with that parameter description.
 
-[TIP]
-To monitor progress during deployment, view <<#_cloudwatch_log_streams>>.
+=== (Optional) Prepare to monitor your deployment
+
+During deployment, you can monitor progress by viewing log data. To learn how to do this, refer to <<#_cloudwatch_log_streams>> later in this guide.
+
+//TODO Marcia to spell out product names, check links & cross refs throughout doc.

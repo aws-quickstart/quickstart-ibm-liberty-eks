@@ -1,15 +1,24 @@
-// Include details about any licenses and how to sign up. Provide links as appropriate.
+:xrefstyle: short
 
-You are responsible for the cost of the AWS services used while running this Partner Solution. You will be billed for any AWS services or resources that this Partner Solution deploys. For more information, refer to the https://fwd.aws/rA69w?[AWS Partner Solution General Information Guide^].
+There is no cost to use this Partner Solution, but you will be billed for any AWS services or resources that this Partner Solution deploys. For more information, refer to the https://fwd.aws/rA69w?[AWS Partner Solution General Information Guide^].
 
-To use {partner-product-name} on the AWS Cloud, you must have a valid license to use {partner-product-short-name}.
-Ensure that you have an https://www.ibm.com/software/passportadvantage/pao_customer.html[active WebSphere entitlement]. A valid license to any of the following products grants you entitlement to use {partner-product-short-name}. Read the https://ibm.biz/was-license[license information for WebSphere Liberty Operator].
+To use {partner-product-name}, you must be entitled to use {partner-product-short-name} by having a valid license to any of the products listed in <<#_license_table>>. 
 
-* Standalone product editions:
-** IBM WebSphere Application Server
-** IBM WebSphere Application Server Liberty Core
-** IBM WebSphere Application Server Network Deployment
-* Other product entitlement sources:
-** IBM WebSphere Hybrid Edition
-** IBM Cloud Pak for Applications
-** IBM WebSphere Application Server Family Edition
+[#_license_table]
+.Products that entitle you to use {partner-product-short-name}
+[cols="1,1"]
+|===
+|Standalone product editions |Other product entitlement sources
+
+// Space needed to maintain table headers
+a|* IBM WebSphere Application Server
+* IBM WebSphere Application Server Liberty Core
+* IBM WebSphere Application Server Network Deployment a| * IBM WebSphere Hybrid Edition
+* IBM Cloud Pak for Applications
+* IBM WebSphere Application Server Family Edition
+|===
+
+More information:
+
+* https://www.ibm.com/software/passportadvantage/pao_customer.html[Passport Advantage Online for Customers^]
+* https://www.ibm.com/docs/en/was-liberty/base?topic=installation-viewing-license-information[Viewing license information for WebSphere Liberty operator^]
