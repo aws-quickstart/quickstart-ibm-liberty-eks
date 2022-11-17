@@ -1,8 +1,8 @@
-// Add any unique troubleshooting steps here.
-
 For troubleshooting common Partner Solution issues, refer to the https://fwd.aws/rA69w?[AWS Partner Solution General Information Guide^] and https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/troubleshooting.html[Troubleshooting CloudFormation^].
 
-Review frequently asked questions for this Partner Solution.
+== FAQ
+
+//TODO Vinod, We don't include FAQs in deployment guides any more, so I haven't edited this .adoc file. We encourage partners to move this type of content to their own website where they can maintain it. As a last resort, you could create an operations guide that we maintain.
 
 .General FAQs
 * <<#_how_do_i_connect_to_the_eks_cluster>>
@@ -67,8 +67,9 @@ eksctl create iamidentitymapping --cluster "<cluster_name>" --region "<cluster_r
 
 ===== CloudWatch log streams
 
-During or after deployment, and even after a failed deployment, you can view log data in https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/Working-with-log-groups-and-streams.html[Amazon CloudWatch log streams]. Access log streams from a log groups search in the https://console.aws.amazon.com/cloudwatch/[CloudWatch console].
+To view Amazon CloudWatch Logs data during or after deployment, even after a failed deployment, follow these steps.
 
+. Access log streams from a log groups search in the https://console.aws.amazon.com/cloudwatch/[CloudWatch console].
 . In the navigation pane, click *Logs* and then *Log groups*.
 . On the Log groups page, enter the stack name in the search bar.
 . From the *Log streams* tab of the log group details, select the log stream to view.
@@ -78,6 +79,8 @@ After deployment, you can also view log streams from the *Outputs* tab for your 
 . Click the *Outputs* tab for your main stack.
 . Click the value of the _CloudWatchInstallLogs_ key.
 . From the *Log streams* tab of the log group details, select the output logs.
+
+ For more information, refer to https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/Working-with-log-groups-and-streams.html[Working with log groups and log streams^] in the Amazon CloudWatch Logs User Guide. 
 
 ===== Lambda function logs
 
@@ -159,5 +162,7 @@ In the ticket, describe the error. If the error is difficult to describe, then p
 The <<#_where_are_the_deployment_logs>> FAQ explains how to find deployment logs. See https://www.ibm.com/docs/SSEQTP_liberty/opr/ae/t-troubleshooting.html#t-troubleshooting__must-gather[Gathering information about clusters with MustGather] to learn how to use MustGather to collect information for a Support Ticket.
 
 
+//TODO Vinod, Whichever links we may want to keep in the deployment guide would go into a "Resources" section at the end... 
+
 //== Resources
-// Uncomment section and add links to any external resources that are specified by the partner.
+// Uncomment this section and add links to any external resources that are specified by the partner.

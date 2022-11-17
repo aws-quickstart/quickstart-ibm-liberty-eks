@@ -1,10 +1,14 @@
-// Include any postdeployment steps here, such as steps necessary to test that the deployment was successful. If there are no postdeployment steps, leave this file empty.
-
 == Postdeployment steps
 
-. https://www.ibm.com/docs/SSHKN6/license-service/1.x.x/standalone-LS.html[Deploy License Service] on your Kubernetes cluster. License Service is required to measure and track license use of IBM Containerized Software such as {partner-product-short-name} application. Manual license measurements are not allowed.
-. If you selected to deploy the sample or a custom application, launch the application. From the *Outputs* tab of the main stack, click the value of the _AppEndpoint_ key.
+. Deploy License Service on your Kubernetes cluster. 
++
+License Service is required to measure and track license use of IBM containerized software, such as the {partner-product-short-name} application. Manual license measurements are not allowed. For more information, refer to https://www.ibm.com/docs/SSHKN6/license-service/1.x.x/standalone-LS.html[Tracking license usage of stand-alone IBM Containerized Software^].
 
-For general information about your deployment, see the <<#_how_do_i_get_information_about_my_deployment>> FAQ.
+. If you deployed an application, either the sample that came with this Partner Solution or a custom application, launch it to confirm that it works. 
+.. Go to the main stack.
+.. Choose the *Outputs* tab.
+.. Choose the value of the `AppEndpoint` key.
 
-To manually deploy a custom application, https://www.ibm.com/docs/SSEQTP_liberty/opr/ae/cfg-t-main.html[use a WebSphereLibertyApplication custom resource (CR) file] that sets parameter values for your application image deployment.
+. (Optional) Manually deploy a custom application using a `WebSphereLibertyApplication` custom resource (CR) file that sets parameter values for your application image. For more information, refer to https://www.ibm.com/docs/SSEQTP_liberty/opr/ae/cfg-t-main.html[Using the WebSphere Liberty operator^].
+
+. (Optional) Get general information about your deployment. See <<#_how_do_i_get_information_about_my_deployment>> later in this guide.

@@ -1,9 +1,8 @@
-// Edit this placeholder text as necessary to describe the deployment options.
-
 This Partner Solution provides the following deployment options:
 
-* http://qs_launch_permalink[Deploy into a new VPC and a new Amazon EKS cluster with an application^]. This option builds a new AWS environment that consists of the VPC, subnets, NAT gateways, security groups, boot node, and other infrastructure components. It then creates a new EKS into this new VPC and deploys {partner-product-short-name} Operator, an application, and related artifacts into this EKS cluster.
-// * http://qs_launch_permalink[Deploy {partner-product-short-name} into an existing VPC^]. This option provisions {partner-product-short-name} in your existing AWS infrastructure.
-* http://qs_launch_permalink[Deploy into a new VPC and a new Amazon EKS cluster without an application^]. This option builds a new AWS environment that consists of the VPC, subnets, NAT gateways, security groups, boot node, and other infrastructure components. This option then creates a new EKS into this new VPC and deploys {partner-product-short-name} Operator and related artifacts into this EKS cluster.
+* http://qs_launch_permalink[Deploy into a new VPC and a new Amazon EKS cluster with a sample application^]. This option builds a new AWS environment that consists of the VPC, subnets, NAT gateways, security groups, boot node, and other infrastructure components. It then creates a new EKS into this new VPC and deploys an {partner-product-short-name} operator, an application, and related artifacts into this EKS cluster.
+* http://qs_launch_permalink[Deploy into a new VPC and a new Amazon EKS cluster with no application^]. This option builds the same AWS environment but without the sample application.
 
-//This Partner Solution provides separate templates for these options. It also lets you configure Classless Inter-Domain Routing (CIDR) blocks, instance types, and {partner-product-short-name} settings.
+This Partner Solution uses the same template for both options. The first option has the `<___>` parameter preset to *<___>*. For both options, you can configure Classless Inter-Domain Routing (CIDR) blocks, instance types, and <___> settings.
+
+//TODO Vinod, Please edit the final paragraph for accuracy. This paragraph is just a placeholder based on a recent EKS doc.

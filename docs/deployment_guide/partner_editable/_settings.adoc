@@ -1,5 +1,5 @@
-:quickstart-project-name: quickstart-ibm-liberty-eks
-:quickstart-github-org: aws-quickstart
+:partner-solution-project-name: quickstart-ibm-liberty-eks
+:partner-solution-github-org: aws-quickstart
 :partner-product-name: IBM WebSphere Liberty for Amazon EKS
 :partner-product-short-name: WebSphere Liberty
 :partner-company-name: IBM
@@ -7,7 +7,7 @@
 :doc-year: 2022
 :partner-contributors: Ranjan Kumar, Venu Beyagudem, Paul Baity, Jarek Gawor, Barbara Jones, and Pam Helyar, {partner-company-name}
 // :other-contributors: Akua Mansa, Trek10
-:aws-contributors: Senthil Nagaraj, AWS Partner team
+:aws-contributors: Senthil Nagaraj, AWS IBM Alliance team
 :aws-ia-contributors: Troy Lindsay and Vinod Shukla, AWS Integration & Automation team
 :deployment_time: 20 minutes
 :default_deployment_region: us-east-1
