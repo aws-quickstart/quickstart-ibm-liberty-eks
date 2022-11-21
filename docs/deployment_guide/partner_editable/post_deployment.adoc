@@ -1,6 +1,6 @@
 == Postdeployment steps
 
-. Deploy License Service on your Kubernetes cluster. 
+. Deploy License Service on your EKS cluster. 
 +
 License Service is required to measure and track license use of IBM containerized software, such as the {partner-product-short-name} application. Manual license measurements are not allowed. For more information, refer to https://www.ibm.com/docs/SSHKN6/license-service/1.x.x/standalone-LS.html[Tracking license usage of stand-alone IBM Containerized Software^].
 
@@ -10,5 +10,3 @@ License Service is required to measure and track license use of IBM containerize
 .. Choose the value of the `AppEndpoint` key.
 
 . (Optional) Manually deploy a custom application using a `WebSphereLibertyApplication` custom resource (CR) file that sets parameter values for your application image. For more information, refer to https://www.ibm.com/docs/SSEQTP_liberty/opr/ae/cfg-t-main.html[Using the WebSphere Liberty operator^].
-
-. (Optional) Get general information about your deployment. See <<#_how_do_i_get_information_about_my_deployment>> later in this guide.
