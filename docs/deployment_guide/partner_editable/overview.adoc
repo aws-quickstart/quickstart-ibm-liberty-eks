@@ -1,1 +1,5 @@
 This guide covers the information you need to deploy the https://www.ibm.com/products/websphere-liberty[IBM {partner-product-short-name}^] operator in an Amazon Elastic Kubernetes Service (Amazon EKS) cluster. For more information, refer to https://ibm.biz/wlo-docs[Running a WebSphere Liberty operator^].
+
+For advanced information about the product, troubleshooting, or additional functionality, refer to the https://{partner-solution-github-org}.github.io/{partner-solution-project-name}/operational/index.html[Operational Guide^].
+
+//TODO Marcia add permalink.

@@ -14,15 +14,12 @@ As shown in <<architecture1>>, this Partner Solution sets up the following:
 * In the public subnets:
 ** Managed NAT gateways to allow outbound internet access for resources in the private subnets.
 ** One boot node, an Amazon Elastic Compute Cloud (Amazon EC2) instance, to access the Amazon EKS cluster.
-* In the private subnets, an EKS cluster that comprises two Amazon EKS nodes built on EC2 instances, one in each Availability Zone. Amazon EKS automates the provisioning and lifecycle management of these nodes. Each node includes the following:
-** An application pod, which <___>.
-** A WebSphere Liberty operator, which <___>.
-** A certificate manager, which <___>.
-** https://olm.operatorframework.io/[Operator Lifecycle Manager^], which <___>.
-* A Classic Load Balancer to enable HTTPS access to an application.
+* In the private subnets, an https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html[Amazon EKS managed node group^] to automate the provisioning and lifecycle management of the nodes (Amazon EC2 instances) for the EKS cluster. Each node comprises the following:
+** An application pod, a WebSphere Liberty application that's deployed as a `WebSphereLibertyApplication` custom resource.
+** WebSphere Liberty operator, a Kubernetes extension that helps you deploy and manage WebSphere Liberty applications. It watches all namespaces for `WebSphereLibertyApplication` pods and maintains the configured state.
+** A certificate manager, a X.509 certificate controller that issues certificates for secure access to the WebSphere Liberty application.
+** https://olm.operatorframework.io/[Operator Lifecycle Manager^], which manages the WebSphere Liberty operator and keeps it up to date.
+* A Classic Load Balancer to enable HTTPS access to the application.
+* Amazon EKS, which provides the Kubernetes control plane for the cluster.
 * Amazon Elastic Container Registry (Amazon ECR) to store, share, and deploy container software, such as application images and artifacts.
 * Amazon CloudWatch to monitor and track metrics for your AWS resources and applications.
-
-//TODO Vinod, In the second bullet, I used our standard description instead of this statement: "This creates a logically isolated networking environment that you can connect to your on-premises data centers or use as a standalone environment."  Do we need to specify that somewhere?
-
-//TODO Vinod, Please fill in the blanks above.
