@@ -2,7 +2,7 @@
 ## quickstart-ibm-liberty-eks
 
 ### IBM WebSphere Liberty for Amazon EKS
-Use this Partner Solution (formerly Quick Start) to provision a highly-available architecture with and EKS cluster that spans two Availability Zones, along with the [WebSphere Liberty Operator](https://ibm.biz/wlo-docs) ready for you to deploy your applications. You can use WebSphere Liberty Operator to deploy and manage Liberty applications on Kubernetes-based clusters. This Partner Solution can also deploy a provided sample application or your own custom application.
+Use this Partner Solution (formerly Quick Start) to provision a highly-available architecture with an EKS cluster that spans two Availability Zones, along with the [WebSphere Liberty Operator](https://ibm.biz/wlo-docs) ready for you to deploy your applications. You can use WebSphere Liberty Operator to deploy and manage Liberty applications on Kubernetes-based clusters. This Partner Solution can also deploy a provided sample application or your own custom application.
 
 [IBM WebSphere Liberty](https://www.ibm.com/products/websphere-liberty) is a fast, lightweight, modular, and container-friendly cloud-native runtime that supports industry standards such as Java EE, Jakarta EE, and MicroProfile.
 
