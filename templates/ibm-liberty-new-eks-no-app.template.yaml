@@ -1,8 +1,8 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: "This template deploys WebSphere Liberty Operator into a new EKS cluster in a new VPC. (qs-1tdrmii9l)"
+Description: "This template deploys a WebSphere Liberty operator into a new EKS cluster in a new VPC. (qs-1tdrmii9l)"
 Metadata:
   QuickStartDocumentation:
-    EntrypointName: Deploy into a new VPC and a new Amazon EKS cluster
+    EntrypointName: Deploy without an application
     Order: 1
   LICENSE: Apache License, Version 2.0
   AWS::CloudFormation::Interface:
@@ -15,7 +15,7 @@ Metadata:
           - AdditionalEKSAdminArns
           - AvailabilityZones
       - Label:
-          default: AWS Quick Start configuration
+          default: AWS Partner Solution configuration
         Parameters:
           - QSS3BucketName
           - QSS3KeyPrefix
@@ -24,17 +24,17 @@ Metadata:
       EKSClusterName:
         default: EKS cluster name*
       QSS3BucketName:
-        default: Quick Start S3 bucket name
+        default: Partner Solution S3 bucket name
       QSS3BucketRegion:
-        default: Quick Start S3 bucket Region
+        default: Partner Solution S3 bucket Region
       QSS3KeyPrefix:
-        default: Quick Start S3 key prefix
+        default: Partner Solution S3 key prefix
       AdditionalEKSAdminArns:
-        default: Additional EKS administrator ARNs (IAM users or roles)
+        default: Additional EKS administrator ARNs
       SetupNewECR:
         default: Set up new private ECR
       AvailabilityZones:
-        default: Availability zones*
+        default: Availability Zones*
 
 
 Parameters:
@@ -51,49 +51,44 @@ Parameters:
     Default: "Yes"
     Description: If Yes, a new ECR is set up with the name <EKS cluster name>-ecr.
   QSS3BucketName:
+    MinLength: 3
+    MaxLength: 63
     Type: String
-    Description: Name of the S3 bucket for your copy of the Quick Start assets.
-      Keep the default name unless you are customizing the template.
-      Changing the name updates code references to point to a new Quick
-      Start location. This name can include numbers, lowercase letters,
-      uppercase letters, and hyphens, but must not start or end with a hyphen (-).
-      See https://aws-quickstart.github.io/option1.html.
-    AllowedPattern: ^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$
-    ConstraintDescription:
-      The Quick Start bucket name can include numbers, lowercase
-      letters, uppercase letters, and hyphens (-). It cannot start or end with a
-      hyphen (-).
+    Description: >-
+      Name of the S3 bucket for your copy of the deployment assets. Keep the default
+      name unless you are customizing the template. Changing the name updates code 
+      references to point to a new location.
+    AllowedPattern: ^[0-9a-z]+([0-9a-z-\.]*[0-9a-z])*$
+    ConstraintDescription: >-
+      The S3 bucket name can include numbers, lowercase letters, 
+      and hyphens (-), but it cannot start or end with a hyphen.
     Default: aws-quickstart
   QSS3KeyPrefix:
     Type: String
-    Description:
-      S3 key prefix that is used to simulate a directory for your copy of the
-      Quick Start assets. Keep the default prefix unless you are customizing
-      the template. Changing this prefix updates code references to point to
-      a new Quick Start location. This prefix can include numbers, lowercase
-      letters, uppercase letters, hyphens (-), and forward slashes (/). End with a forward slash.
-      See https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html
-      and https://aws-quickstart.github.io/option1.html.
-    AllowedPattern: ^([0-9a-zA-Z-.]+/)*$
-    ConstraintDescription:
-      The Quick Start S3 key prefix can include numbers, lowercase letters,
-      uppercase letters, hyphens (-), and forward slashes (/).
+    Description: >-
+      S3 key prefix that is used to simulate a folder for your copy of the 
+      deployment assets. Keep the default prefix unless you are customizing 
+      the template. Changing the prefix updates code references to point to 
+      a new location.
+    AllowedPattern: ^([0-9a-zA-Z!-_\.\*'\(\)/]+/)*$
+    ConstraintDescription: >-
+      The S3 key prefix can include numbers, lowercase letters, uppercase letters, 
+      hyphens (-), underscores (_), periods (.), asterisks (*), single quotes ('),
+      open parenthesis ((), close parenthesis ()), and forward slashes (/). End the
+      prefix with a forward slash.
     Default: quickstart-ibm-liberty-eks/
   QSS3BucketRegion:
     Type: String
     Description: >-
-      AWS Region where the Quick Start S3 bucket (QSS3BucketName) is
-      hosted. Keep the default Region unless you are customizing the template.
-      Changing this Region updates code references to point to a new Quick Start location.
-      When using your own bucket, specify the Region.
-      See https://aws-quickstart.github.io/option1.html.
+      AWS Region where the S3 bucket (QSS3BucketName) is hosted. Keep 
+      the default Region unless you are customizing the template. Changing the Region 
+      updates code references to point to a new location. When using your own bucket, 
+      specify the Region.
     Default: us-east-1
   AdditionalEKSAdminArns:
     Default: ""
     Description: >-
-      One or more IAM user or role ARNs to be granted administrative access to the new EKS cluster.
-      Use a comma-delimited list for multiple ARNs.
-      For example, "arn:aws:iam::012345678910:user/myid@example.com,
+      (Optional) One or more IAM user or role ARNs to be granted administrative access to the new EKS cluster. By default, you can access the EKS cluster from boot node only. To enter multiple ARNs, use a comma-delimited list. Example: "arn:aws:iam::012345678910:user/myid@example.com,
       arn:aws:iam::012345678910:user/otherid@example.com".
     Type: String
   AvailabilityZones:
