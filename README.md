@@ -23,8 +23,8 @@ Deploying this Partner Solution  builds the following WebSphere Liberty environm
 
 ### Deployment options
 This Partner Solution provides the following deployment options:
-- **Deploy into a new VPC and a new Amazon EKS cluster with an application**:  This option builds a new AWS environment outlined in the architecture diagram. It then deploys WebSphere Liberty Operator, an application, and related artifacts into this EKS cluster. 
-- **Deploy into a new VPC and a new Amazon EKS cluster without an application**: This option builds a new AWS environment outlined in the architecture diargam. It then deploys WebSphere Liberty Operator and related artifacts into this EKS cluster. 
+- **Deploy into a new VPC and a new Amazon EKS cluster with an application**:  This option builds a new AWS environment outlined in the architecture diagram. It then installs WebSphere Liberty Operator and related artifacts into this EKS cluster. It also deploys a sample or custom application and enables HTTPS access to the application.
+- **Deploy into a new VPC and a new Amazon EKS cluster without an application**: This option builds a new AWS environment outlined in the architecture diagram. It then installs WebSphere Liberty Operator and related artifacts into this EKS cluster. 
 
 
 ### Predeployment steps
