@@ -1,35 +1,23 @@
 For troubleshooting common Partner Solution issues, refer to the https://fwd.aws/rA69w?[AWS Partner Solution General Information Guide^] and https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/troubleshooting.html[Troubleshooting CloudFormation^].
 
-For advanced information about the product, troubleshooting, or additional functionality, refer to the https://{partner-solution-github-org}.github.io/{partner-solution-project-name}/operational/index.html[Operational Guide^].
-
-//TODO Marcia add permalink.
+For information on using this solution after it's deployed, refer to the https://fwd.aws/Q9vrR?[{partner-product-name} Partner Solution Operational Guide^].
 
 == Customer support
 
-For {partner-product-short-name} issues, open a support ticket (case) with IBM Support.
+For {partner-product-short-name} issues, open a case (support ticket) with IBM Support as follows:
 
 . Go to the https://www.ibm.com/mysupport/s/topic/0TO500000001DQQGA2/websphere-application-server[WebSphere Application Server^] or https://www.ibm.com/mysupport/s/[Let's troubleshoot^] page, and choose *Open a case*.
 . In the ticket, describe the error.
 +
 Include information that can help IBM Support determine the cause of the error. For example, you might describe your cluster configuration and the component that is failing or having issues. If the error is difficult to describe, provide a screenshot of the error. 
 
-//TODO Vinod, (I Slacked this) That first page doesn't have an *Open a case* link.
+To learn how to find deployment logs, refer to the https://fwd.aws/Q9vrR?[{partner-product-name} Partner Solution Operational Guide^].
 
-To learn how to find deployment logs, refer to the https://{partner-solution-github-org}.github.io/{partner-solution-project-name}/operational/index.html[Operational Guide^].
-
-//TODO Marcia add permalink. (Note for Vinod that we don't deep link to other guides because any edits there will break the links.)
-
-//TODO Marcia add prod name to title everywhere we refer to it.
-
-To learn how to use MustGather to collect information for a support ticket, refer to https://www.ibm.com/docs/SSEQTP_liberty/opr/ae/t-troubleshooting.html#t-troubleshooting__must-gather[Gathering information about clusters with MustGather].
-
-//TODO Marcia: Check all other internal links in this doc.
+To learn how to use MustGather to collect information for a support ticket, refer to https://www.ibm.com/docs/SSEQTP_liberty/opr/ae/t-troubleshooting.html#t-troubleshooting__must-gather[Gathering information about clusters with MustGather^].
 
 
 == Resources
 
-* https://www.ibm.com/docs/SSEQTP_liberty/opr/ae/cfg-t-viewstatus.html[Viewing operator application status]
-* https://www.ibm.com/docs/SSEQTP_liberty/opr/ae/t-troubleshooting.html[Troubleshooting WebSphere Liberty operators]
-* https://{partner-solution-github-org}.github.io/{partner-solution-project-name}/operational/index.html[Operational Guide^]
-
-//TODO Marcia add permalink & title.
+* https://www.ibm.com/docs/SSEQTP_liberty/opr/ae/cfg-t-viewstatus.html[Viewing operator application status^]
+* https://www.ibm.com/docs/SSEQTP_liberty/opr/ae/t-troubleshooting.html[Troubleshooting WebSphere Liberty operators^]
+* https://fwd.aws/Q9vrR?[{partner-product-name} Partner Solution Operational Guide^]
