@@ -48,7 +48,7 @@ Metadata:
       DeployApp:
         default: Deploy application
       EKSClusterName:
-        default: EKS cluster name*
+        default: EKS cluster name
       LicenseEdition:
         default: Edition
       LicenseProductEntitlementSource:
@@ -62,9 +62,9 @@ Metadata:
       AdditionalEKSAdminArns:
         default: Additional EKS administrator ARNs 
       SetupNewECR:
-        default: Private ECR
+        default: Set up new ECR
       AvailabilityZones:
-        default: Availability Zones*
+        default: Availability Zones
 
 Parameters:
   AvailabilityZones:
@@ -108,11 +108,11 @@ Parameters:
     Description: Deploy sample or custom application or skip application deployment. Details on sample application is available at https://github.com/OpenLiberty/sample-getting-started.
   EKSClusterName:
     Type: String
-    Description: Name of the new EKS cluster (length 2-250) (required). The name must start with a letter and contain only lowercase letters, numbers, hyphens, underscores, periods, and forward slashes.
+    Description: Name of the new EKS cluster (length 2—250 characters). The name must start with a letter and contain only lowercase letters, numbers, hyphens, underscores, periods, or forward slashes.
     MinLength: 2
     MaxLength: 250
     AllowedPattern: (?:[a-z0-9]+(?:[._-][a-z0-9]+)*/)*[a-z0-9]+(?:[._-][a-z0-9]+)*
-    ConstraintDescription: The name must start with a letter and can only contain lowercase letters, numbers, hyphens, underscores, periods and forward slashes.
+    ConstraintDescription: The name must start with a letter and contain only lowercase letters, numbers, hyphens, underscores, periods, or forward slashes.
   LicenseEdition:
     Type: String
     AllowedValues: ["IBM WebSphere Application Server", "IBM WebSphere Application Server Liberty Core", "IBM WebSphere Application Server Network Deployment"]
@@ -125,7 +125,7 @@ Parameters:
     Type: String
     AllowedValues: ["Yes", "No"]
     Default: "Yes"
-    Description: If Yes, a new ECR is set up with the name <EKS cluster name>-ecr.
+    Description: Choose No if you do not want to set up a new private ECR named <EKS cluster name>-ecr.
   QSS3BucketName:
     MinLength: 3
     MaxLength: 63
@@ -164,8 +164,8 @@ Parameters:
   AdditionalEKSAdminArns:
     Default: ""
     Description: >-
-      (Optional) One or more IAM user or role ARNs to be granted administrative access to the new EKS cluster. By default, you can access the EKS cluster from boot node only. To enter multiple ARNs, use a comma-delimited list. Example: "arn:aws:iam::012345678910:user/myid@example.com,
-      arn:aws:iam::012345678910:user/otherid@example.com".
+      "(Optional) One or more IAM user or role ARNs to be granted administrative access to the new EKS cluster. By default, you can access the EKS cluster from boot node only. To enter multiple ARNs, use a comma-delimited list. Example: arn:aws:iam::012345678910:user/myid@example.com,
+      arn:aws:iam::012345678910:user/otherid@example.com."
     Type: String
 
 Conditions:
