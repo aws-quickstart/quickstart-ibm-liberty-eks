@@ -108,11 +108,11 @@ Parameters:
     Description: Deploy the sample application or a custom application, or skip application deployment. For details on the sample application, go to https://github.com/OpenLiberty/sample-getting-started.
   EKSClusterName:
     Type: String
-    Description: Name of the new EKS cluster (2—250 characters). The name must start with a letter and contain only lowercase letters, numbers, hyphens, underscores, periods, or forward slashes.
+    Description: Name of the new EKS cluster (2—250 characters). The name must start with a letter and contain only lowercase letters, numbers, hyphens, underscores, periods, and forward slashes.
     MinLength: 2
     MaxLength: 250
     AllowedPattern: (?:[a-z0-9]+(?:[._-][a-z0-9]+)*/)*[a-z0-9]+(?:[._-][a-z0-9]+)*
-    ConstraintDescription: The name must start with a letter and contain only lowercase letters, numbers, hyphens, underscores, periods, or forward slashes.
+    ConstraintDescription: The name must start with a letter and contain only lowercase letters, numbers, hyphens, underscores, periods, and forward slashes.
   LicenseEdition:
     Type: String
     AllowedValues: ["IBM WebSphere Application Server", "IBM WebSphere Application Server Liberty Core", "IBM WebSphere Application Server Network Deployment"]

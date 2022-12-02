@@ -39,11 +39,11 @@ Metadata:
 Parameters:
   EKSClusterName:
     Type: String
-    Description: Name of the new EKS cluster (2—250 characters). The name must start with a letter and contain only lowercase letters, numbers, hyphens, underscores, periods, or forward slashes.
+    Description: Name of the new EKS cluster (2—250 characters). The name must start with a letter and contain only lowercase letters, numbers, hyphens, underscores, periods, and forward slashes.
     MinLength: 2
     MaxLength: 250
     AllowedPattern: (?:[a-z0-9]+(?:[._-][a-z0-9]+)*/)*[a-z0-9]+(?:[._-][a-z0-9]+)*
-    ConstraintDescription: The name must start with a letter and contain only lowercase letters, numbers, hyphens, underscores, periods, or forward slashes.
+    ConstraintDescription: The name must start with a letter and contain only lowercase letters, numbers, hyphens, underscores, periods, and forward slashes.
   SetupNewECR:
     Type: String
     AllowedValues: ["Yes", "No"]
