@@ -128,18 +128,18 @@ Parameters:
     Description: >-
     Choose No if you do not want to set up a new private ECR named <EKS cluster name>-ecr.
   QSS3BucketName:
-    MinLength: 3
-    MaxLength: 63
-    Type: String
-    Description: >-
-      Name of the S3 bucket for your copy of the deployment assets. Keep the default
-      name unless you are customizing the template. Changing the name updates code 
-      references to point to a new location.
     AllowedPattern: ^[0-9a-z]+([0-9a-z-\.]*[0-9a-z])*$
     ConstraintDescription: >-
       The S3 bucket name can include numbers, lowercase letters, 
       and hyphens (-), but it cannot start or end with a hyphen.
     Default: aws-quickstart
+    Description: >-
+      Name of the S3 bucket for your copy of the deployment assets. Keep the default
+      name unless you are customizing the template. Changing the name updates code 
+      references to point to a new location.
+    MinLength: 3
+    MaxLength: 63
+    Type: String
   QSS3KeyPrefix:
     Type: String
     Description: >-
