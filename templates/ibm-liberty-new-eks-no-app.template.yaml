@@ -40,7 +40,7 @@ Metadata:
 Parameters:
   EKSClusterName:
     Type: String
-    Description: Name of the new EKS cluster (length 2—250 characters). The name must start with a letter and contain only lowercase letters, numbers, hyphens, underscores, periods, or forward slashes.
+    Description: Name of the new EKS cluster (2—250 characters). The name must start with a letter and contain only lowercase letters, numbers, hyphens, underscores, periods, or forward slashes.
     MinLength: 2
     MaxLength: 250
     AllowedPattern: (?:[a-z0-9]+(?:[._-][a-z0-9]+)*/)*[a-z0-9]+(?:[._-][a-z0-9]+)*
@@ -49,7 +49,8 @@ Parameters:
     Type: String
     AllowedValues: ["Yes", "No"]
     Default: "Yes"
-    Description: Choose No if you do not want to set up a new private ECR named <EKS cluster name>-ecr.
+    Description: >-
+    Choose No if you do not want to set up a new private ECR named <EKS cluster name>-ecr.
   QSS3BucketName:
     MinLength: 3
     MaxLength: 63
