@@ -2,7 +2,7 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: "This template deploys a WebSphere Liberty operator into a new EKS cluster in a new VPC. (qs-1tdrmii9l)"
 Metadata:
   QuickStartDocumentation:
-    EntrypointName: Deploy without an application
+    EntrypointName: Deploy with no application
     Order: 1
   LICENSE: Apache License, Version 2.0
   AWS::CloudFormation::Interface:
