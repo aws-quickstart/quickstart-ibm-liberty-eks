@@ -164,8 +164,8 @@ Parameters:
   AdditionalEKSAdminArns:
     Default: ""
     Description: >-
-      "(Optional) One or more IAM user or role ARNs to be granted administrative access to the new EKS cluster. By default, you can access the EKS cluster from boot node only. To enter multiple ARNs, use a comma-delimited list. Example: arn:aws:iam::012345678910:user/myid@example.com,
-      arn:aws:iam::012345678910:user/otherid@example.com."
+      (Optional) One or more IAM user or role ARNs to be granted administrative access to the new EKS cluster. By default, you can access the EKS cluster from boot node only. To enter multiple ARNs, use a comma-delimited list. Example: arn:aws:iam::012345678910:user/myid@example.com,
+      arn:aws:iam::012345678910:user/otherid@example.com.
     Type: String
 
 Conditions:
