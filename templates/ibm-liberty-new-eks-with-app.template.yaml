@@ -60,7 +60,7 @@ Metadata:
       QSS3KeyPrefix:
         default: Partner Solution S3 key prefix
       AdditionalEKSAdminArns:
-        default: Additional EKS administrator ARNs 
+        default: Additional EKS administrator ARNs
       SetupNewECR:
         default: Set up new ECR
       AvailabilityZones:
@@ -75,7 +75,7 @@ Parameters:
     AllowedValues: ["Accept: Proceed with the installation", "Decline: Exit without installing"]
     Description: >-
       Choose Accept to accept the terms on the license agreement corresponding to the version of IBM program
-      in the application container. See https://ibm.biz/was-license 
+      in the application container. See https://ibm.biz/was-license
       for the license agreement applicable to this IBM program. You must accept the license if you are deploying the sample application or a custom application.
     ConstraintDescription: You must accept the license (https://ibm.biz/was-license) to proceed with installation.
   AppContainerImageURL:
@@ -126,16 +126,16 @@ Parameters:
     AllowedValues: ["Yes", "No"]
     Default: "Yes"
     Description: >-
-    Choose No if you do not want to set up a new private ECR named <EKS cluster name>-ecr.
+      Choose No if you do not want to set up a new private ECR named <EKS cluster name>-ecr.
   QSS3BucketName:
     AllowedPattern: ^[0-9a-z]+([0-9a-z-\.]*[0-9a-z])*$
     ConstraintDescription: >-
-      The S3 bucket name can include numbers, lowercase letters, 
+      The S3 bucket name can include numbers, lowercase letters,
       and hyphens (-), but it cannot start or end with a hyphen.
     Default: aws-quickstart
     Description: >-
       Name of the S3 bucket for your copy of the deployment assets. Keep the default
-      name unless you are customizing the template. Changing the name updates code 
+      name unless you are customizing the template. Changing the name updates code
       references to point to a new location.
     MinLength: 3
     MaxLength: 63
@@ -143,13 +143,13 @@ Parameters:
   QSS3KeyPrefix:
     Type: String
     Description: >-
-      S3 key prefix that is used to simulate a folder for your copy of the 
-      deployment assets. Keep the default prefix unless you are customizing 
-      the template. Changing the prefix updates code references to point to 
+      S3 key prefix that is used to simulate a folder for your copy of the
+      deployment assets. Keep the default prefix unless you are customizing
+      the template. Changing the prefix updates code references to point to
       a new location.
     AllowedPattern: ^([0-9a-zA-Z!-_\.\*'\(\)/]+/)*$
     ConstraintDescription: >-
-      The S3 key prefix can include numbers, lowercase letters, uppercase letters, 
+      The S3 key prefix can include numbers, lowercase letters, uppercase letters,
       hyphens (-), underscores (_), periods (.), asterisks (*), single quotes ('),
       open parenthesis ((), close parenthesis ()), and forward slashes (/). End the
       prefix with a forward slash.
@@ -157,9 +157,9 @@ Parameters:
   QSS3BucketRegion:
     Type: String
     Description: >-
-      AWS Region where the S3 bucket (QSS3BucketName) is hosted. Keep 
-      the default Region unless you are customizing the template. Changing the Region 
-      updates code references to point to a new location. When using your own bucket, 
+      AWS Region where the S3 bucket (QSS3BucketName) is hosted. Keep
+      the default Region unless you are customizing the template. Changing the Region
+      updates code references to point to a new location. When using your own bucket,
       specify the Region.
     Default: us-east-1
   AdditionalEKSAdminArns:
