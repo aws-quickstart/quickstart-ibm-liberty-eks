@@ -1,0 +1,1 @@
+This document goes over troubleshooting information deployed as part of the Partner Solution {partner-product-name} on the AWS Cloud. Refer to https://aws-quickstart.github.io/quickstart-ibm-liberty-eks/[deployment guide^] for details.
