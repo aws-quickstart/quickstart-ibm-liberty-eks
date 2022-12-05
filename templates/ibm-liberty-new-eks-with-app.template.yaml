@@ -1,8 +1,8 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: "This template deploys WebSphere Liberty Operator and application into a new EKS cluster in a new VPC. (qs-1tdrllesf)"
+Description: "This template deploys a WebSphere Liberty operator and application into a new EKS cluster in a new VPC. (qs-1tdrllesf)"
 Metadata:
   QuickStartDocumentation:
-    EntrypointName: Deploy into a new VPC and a new Amazon EKS cluster
+    EntrypointName: Deploy with an application
     Order: 1
   LICENSE: Apache License, Version 2.0
   AWS::CloudFormation::Interface:
@@ -29,16 +29,16 @@ Metadata:
           - LicenseProductEntitlementSource
           - AcceptLicense
       - Label:
-          default: AWS Quick Start configuration
+          default: AWS Partner Solution configuration
         Parameters:
           - QSS3BucketName
           - QSS3KeyPrefix
           - QSS3BucketRegion
     ParameterLabels:
       AcceptLicense:
-        default: Accept (https://ibm.biz/was-license)
+        default: Accept license
       AppContainerImageURL:
-        default: Custom application image
+        default: Application container image URL
       AppName:
         default: Application name
       AppNamespace:
@@ -48,23 +48,23 @@ Metadata:
       DeployApp:
         default: Deploy application
       EKSClusterName:
-        default: EKS cluster name*
+        default: EKS cluster name
       LicenseEdition:
-        default: Edition
+        default: License edition
       LicenseProductEntitlementSource:
-        default: Product entitlement source
+        default: License product entitlement source
       QSS3BucketName:
-        default: Quick Start S3 bucket name
+        default: Partner Solution S3 bucket name
       QSS3BucketRegion:
-        default: Quick Start S3 bucket Region
+        default: Partner Solution S3 bucket Region
       QSS3KeyPrefix:
-        default: Quick Start S3 key prefix
+        default: Partner Solution S3 key prefix
       AdditionalEKSAdminArns:
-        default: Additional EKS administrator ARNs (IAM users or roles)
+        default: Additional EKS administrator ARNs
       SetupNewECR:
-        default: Private ECR
+        default: Set up new ECR
       AvailabilityZones:
-        default: Availability zones*
+        default: Availability Zones
 
 Parameters:
   AvailabilityZones:
@@ -74,20 +74,20 @@ Parameters:
     Type: String
     AllowedValues: ["Accept: Proceed with the installation", "Decline: Exit without installing"]
     Description: >-
-      I accept the terms on the license agreement corresponding to the version of IBM program
-      in the application container by setting this value to true. See https://ibm.biz/was-license
-      for the license agreement applicable to this IBM program. You must accept the license if you are deploying sample or custom application.
+      Choose Accept to accept the terms on the license agreement corresponding to the version of IBM program
+      in the application container. See https://ibm.biz/was-license
+      for the license agreement applicable to this IBM program. You must accept the license if you are deploying the sample application or a custom application.
     ConstraintDescription: You must accept the license (https://ibm.biz/was-license) to proceed with installation.
   AppContainerImageURL:
     Type: String
     Description: >-
-      For example, icr.io/appcafe/open-liberty/samples/getting-started. This value is only required when "Deploy application" is set to "Custom". The image must be accessible without any credentials.
+      Custom URL for the application container image. Example: icr.io/appcafe/open-liberty/samples/getting-started. This value is required only when DeployApp is set to Custom. The image must be accessible without any credentials.
     AllowedPattern: ^(?:(?=[^:\/]{4,253})(?!-)[a-zA-Z0-9-]{1,63}(?<!-)(?:\\.(?!-)[a-zA-Z0-9-]{1,63}(?<!-))*(?::[0-9]{1,5})?/)?((?![._-])(?:[a-z0-9._-]*)(?<![._-])(?:/(?![._-])[a-z0-9._-]*(?<![._-]))*)(?::(?![.-])[a-zA-Z0-9_.-]{1,128})?$
     ConstraintDescription: The value must be a valid application image path. For example, icr.io/appcafe/open-liberty/samples/getting-started
   AppName:
     Type: String
     Default: "websphereliberty-app-sample"
-    Description: Name of application to deploy.
+    Description: Name of the application to deploy.
     AllowedPattern: (?:[a-z0-9]+(?:[._-][a-z0-9]+)*/)*[a-z0-9]+(?:[._-][a-z0-9]+)*
     ConstraintDescription: The name must start with a letter and can only contain lowercase letters, numbers, hyphens, underscores, periods and forward slashes.
   AppNamespace:
@@ -105,72 +105,68 @@ Parameters:
     Type: String
     AllowedValues: [ "Sample", "Custom" ]
     Default: "Sample"
-    Description: Deploy sample or custom application or skip application deployment. Details on sample application is available at https://github.com/OpenLiberty/sample-getting-started.
+    Description: Deploy the sample application or a custom application, or skip application deployment. For details on the sample application, go to https://github.com/OpenLiberty/sample-getting-started.
   EKSClusterName:
     Type: String
-    Description: Name of the new EKS cluster (length 2-250) (required). The name must start with a letter and contain only lowercase letters, numbers, hyphens, underscores, periods, and forward slashes.
+    Description: Name of the new EKS cluster (2—250 characters). The name must start with a letter and contain only lowercase letters, numbers, hyphens, underscores, periods, and forward slashes.
     MinLength: 2
     MaxLength: 250
     AllowedPattern: (?:[a-z0-9]+(?:[._-][a-z0-9]+)*/)*[a-z0-9]+(?:[._-][a-z0-9]+)*
-    ConstraintDescription: The name must start with a letter and can only contain lowercase letters, numbers, hyphens, underscores, periods and forward slashes.
+    ConstraintDescription: The name must start with a letter and contain only lowercase letters, numbers, hyphens, underscores, periods, and forward slashes.
   LicenseEdition:
     Type: String
     AllowedValues: ["IBM WebSphere Application Server", "IBM WebSphere Application Server Liberty Core", "IBM WebSphere Application Server Network Deployment"]
-    Description:  Product edition.
+    Description:  Product edition for your license.
   LicenseProductEntitlementSource:
     Type: String
     AllowedValues: ["Standalone", "IBM WebSphere Hybrid Edition", "IBM Cloud Pak for Applications", "IBM WebSphere Application Server Family Edition"]
-    Description: Entitlement source for the product. Select "Standalone" if the entitlement source is IBM WebSphere Application Server, IBM WebSphere Application Server Liberty Core, or IBM WebSphere Application Server Network Deployment.
+    Description: Entitlement source for the product. Select Standalone if the entitlement source is IBM WebSphere Application Server, IBM WebSphere Application Server Liberty Core, or IBM WebSphere Application Server Network Deployment.
   SetupNewECR:
     Type: String
     AllowedValues: ["Yes", "No"]
     Default: "Yes"
-    Description: If Yes, a new ECR is set up with the name <EKS cluster name>-ecr.
+    Description: >-
+      Choose No if you do not want to set up a new private ECR named <EKS cluster name>-ecr.
   QSS3BucketName:
-    Type: String
-    Description: Name of the S3 bucket for your copy of the Quick Start assets.
-      Keep the default name unless you are customizing the template.
-      Changing the name updates code references to point to a new Quick
-      Start location. This name can include numbers, lowercase letters,
-      uppercase letters, and hyphens, but must not start or end with a hyphen (-).
-      See https://aws-quickstart.github.io/option1.html.
-    AllowedPattern: ^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$
-    ConstraintDescription:
-      The Quick Start bucket name can include numbers, lowercase
-      letters, uppercase letters, and hyphens (-). It cannot start or end with a
-      hyphen (-).
+    AllowedPattern: ^[0-9a-z]+([0-9a-z-\.]*[0-9a-z])*$
+    ConstraintDescription: >-
+      The S3 bucket name can include numbers, lowercase letters,
+      and hyphens (-), but it cannot start or end with a hyphen.
     Default: aws-quickstart
+    Description: >-
+      Name of the S3 bucket for your copy of the deployment assets. Keep the default
+      name unless you are customizing the template. Changing the name updates code
+      references to point to a new location.
+    MinLength: 3
+    MaxLength: 63
+    Type: String
   QSS3KeyPrefix:
     Type: String
-    Description:
-      S3 key prefix that is used to simulate a directory for your copy of the
-      Quick Start assets. Keep the default prefix unless you are customizing
-      the template. Changing this prefix updates code references to point to
-      a new Quick Start location. This prefix can include numbers, lowercase
-      letters, uppercase letters, hyphens (-), and forward slashes (/). End with a forward slash.
-      See https://docs.aws.amazon.com/AmazonS3/latest/dev/UsingMetadata.html
-      and https://aws-quickstart.github.io/option1.html.
-    AllowedPattern: ^([0-9a-zA-Z-.]+/)*$
-    ConstraintDescription:
-      The Quick Start S3 key prefix can include numbers, lowercase letters,
-      uppercase letters, hyphens (-), and forward slashes (/).
+    Description: >-
+      S3 key prefix that is used to simulate a folder for your copy of the
+      deployment assets. Keep the default prefix unless you are customizing
+      the template. Changing the prefix updates code references to point to
+      a new location.
+    AllowedPattern: ^([0-9a-zA-Z!-_\.\*'\(\)/]+/)*$
+    ConstraintDescription: >-
+      The S3 key prefix can include numbers, lowercase letters, uppercase letters,
+      hyphens (-), underscores (_), periods (.), asterisks (*), single quotes ('),
+      open parenthesis ((), close parenthesis ()), and forward slashes (/). End the
+      prefix with a forward slash.
     Default: quickstart-ibm-liberty-eks/
   QSS3BucketRegion:
     Type: String
     Description: >-
-      AWS Region where the Quick Start S3 bucket (QSS3BucketName) is
-      hosted. Keep the default Region unless you are customizing the template.
-      Changing this Region updates code references to point to a new Quick Start location.
-      When using your own bucket, specify the Region.
-      See https://aws-quickstart.github.io/option1.html.
+      AWS Region where the S3 bucket (QSS3BucketName) is hosted. Keep
+      the default Region unless you are customizing the template. Changing the Region
+      updates code references to point to a new location. When using your own bucket,
+      specify the Region.
     Default: us-east-1
   AdditionalEKSAdminArns:
     Default: ""
     Description: >-
-      One or more IAM user or role ARNs to be granted administrative access to the new EKS cluster.
-      Use a comma-delimited list for multiple ARNs.
-      For example, "arn:aws:iam::012345678910:user/myid@example.com,
-      arn:aws:iam::012345678910:user/otherid@example.com".
+      (Optional) One or more IAM user or role ARNs to be granted administrative access to the new EKS cluster. By default, you can access the EKS cluster from boot node only. To enter multiple ARNs, use a comma-delimited list. Example: arn:aws:iam::012345678910:user/myid@example.com,
+      arn:aws:iam::012345678910:user/otherid@example.com.
     Type: String
 
 Conditions:
