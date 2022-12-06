@@ -1,6 +1,6 @@
 == Predeployment steps
 
-. Confirm that you have a license that entitles you to use IBM {partner-product-short-name}. 
+. Confirm that you have a license that entitles you to use {partner-product-short-name}. 
 +
 For more information, refer to <<#_costs_and_licenses>> earlier in this guide.
 
