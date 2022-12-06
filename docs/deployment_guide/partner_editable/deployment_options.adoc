@@ -5,5 +5,3 @@ This Partner Solution provides the following deployment options:
 * https://fwd.aws/dvmWv?[Deploy into a new VPC and a new Amazon EKS cluster with no application^]. This option builds a new AWS environment, as outlined in the architecture diagram. It then installs a {partner-product-short-name} operator and related artifacts into the EKS cluster.
 
 This Partner Solution provides separate templates for these options. It also lets you configure Classless Inter-Domain Routing (CIDR) blocks, instance types, and {partner-product-short-name} settings.
-
-//TODO Marcia to confirm that these permalinks both go where they should and that aren't pointing to the truncated URLs my machine kept creating. (python bart marciarj@amazon.com get-link -id dvmWv & qYyer)
