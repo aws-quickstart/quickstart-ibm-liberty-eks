@@ -2,10 +2,10 @@
 
 There is no cost to use this Partner Solution, but you will be billed for any AWS services or resources that this Partner Solution deploys. For more information, refer to the https://fwd.aws/rA69w?[AWS Partner Solution General Information Guide^].
 
-To use this Partner Solution, you must be entitled to use IBM {partner-product-short-name} by having a valid license to any of the products listed in <<#_license_table>>. 
+To use this Partner Solution, you must be entitled to use {partner-product-short-name} by having a valid license to any of the products listed in <<#_license_table>>. 
 
 [#_license_table]
-.Products that entitle you to use IBM {partner-product-short-name}
+.Products that entitle you to use {partner-product-short-name}
 [cols="1,1"]
 |===
 |Standalone product editions |Other product entitlement sources

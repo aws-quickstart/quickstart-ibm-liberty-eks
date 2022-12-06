@@ -1,6 +1,6 @@
 :xrefstyle: short
 
-Deploying this Partner Solution builds the following IBM {partner-product-short-name} environment in the
+Deploying this Partner Solution builds the following {partner-product-short-name} environment in the
 AWS Cloud.
 
 [#architecture1]

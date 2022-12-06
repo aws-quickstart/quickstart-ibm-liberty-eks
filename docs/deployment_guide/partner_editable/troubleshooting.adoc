@@ -4,7 +4,7 @@ For information on using this solution after it's deployed, refer to the https:/
 
 == Customer support
 
-For IBM {partner-product-short-name} issues, open a case (support ticket) with IBM Support as follows:
+For {partner-product-short-name} issues, open a case (support ticket) with IBM Support as follows:
 
 . Go to the https://www.ibm.com/mysupport/s/topic/0TO500000001DQQGA2/websphere-application-server[WebSphere Application Server^] or https://www.ibm.com/mysupport/s/[Let's troubleshoot^] page, and choose *Open a case*.
 . In the ticket, describe the error.
