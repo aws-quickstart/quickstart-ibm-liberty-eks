@@ -6,16 +6,12 @@ The steps you follow to connect to the EKS cluster depend on whether you use the
 
 === Connect with the boot node
 
-//TODO Vinod, What do we need to sign in to first? 
-
-. Go to the boot node. Look under the **Resources** tab of the boot-node stack. The node ID is listed in **Outputs** of the main stack.
+. In the AWS CloudFormation console, go to the boot node. Look under the **Resources** tab of the boot-node stack. The node ID is listed in **Outputs** of the main stack.
 . Start the boot node.
 . Enable SSH (Secure Shell) to the boot node. Add a rule to the virtual private cloud (VPC) security group that permits inbound traffic on port 22.
 . Connect to the boot node by using SSH or https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Connect-using-EC2-Instance-Connect.html[EC2 Instance Connect^] in your browser.
 
 === Connect without the boot node
-
-//TODO Vinod, What do we need to sign in to first? 
 
 . If you haven't done so already, check your Amazon Resource Name (ARN) configuration. For details, refer to the https://aws-quickstart.github.io/quickstart-ibm-liberty-eks/index.html#_predeployment_steps[predeployment steps^] in the https://fwd.aws/pGdpv?[deployment guide^].
 . Use the Kubernetes command line interface to access the EKS cluster.
@@ -92,8 +88,6 @@ SSM logs are on the boot node at `/var/log/amazon/ssm/`.
 
 
 == Get information about your deployments
-
-//TODO Vinod, I combined two sections here, as seemed logical. Does this flow okay as edited? 
 
 To get information about your {partner-product-short-name} operator and any applications you've deployed, run this command:
 ----

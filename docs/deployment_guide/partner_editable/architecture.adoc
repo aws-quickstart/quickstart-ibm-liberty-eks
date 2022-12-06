@@ -15,6 +15,9 @@ As shown in <<architecture1>>, this Partner Solution sets up the following:
 ** Managed NAT gateways to allow outbound internet access for resources in the private subnets.
 ** One boot node, an Amazon Elastic Compute Cloud (Amazon EC2) instance, to access the Amazon EKS cluster.
 * In the private subnets, an https://docs.aws.amazon.com/eks/latest/userguide/managed-node-groups.html[Amazon EKS managed node group^] to automate the provisioning and lifecycle management of the nodes (Amazon EC2 instances) for the EKS cluster. Each node comprises the following:
+** An {partner-product-short-name} operator, a Kubernetes extension that helps you deploy and manage WebSphere Liberty applications.
+** One or more optional application pods for WebSphere Liberty application, which is deployed as a custom resource.
+** An X.509 certificate manager, which issues certificates for secure access to the WebSphere Liberty application.
 ** https://olm.operatorframework.io/[Operator Lifecycle Manager^], which manages the WebSphere Liberty operator and keeps it up to date.
 ** A WebSphere Liberty operator, a Kubernetes extension that helps you deploy and manage WebSphere Liberty applications.
 ** One or more optional application pods for WebSphere Liberty application, which is deployed as a custom resource.

@@ -1,7 +1,7 @@
 :partner-solution-project-name: quickstart-ibm-liberty-eks
 :partner-solution-github-org: aws-quickstart
 :partner-product-name: IBM WebSphere Liberty for Amazon EKS
-:partner-product-short-name: WebSphere Liberty
+:partner-product-short-name: IBM WebSphere Liberty
 :partner-company-name: IBM
 :doc-month: December
 :doc-year: 2022
