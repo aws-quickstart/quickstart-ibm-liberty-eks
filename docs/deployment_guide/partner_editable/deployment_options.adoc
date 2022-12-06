@@ -1,8 +1,7 @@
-// Edit this placeholder text as necessary to describe the deployment options.
+This Partner Solution provides the following deployment options:
 
-This Quick Start provides the following deployment options:
+* https://fwd.aws/qYyer?[Deploy into a new VPC and a new Amazon EKS cluster with a sample application^]. This option builds a new AWS environment, as outlined in the architecture diagram. It then installs a {partner-product-short-name} operator and related artifacts into the EKS cluster. It also deploys a sample or custom application and enables HTTPS access to the application.
 
-* http://qs_launch_permalink[Deploy {partner-product-short-name} into a new VPC^]. This option builds a new AWS environment that consists of the VPC, subnets, NAT gateways, security groups, bastion hosts, and other infrastructure components. It then deploys {partner-product-short-name} into this new VPC.
-* http://qs_launch_permalink[Deploy {partner-product-short-name} into an existing VPC^]. This option provisions {partner-product-short-name} in your existing AWS infrastructure.
+* https://fwd.aws/dvmWv?[Deploy into a new VPC and a new Amazon EKS cluster with no application^]. This option builds a new AWS environment, as outlined in the architecture diagram. It then installs a {partner-product-short-name} operator and related artifacts into the EKS cluster.
 
-This Quick Start provides separate templates for these options. It also lets you configure Classless Inter-Domain Routing (CIDR) blocks, instance types, and {partner-product-short-name} settings.
+This Partner Solution provides separate templates for these options. It also lets you configure Classless Inter-Domain Routing (CIDR) blocks, instance types, and {partner-product-short-name} settings.

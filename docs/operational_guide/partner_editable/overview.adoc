@@ -1,0 +1,3 @@
+This guide covers information you need to use your {partner-product-name} Partner Solution. 
+
+For deployment instructions, refer to the https://fwd.aws/pGdpv?[{partner-product-name} Partner Solution Deployment Guide^].

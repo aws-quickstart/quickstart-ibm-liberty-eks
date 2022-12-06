@@ -1,0 +1,135 @@
+:xrefstyle: short
+
+== Connect to the EKS cluster
+
+The steps you follow to connect to the EKS cluster depend on whether you use the boot node. After you connect, you can use `kubectl` commands to manage your cluster. 
+
+=== Connect with the boot node
+
+. In the AWS CloudFormation console, go to the boot node. Look under the **Resources** tab of the boot-node stack. The node ID is listed in **Outputs** of the main stack.
+. Start the boot node.
+. Enable SSH (Secure Shell) to the boot node. Add a rule to the virtual private cloud (VPC) security group that permits inbound traffic on port 22.
+. Connect to the boot node by using SSH or https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/Connect-using-EC2-Instance-Connect.html[EC2 Instance Connect^] in your browser.
+
+=== Connect without the boot node
+
+. If you haven't done so already, check your Amazon Resource Name (ARN) configuration. For details, refer to the https://aws-quickstart.github.io/quickstart-ibm-liberty-eks/index.html#_predeployment_steps[predeployment steps^] in the https://fwd.aws/pGdpv?[deployment guide^].
+. Use the Kubernetes command line interface to access the EKS cluster.
++
+.. Run the following command, replacing the information in brackets:
++
+----
+aws eks update-kubeconfig --name <cluster_name> --region <cluster_region>
+----
++
+This command updates your `kubeconfig` file so that you can use `kubectl` commands to work with your cluster.
+
+.. Run any `kubectl` command, such as this one:
++
+----
+$ kubectl get pods
+----
+
+.. Confirm that the output messages show a connection to the cluster. 
++
+An `Unauthorized` error means that your IAM user or role was not granted access to the cluster. To gain access to the cluster, provide your IAM user ARN in the `AdditionalEKSAdminArns` parameter of the stack. 
+
+. If needed, ask the creator of the EKS cluster to grant access by adding your IAM user or role to the `aws-auth` Kubernetes ConfigMap in the `kube-system` namespace. This ConfigMap maps IAM entities in AWS to user accounts in the Kubernetes cluster. The following steps use https://docs.aws.amazon.com/eks/latest/userguide/eksctl.html[eksctl^].
+
+.. Get the ARN of the IAM entity to which you want to grant cluster access.
++
+* Example user ARN: `arn:aws:iam::123456789012:user/user@example.com`
+* Example role ARN: `arn:aws:iam::123456789012:role/some-role`
+
+.. Run the `eksctl` command to create a mapping for that IAM entity in the `aws-auth` ConfigMap.
++
+----
+eksctl create iamidentitymapping --cluster "<cluster_name>" --region "<cluster_region>" --arn "<arn>"
+----
+
+== Find your deployment logs
+
+=== CloudWatch log streams
+
+You can find Amazon CloudWatch log streams either from the Amazon CloudWatch console or from your AWS CloudFormation stack. 
+
+===== From the CloudWatch console
+
+During or after deployment, and even after a failed deployment, you can view log data in https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/Working-with-log-groups-and-streams.html[CloudWatch log streams^] as follows.
+
+. Open the https://console.aws.amazon.com/cloudwatch/[CloudWatch console^].
+. In the navigation pane, choose *Logs*, *Log groups*.
+. On the *Log groups* page, enter the stack name in the search bar.
+. From the *Log streams* tab of the log group details, select the log stream to view.
+
+===== From your CloudFormation stack
+
+After deployment, you can also view log streams from the *Outputs* tab for your CloudFormation stack.
+
+. Choose the *Outputs* tab for your main stack.
+. Choose the value of the `CloudWatchInstallLogs` key.
+. From the *Log streams* tab of the log group details, select the output logs.
+
+=== Lambda function logs
+
+Lambda function logs are at `/aws/lambda/` and have the file path `/aws/lambda/<name_of_lambda_resource>`.
+
+You can view Lambda function logs in CloudWatch.
+
+. From the stack *Resources* tab, select a Lambda function.
+. Choose the *Monitor* tab.
+. Choose *View logs in CloudWatch*.
+
+Nested stacks such as `IBMLibertyBootNodeStack`, `IBMLibertyEKSClusterStack`, and `IBMLibertyWorkloadStack` have a Lambda function.
+
+=== SSM logs
+
+SSM logs are on the boot node at `/var/log/amazon/ssm/`.
+
+
+== Get information about your deployments
+
+To get information about your {partner-product-short-name} operator and any applications you've deployed, run this command:
+----
+$ kubectl get deployments
+----
+
+For a list of namespaces, append `-A` (shorthand for `--all-namespaces`). The application name and its namespace depend on your input. If you did not deploy an application, then no application or `cert-manager` deployments are in your list.
+
+----
+$ kubectl get deployments -A
+
+NAMESPACE    NAME
+
+default      websphereliberty-app-sample
+kube-system  coredns
+olm          catalog-operator
+olm          olm-operator
+olm          packageserver
+operators    cert-manager
+operators    cert-manager-cainjector
+operators    cert-manager-webhook
+operators    wlo-controller-manager
+----
+
+For stack outputs, go to the *Outputs* tab for your CloudFormation stack, or go to the CloudWatch console.
+
+The CloudWatch `deployment.properties` file lists the deployment properties.
+
+
+== Recover from a failed stack
+
+If your stack fails, delete it and retry the deployment. Stack deletion deletes all the artifacts that the stack created, including the EKS cluster and everything deployed in the cluster.
+
+Stack deletion might fail due to timeouts or resource dependencies. If this happens, try to delete the failed stack again. If you installed any external components after the deployment, such as Ingress, those resources are not deleted and might prevent stack deletion. In this case, manually delete the resources that are preventing stack deletion.
+
+
+== Troubleshooting
+
+For troubleshooting common Partner Solution issues, refer to the https://fwd.aws/rA69w?[AWS Partner Solution General Information Guide^] and https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/troubleshooting.html[Troubleshooting CloudFormation^].
+
+== Resources
+
+* https://www.ibm.com/docs/SSEQTP_liberty/opr/ae/cfg-t-viewstatus.html[Viewing operator application status^]
+* https://www.ibm.com/docs/SSEQTP_liberty/opr/ae/t-troubleshooting.html[Troubleshooting WebSphere Liberty operators^]
+
