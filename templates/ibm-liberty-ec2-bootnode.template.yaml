@@ -51,8 +51,12 @@ Resources:
           Required:
             - StackPropertiesFile
         StackPropertiesFile:
+          commands:
+            01_create_opt_ibm:
+              command: mkdir -p /opt/ibm
+              test: test ! -d /opt/ibm
           files:
-            /tmp/cluster.yaml:
+            /opt/ibm/cluster.yaml:
               mode: '000755'
               owner: root
               group: root
