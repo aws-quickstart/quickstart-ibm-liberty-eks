@@ -38,27 +38,27 @@ Resources:
         - |
           #!/bin/bash
           i=0
-          while [ ! -f /tmp/cluster.yaml ]; do 
-            echo "/tmp/cluster.yaml isn't available yet, waiting"
+          while [ ! -f /opt/ibm/cluster.yaml ]; do 
+            echo "/opt/ibm/cluster.yaml isn't available yet, waiting"
             sleep 5
             i=$[$i+1]
             if [ $i -ge 12 ]; then
-              echo "Timed out waiting 60 seconds for /tmp/cluster.yaml to be available"
+              echo "Timed out waiting 60 seconds for /opt/ibm/cluster.yaml to be available"
               break; 
             fi
-            echo "/tmp/cluster.yaml ready:"
-            cat /tmp/cluster.yaml
+            echo "/opt/ibm/cluster.yaml ready:"
+            cat /opt/ibm/cluster.yaml
           done
         - !If
           - IsFargate
           - !Sub |
             #!/bin/bash
-            eksctl create cluster --fargate --name ${EKSClusterName} --region ${AWS::Region} > /tmp/eksctl.log
+            eksctl create cluster --fargate --name ${EKSClusterName} --region ${AWS::Region} > /opt/ibm/eksctl.log
           - |
             #!/bin/bash
-            eksctl create cluster -f /tmp/cluster.yaml > /tmp/eksctl.log
+            eksctl create cluster -f /opt/ibm/cluster.yaml > /opt/ibm/eksctl.log
         workingDirectory:
-        - /tmp
+        - /opt/ibm
       WaitForSuccessTimeoutSeconds: 1200
 
   LambdaExecutionRole:
@@ -157,9 +157,9 @@ Resources:
                     try:
                       response = ssm.send_command(Targets=[{"Key":"instanceids","Values":[instanceID]}],
                               DocumentName="AWS-RunShellScript",
-                              Parameters={"commands":[f"/tmp/scripts/destroy.sh >> /tmp/eksctl.log"],
+                              Parameters={"commands":[f"/opt/ibm/scripts/destroy.sh >> /opt/ibm/eksctl.log"],
                                           "executionTimeout":["1800"],
-                                          "workingDirectory":["/tmp/scripts"]},
+                                          "workingDirectory":["/opt/ibm/scripts"]},
                               Comment="Execute script to delete EKS cluster",
                               TimeoutSeconds=180)
                       break

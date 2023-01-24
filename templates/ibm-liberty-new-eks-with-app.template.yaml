@@ -306,10 +306,10 @@ Outputs:
     Value: !GetAtt IBMLibertyBootNodeStack.Outputs.InstanceName
   InstallLogsLocation:
     Description: Install logs location (on boot node)
-    Value: "/tmp/install.log"
+    Value: "/opt/ibm/install.log"
   LibertyAppCRLocation:
     Description: Location (on boot node) of the deployed Liberty app CR
-    Value: "/tmp/scripts/templates/ibm-liberty-app-deploy.yaml"
+    Value: "/opt/ibm/scripts/templates/ibm-liberty-app-deploy.yaml"
   CloudWatchInstallLogs:
     Description: Installation logs (in CloudWatch)
     Value: !GetAtt IBMLibertyWorkloadStack.Outputs.CloudWatchInstallLogs

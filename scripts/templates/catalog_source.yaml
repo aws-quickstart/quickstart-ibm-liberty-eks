@@ -10,6 +10,8 @@ spec:
   publisher: IBM
   sourceType: grpc
   image: icr.io/cpopen/ibm-operator-catalog:latest
+  grpcPodConfig:
+    securityContextConfig: restricted
   updateStrategy:
     registryPoll:
       interval: 45m

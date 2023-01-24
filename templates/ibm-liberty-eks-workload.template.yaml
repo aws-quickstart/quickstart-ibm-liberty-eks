@@ -157,7 +157,7 @@ Resources:
           echo "CLOUDWATCH_INSTALL_LOGS=https://${AWS::Region}.console.aws.amazon.com/cloudwatch/home?region=${AWS::Region}#logsV2:log-groups/log-group/${MainStackName}" >> scripts/ibm-liberty-parameters.properties
           echo "EKS_ADMIN_USER_ARNS='${AdditionalEKSAdminArns}'" >> scripts/ibm-liberty-parameters.properties
           echo "EKS_CLUSTER_NAME=${EKSClusterName}" >> scripts/ibm-liberty-parameters.properties
-          echo "INSTALL_LOG_LOCATION=/tmp/install.log" >> scripts/ibm-liberty-parameters.properties
+          echo "INSTALL_LOG_LOCATION=/opt/ibm/install.log" >> scripts/ibm-liberty-parameters.properties
           echo "LAUNCH_TYPE=${LaunchType}" >> scripts/ibm-liberty-parameters.properties
           echo "LICENSE_EDITION='${LicenseEdition}'" >> scripts/ibm-liberty-parameters.properties
           echo "LICENSE_ENTITLEMENT='${LicenseProductEntitlementSource}'" >> scripts/ibm-liberty-parameters.properties
@@ -170,10 +170,10 @@ Resources:
           chown -R ${BootNodeUser} ./templates ./scripts ./install.log
           chgrp -R ${BootNodeUser} ./templates ./scripts ./install.log
 
-          su - ${BootNodeUser} -c '/tmp/scripts/install.sh' | tee install.log
+          su - ${BootNodeUser} -c '/opt/ibm/scripts/install.sh' | tee install.log
 
         workingDirectory:
-        - /tmp
+        - /opt/ibm
       WaitForSuccessTimeoutSeconds: 1200
 
   LambdaExecutionRole:
